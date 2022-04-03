@@ -87,7 +87,7 @@ public class MainView {
 
         txtLeaderGrid2.setText(esctool.getGridPositionGridLeader());
         txtLeaderGrid2.setColumns(3);
-        JButton btnSetLeaderGrid2 = new JButton("Leader 2nd Grid");
+        JButton btnSetLeaderGrid2 = new JButton("create grid");
         btnSetLeaderGrid2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -147,14 +147,6 @@ public class MainView {
         text = new JLabel();
         text.setText("<html><body>hallo<br>" +
                 "Bitte den Rennserver auswählen,<br>" +
-                "danach auf \"start\" drücken.<br>" +
-                "Das Programm erkennt in welcher Session es sich befindet<br>" +
-                "und führt dann entweder die ESC Protokollierung<br>" +
-                "oder den automatischen Startvorgang durch.<br>" +
-                "Einfach einschalten und laufen lassen, am Ende wird<br>" +
-                "auch die Boxeneinfahrt mit Protokolliert<br>" +
-                "<font color=ff0000>!!! Während des Startvorganges nicht stoppen !!!</font><br>" +
-                "sonst kommen die automatischen Nachrichten natürlich nicht ;)" +
                 "</body></html>");
         panNorth.add(text);
 
