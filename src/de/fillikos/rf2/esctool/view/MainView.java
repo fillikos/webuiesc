@@ -1,5 +1,6 @@
 package de.fillikos.rf2.esctool.view;
 
+import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.esctool.ESCTool;
 import de.fillikos.rf2.esctool.grid.DataController;
 import de.fillikos.rf2.service.webui.httpss.Connection;
@@ -155,13 +156,12 @@ public class MainView {
         contentPane.add(panSouth, BorderLayout.SOUTH);
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
+
     }
 
     private void loadSession() {
         StringBuilder textinsert = new StringBuilder();
         long time = 0;
-        int i = 1;
         while (startload) {
             try {
                 Thread.sleep(500);
@@ -191,8 +191,14 @@ public class MainView {
             txtLeaderGrid2.repaint();
 
             text.setText(textinsert.toString());
+
+//            text.setText(Controller.setMainViewText());
             text.repaint();
 
         }
+    }
+
+    public void showView() {
+        frame.setVisible(true);
     }
 }
