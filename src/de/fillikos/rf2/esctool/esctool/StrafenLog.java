@@ -9,13 +9,12 @@ public class StrafenLog {
     private String teamName;
     private String driverName;
     private String currentEventTime;
-    private PitVorgang vorgang;
 
-    public StrafenLog(SessionInfo sessionInfo, User user, PitVorgang vorgang) {
+    public StrafenLog(SessionInfo sessionInfo, User user, String klartext) {
         this.teamName = user.getFullTeamName();
         this.driverName = user.getDriverName();
         this.currentEventTime = sessionInfo.getCurrentEventTime();
-        this.vorgang = vorgang;
+        this.klartext = klartext;
     }
 
     public String getKlartext() {
@@ -50,11 +49,13 @@ public class StrafenLog {
         this.currentEventTime = currentEventTime;
     }
 
-    public PitVorgang getVorgang() {
-        return vorgang;
-    }
-
-    public void setVorgang(PitVorgang vorgang) {
-        this.vorgang = vorgang;
+    @Override
+    public String toString() {
+        return "StrafenLog{" +
+                "klartext='" + klartext + '\'' +
+                ", teamName='" + teamName + '\'' +
+                ", driverName='" + driverName + '\'' +
+                ", currentEventTime='" + currentEventTime + '\'' +
+                '}';
     }
 }

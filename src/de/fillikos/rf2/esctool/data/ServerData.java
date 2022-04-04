@@ -1,5 +1,6 @@
 package de.fillikos.rf2.esctool.data;
 
+import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.service.webui.httpss.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.User;
@@ -16,18 +17,24 @@ public class ServerData {
 
     }
 
-    public void start(Connection connection) {
-        server = connection;
-        while (start) {
-            server.loadData();
-            users = server.getStandings();
-            sessionInfo = server.getSessionInfo();
-            try {
-                Thread.sleep(aktualisierungsrate);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void start() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (start) {
+                    server.loadData();
+                    users = server.getStandings();
+                    sessionInfo = server.getSessionInfo();
+                    Controller.setViewData();
+                    Controller.runDataHandling();
+                    try {
+                        Thread.sleep(aktualisierungsrate);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        }).start();
     }
 
     public Connection getServer() {
