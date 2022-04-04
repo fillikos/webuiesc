@@ -1,24 +1,16 @@
 package de.fillikos.rf2.esctool.controller;
 
 import de.fillikos.rf2.esctool.data.ServerData;
-import de.fillikos.rf2.esctool.esctool.ESCTool;
+import de.fillikos.rf2.esctool.data.SessionController;
 
 public class DataController {
 
-    private ESCTool escTool;
     private ServerData serverData;
+    private SessionController sessionController;
 
     public DataController() {
         serverData = new ServerData();
-        escTool = new ESCTool();
-    }
-
-    public ESCTool getEscTool() {
-        return escTool;
-    }
-
-    public void setEscTool(ESCTool escTool) {
-        this.escTool = escTool;
+        sessionController = new SessionController();
     }
 
     public ServerData getServerData() {
@@ -27,5 +19,13 @@ public class DataController {
 
     public void setServerData(ServerData serverData) {
         this.serverData = serverData;
+    }
+
+    public SessionController getSessionController() {
+        return sessionController;
+    }
+
+    public void setSessionController(SessionController sessionController) {
+        this.sessionController = sessionController;
     }
 }

@@ -62,58 +62,9 @@ public class MainView {
         panSouth.add(btnStart);
         panSouth.add(boxServer);
 
-        txtLeaderGrid2.setText("1");
-        txtLeaderGrid2.setColumns(3);
-        JButton btnSetLeaderGrid2 = new JButton("create grid");
-//        btnSetLeaderGrid2.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
-//                        DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
-//                        String timeString = df.format(new Date());
-//
-//                        FileFilter ff = new FileFilter() {
-//                            @Override
-//                            public boolean accept(File pathname) {
-//                                if (pathname.toString().contains("Q1.xml") &&
-//                                        pathname.toString().contains(timeString)) {
-//                                    return true;
-//                                }
-//                                return false;
-//                            }
-//                        };
-//
-//                        //2. Die größte Datei wird verwendet
-//                        File[] files = esctool.getQualixml().listFiles(ff);
-//                        File file = new File("D:\\");
-//                        if (files.length != 0) {
-//                            file = files[0];
-//                            if (files.length > 1) {
-//                                for (File f : files) {
-//                                    if (f.length() > file.length()) {
-//                                        file = f;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
-//                        DataController dc = new DataController();
-//                        if (!file.toString().equals("D:\\")) {
-//                            txtLeaderGrid2.setText("0");
-//                            System.out.println(file.toString());
-//                            dc.load24h(file, esctool.getServer(), txtLeaderGrid2);
-//                            System.out.println("grid.ini und strafen.ini wurden erstellt");
-//                            //4. Nach dem erstellen wird die grid.ini ausgeführt
-////                                        server.sendchat("/batch grid.ini");
-//                            System.out.println("grid.ini wurde ausgeführt");
-//                        }
-//                    }
-//                }).start();
-//            }
-//        });
+        txtLeaderGrid2.setText("0");
+        txtLeaderGrid2.setColumns(2);
+        JButton btnSetLeaderGrid2 = new JButton("nothing");
 
         panSouth.add(btnSetLeaderGrid2);
         panSouth.add(txtLeaderGrid2);

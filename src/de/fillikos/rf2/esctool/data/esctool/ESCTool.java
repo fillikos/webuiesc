@@ -1,0 +1,241 @@
+package de.fillikos.rf2.esctool.data.esctool;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fillikos.rf2.service.webui.httpss.model.PitState;
+import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.User;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
+public class ESCTool {
+
+    private ArrayList<StrafenLog> strafen;
+    private SessionInfo sessionInfo;
+    private User[] usersOld = new User[0];
+    private File pathname = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
+
+
+    public ESCTool() {
+        strafen = new ArrayList<StrafenLog>();
+    }
+
+    public void handleESCRule(User[] users, SessionInfo sessionInfo, PitVorgang pitVorgang) {
+        this.sessionInfo = sessionInfo;
+        for (User user : users) {
+            for (User userOld : usersOld) {
+                if (userOld.getDriverName().equals(user.getDriverName())) {
+                    pitRule(user, userOld, pitVorgang);
+                    break;
+                }
+            }
+        }
+        usersOld = users;
+    }
+
+    private void pitRule(User user, User userOld, PitVorgang pitVorgang) {
+        PitState pitNew, pitOld;
+        pitNew = user.getPitStateEnum();
+        pitOld = userOld.getPitStateEnum();
+
+        if (pitOld != pitNew) {
+            /*
+             * 0 == NONE = OnTrack
+             * 1 == REQUEST = OnTrack PitStop Requested
+             * 2 == InPitLane
+             * 3 == Pitting
+             * 4 == EXITING = ExitingPitLane == Vehicle in Garage
+             * ? == ENTERING
+             * ? == STOPPED
+             */
+            switch (pitNew) {
+                case NONE:
+                    switch (pitOld) {
+                        case INPITLANE:
+                        case PITTING:
+                        case ENTERING:
+                        case STOPPED:
+                            break;
+                        case EXITING:
+                            if (pitVorgang.isAus_der_box_gefahren()) {
+                                write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
+                            }
+                            break;
+                        case REQUEST:
+                            if (pitVorgang.isBoxenstop_anforderung_abgebrochen()) {
+                                write(new StrafenLog(sessionInfo, user, "Boxenstopanforderung abgebrochen"));
+                            }
+                            break;
+                    }
+                    break;
+                case REQUEST:
+                    switch (pitOld) {
+                        case NONE:
+                            if (pitVorgang.isBoxenstop_angefordert()) {
+                                write(new StrafenLog(sessionInfo, user, "Boxenstop angefordert"));
+                            }
+                            break;
+                        case INPITLANE:
+                        case PITTING:
+                        case STOPPED:
+                        case ENTERING:
+                            break;
+                        case EXITING:
+                            //Muss händisch geprüft werden, in der Box ein Abbruch führt zu einem pitState'NONE'
+                            //somit ein ESC auch innerhalb der Box (Boxenausfahrt) nicht zu erkennen
+                            //System.out.println(u.getDriverName() + " hat in der Box einen Boxenstopp angefordert.");
+                            break;
+                    }
+                    break;
+                case INPITLANE:
+                    switch (pitOld) {
+                        case NONE:
+                        case STOPPED:
+                        case ENTERING:
+                        case EXITING:
+                        case PITTING:
+                        case REQUEST:
+                            break;
+                    }
+                    break;
+                case PITTING:
+                    switch (pitOld) {
+                        case NONE:
+                        case STOPPED:
+                        case ENTERING:
+                        case EXITING:
+                        case INPITLANE:
+                        case REQUEST:
+                            break;
+                    }
+                    break;
+                case EXITING:
+                    switch (pitOld) {
+                        case NONE:
+                        case REQUEST:
+                            //Wichtig auch für die Auswertung nach dem Rennen
+                            if (pitVorgang.isEsc_auf_strecke()) {
+                                write(new StrafenLog(sessionInfo, user, "ESC auf der strecke"));
+                            }
+                            break;
+                        case INPITLANE:
+                        case PITTING:
+                            break;
+                        case ENTERING:
+                            if (pitVorgang.isEsc_in_der_box()) {
+                                write(new StrafenLog(sessionInfo, user, "ESC in der box"));
+                            }
+                            break;
+                        case STOPPED:
+                            if (pitVorgang.isBoxenstop_ende()) {
+                                write(new StrafenLog(sessionInfo, user, "boxenstop ende"));
+                            }
+                            break;
+                    }
+                case ENTERING:
+                    switch (pitOld) {
+                        case NONE:
+                        case REQUEST:
+                            if (pitVorgang.isIn_die_box()) {
+                                write(new StrafenLog(sessionInfo, user, "in die Box"));
+                            }
+                            break;
+                        case INPITLANE:
+                        case STOPPED:
+                        case ENTERING:
+                        case EXITING:
+                        case PITTING:
+                            break;
+                    }
+                    break;
+                case STOPPED:
+                    switch (pitOld) {
+                        case NONE:
+                        case EXITING:
+                        case PITTING:
+                        case INPITLANE:
+                        case REQUEST:
+                            break;
+                        case ENTERING:
+                            if (pitVorgang.isBoxenstop_beginn()) {
+                                write(new StrafenLog(sessionInfo, user, "Boxenstop beginn"));
+                            }
+                            break;
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void write(StrafenLog strafenLog) {
+        strafen.add(strafenLog);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String timeString = df.format(new Date());
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(Paths.get(pathname + "\\" +
+                    timeString +
+                    "_" +
+                    sessionInfo.getServerName() +
+                    "_" +
+                    sessionInfo.getSession().charAt(0) +
+                    sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
+                    ".te").toFile(), strafen);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<StrafenLog> getStrafen() {
+        return strafen;
+    }
+
+    public void setStrafen(ArrayList<StrafenLog> strafen) {
+        this.strafen = strafen;
+    }
+
+    public SessionInfo getSessionInfo() {
+        return sessionInfo;
+    }
+
+    public void setSessionInfo(SessionInfo sessionInfo) {
+        this.sessionInfo = sessionInfo;
+    }
+
+    public User[] getUsersOld() {
+        return usersOld;
+    }
+
+    public void setUsersOld(User[] usersOld) {
+        this.usersOld = usersOld;
+    }
+
+    public File getPathname() {
+        return pathname;
+    }
+
+    public void setPathname(File pathname) {
+        this.pathname = pathname;
+    }
+
+    @Override
+    public String toString() {
+        return "ESCTool{" +
+                "strafen=" + strafen +
+                ", sessionInfo=" + sessionInfo +
+                ", usersOld=" + Arrays.toString(usersOld) +
+                ", pathname=" + pathname +
+                '}';
+    }
+
+    public void cleanData() {
+        strafen.clear();
+        usersOld = new User[0];
+    }
+}

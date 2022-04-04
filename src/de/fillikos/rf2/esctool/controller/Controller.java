@@ -1,6 +1,6 @@
 package de.fillikos.rf2.esctool.controller;
 
-import de.fillikos.rf2.esctool.esctool.PitVorgang;
+import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.service.webui.httpss.Connection;
 
 public class Controller {
@@ -12,12 +12,10 @@ public class Controller {
         vc.showView();
     }
 
-    public static String setMainViewText() {
-        return "";
-    }
-
     public static void setServer(Connection connection) {
         dc.getServerData().setServer(connection);
+        dc.getSessionController().setServer(connection);
+        dc.getSessionController().getRaceController().setServer(connection);
     }
 
     public static void startUpdateServerData() {
@@ -26,6 +24,7 @@ public class Controller {
     }
 
     public static void stopUpdateServerData() {
+        dc.getSessionController().cleanData();
         dc.getServerData().setStart(false);
     }
 
@@ -34,6 +33,10 @@ public class Controller {
     }
 
     public static void runDataHandling() {
-        dc.getEscTool().handleESCRule(dc.getServerData().getUsers(), dc.getServerData().getSessionInfo(), new PitVorgang());
+        dc.getSessionController().setNewData(dc.getServerData().getUsers(), dc.getServerData().getSessionInfo(), new PitVorgang());
+    }
+
+    public static void setAktualisierungsrate(int rate) {
+        dc.getServerData().setAktualisierungsrate(rate);
     }
 }
