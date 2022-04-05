@@ -3,6 +3,8 @@ package de.fillikos.rf2.esctool.controller;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.service.webui.httpss.Connection;
 
+import java.util.ArrayList;
+
 public class Controller {
 
     private static DataController dc = new DataController();
@@ -38,5 +40,9 @@ public class Controller {
 
     public static void setAktualisierungsrate(int rate) {
         dc.getServerData().setAktualisierungsrate(rate);
+    }
+
+    public static void setStartgruppen(ArrayList<ArrayList> startgruppen) {
+        dc.getSessionController().setStartgruppeClass(startgruppen);
     }
 }

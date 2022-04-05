@@ -5,6 +5,9 @@ import de.fillikos.rf2.service.webui.httpss.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RaceController {
 
     private int anzahlStartgruppen;
@@ -15,6 +18,7 @@ public class RaceController {
     private boolean serververlassen = false;
     private Connection server;
     private SessionInfo sessionInfo;
+    private ArrayList<ArrayList> startgruppeClass;
 
     public RaceController() {
 
@@ -56,25 +60,25 @@ public class RaceController {
         for (int i = 0; i < startgruppeGo.length; i++) {
             if (startgruppeGo[i]) {
                 int startPos = 100;
-                for (User u : users) {
-                    //TODO if für verschiedene Klassen erstellen
-                    if (u.getCarClass().equals("SP9 GT3") ||
-                            u.getCarClass().equals("Cup2")) {
-                        int position = Integer.parseInt(u.getPosition());
+                for (User user : users) {
+                    if (startgruppe(user, startgruppeClass.get(i))) {
+//                    if (u.getCarClass().equals("SP9 GT3") ||
+//                            u.getCarClass().equals("Cup2")) {
+                        int position = Integer.parseInt(user.getPosition());
                         if (startPos > position) {
                             gridPositionGridLeader[i] = String.valueOf(position);
                             startPos = position;
                         }
                     }
                 }
-                for (User u : users) {
-                    if (u.getPosition().equals(gridPositionGridLeader[i]) &&
-                            (u.getLapsCompleted().equals("0") || u.getLapsCompleted().equals("1"))) {
+                for (User user : users) {
+                    if (user.getPosition().equals(gridPositionGridLeader[i]) &&
+                            (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
                         if (setBeginnStartprozedur) {
-                            if (Float.parseFloat(u.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.9) {
+                            if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.9) {
                                 Controller.setAktualisierungsrate(300);
                             }
-                            if (Float.parseFloat(u.getLapDistance()) > startLapPosition[0] || u.getLapsCompleted().equals("1")) {
+                            if (Float.parseFloat(user.getLapDistance()) > startLapPosition[0] || user.getLapsCompleted().equals("1")) {
                                 System.out.println("Start " + i + ". Startgruppe");
                                 server.sendchat(i + ". Startgruppe Go Go Go");
                                 startgruppeGo[i] = false;
@@ -84,7 +88,7 @@ public class RaceController {
                                 Controller.setAktualisierungsrate(500);
                             }
                         }
-                        if (!setBeginnStartprozedur && Float.parseFloat(u.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5) {
+                        if (!setBeginnStartprozedur && Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5) {
                             setBeginnStartprozedur = true;
                         }
                     }
@@ -105,6 +109,15 @@ public class RaceController {
                 server.sendchat("Der Server kann jetzt verlassen werden.");
             }
         }
+    }
+
+    private boolean startgruppe(User user, ArrayList<String> startgruppeClass) {
+        for (String carClass : startgruppeClass) {
+            if (user.getCarClass().equals(carClass)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int generateRandomStartPos() {
@@ -132,6 +145,15 @@ public class RaceController {
             startLapPosition[i] = generateRandomStartPos();
         }
         startgruppeGo[0] = true;
+    }
+
+    public ArrayList<ArrayList> getStartgruppeClass() {
+        return startgruppeClass;
+    }
+
+    public void setStartgruppeClass(ArrayList<ArrayList> startgruppeClass) {
+        this.startgruppeClass = startgruppeClass;
+        setAnzahlStartgruppen(startgruppeClass.size());
     }
 
     public int[] getStartLapPosition() {

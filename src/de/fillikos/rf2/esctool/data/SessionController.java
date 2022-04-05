@@ -1,7 +1,6 @@
 package de.fillikos.rf2.esctool.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.data.esctool.ESCTool;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.data.grid.DataController;
@@ -10,7 +9,6 @@ import de.fillikos.rf2.service.webui.httpss.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.User;
 
-import javax.net.ssl.HandshakeCompletedEvent;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
@@ -35,6 +33,7 @@ public class SessionController {
     private boolean gridIniErstellt = false;
     private Connection server;
     private boolean rennende = false;
+    private ArrayList<ArrayList> startgruppeClass;
 
     public SessionController() {
         raceController = new RaceController();
@@ -154,6 +153,7 @@ public class SessionController {
     }
 
     private void gridINI() {
+        raceController.setStartgruppeClass(startgruppeClass);
         //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
         DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
         String timeString = df.format(new Date());
@@ -296,5 +296,42 @@ public class SessionController {
 
     public void setServer(Connection connection) {
         this.server = connection;
+    }
+
+    public SessionInfo getSessionInfoOld() {
+        return sessionInfoOld;
+    }
+
+    public void setSessionInfoOld(SessionInfo sessionInfoOld) {
+        this.sessionInfoOld = sessionInfoOld;
+    }
+
+    public boolean isGridIniErstellt() {
+        return gridIniErstellt;
+    }
+
+    public void setGridIniErstellt(boolean gridIniErstellt) {
+        this.gridIniErstellt = gridIniErstellt;
+    }
+
+    public Connection getServer() {
+        return server;
+    }
+
+    public boolean isRennende() {
+        return rennende;
+    }
+
+    public void setRennende(boolean rennende) {
+        this.rennende = rennende;
+    }
+
+    public ArrayList<ArrayList> getStartgruppeClass() {
+        return startgruppeClass;
+    }
+
+    public void setStartgruppeClass(ArrayList<ArrayList> startgruppeClass) {
+        this.startgruppeClass = startgruppeClass;
+        raceController.setStartgruppeClass(startgruppeClass);
     }
 }

@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class MainView {
 
@@ -55,6 +56,19 @@ public class MainView {
                             Controller.setServer(new Connection("http://localhost:", "5397"));
                             break;
                     }
+                    ArrayList<String> startgruppeEins = new ArrayList<String>();
+                    startgruppeEins.add("SP3 GT9");
+                    startgruppeEins.add("Cup2");
+                    ArrayList<String> startgruppeZwei = new ArrayList<String>();
+                    startgruppeZwei.add("H2");
+                    startgruppeZwei.add("H4");
+                    startgruppeZwei.add("SP10 GT4");
+                    startgruppeZwei.add("SP3T");
+                    ArrayList<ArrayList> startgruppen = new ArrayList<ArrayList>();
+                    startgruppen.add(startgruppeEins);
+                    startgruppen.add(startgruppeZwei);
+                    Controller.setStartgruppen(startgruppen);
+
                     Controller.startUpdateServerData();
                 }
             }
