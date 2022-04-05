@@ -36,6 +36,7 @@ public class Controller {
 
     public static void runDataHandling() {
         dc.getSessionController().setNewData(dc.getServerData().getUsers(), dc.getServerData().getSessionInfo(), new PitVorgang());
+        dc.getSessionController().getRaceController().setSessionInfo(dc.getServerData().getSessionInfo());
     }
 
     public static void setAktualisierungsrate(int rate) {
@@ -44,5 +45,9 @@ public class Controller {
 
     public static void setStartgruppen(ArrayList<ArrayList> startgruppen) {
         dc.getSessionController().setStartgruppeClass(startgruppen);
+    }
+
+    public static void loadGridINI() {
+        dc.getSessionController().gridINI();
     }
 }

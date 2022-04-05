@@ -21,11 +21,11 @@ public class Fahrzeug {
         this.nummer = nummer;
     }
 
-    public Fahrzeug(int position, int nummer, String fahrer, String team) {
+    public Fahrzeug(int position, int nummer, String fahrer, String klasse) {
         this.position = position;
         this.fahrer = fahrer;
         this.nummer = nummer;
-        this.team = team;
+        this.klasse = klasse;
     }
 
     public Fahrzeug(int nummer, int anmeldeztpkt, String team, boolean anmeldung) {

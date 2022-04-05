@@ -156,7 +156,7 @@ public class SessionController {
 
     }
 
-    private void gridINI() {
+    public void gridINI() {
         raceController.setStartgruppeClass(startgruppeClass);
         //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
         DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
@@ -191,7 +191,7 @@ public class SessionController {
         DataController dc = new DataController();
         if (!file.toString().equals("D:\\")) {
             System.out.println(file.toString());
-            dc.load24h(file, server, new JTextField());
+            dc.load24h(file, server, startgruppeClass);
             System.out.println("grid.ini und strafen.ini wurden erstellt");
             //4. Nach dem erstellen wird die grid.ini ausgeführt
             server.sendchat("/batch grid.ini");

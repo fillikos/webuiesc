@@ -83,6 +83,7 @@ public class MainView {
                 startgruppen.add(startgruppeEins);
                 startgruppen.add(startgruppeZwei);
                 Controller.setStartgruppen(startgruppen);
+                Controller.loadGridINI();
             }
         });
 

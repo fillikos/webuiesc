@@ -4,8 +4,8 @@ import de.fillikos.rf2.esctool.data.grid.raceresult.RFactorXML;
 import de.fillikos.rf2.esctool.data.grid.raceresult.ResultsFactory;
 import de.fillikos.rf2.esctool.data.grid.raceresult.driver.Driver;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
-import javax.swing.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ public class DataController {
     private StartgruppeName[] startgruppeName = new StartgruppeName[6];
     private Client client;
     private ArrayList<String> startgruppe24h;
+    private ArrayList<ArrayList> startgruppeClass = new ArrayList<>();
 
     public DataController() {
         /**
@@ -127,18 +128,18 @@ public class DataController {
         daten.readAnmeldugThread(insgesamt, anmeldeThread);
     }
 
-    public void load24h(File qualiXml, Connection server, JTextField txtLeaderGrid2) {
+    public void load24h(File qualiXml, Connection server, ArrayList<ArrayList> startgruppeClass) {
+        this.startgruppeClass = startgruppeClass;
         System.out.println("DataController.load24h()");
         /**
          * Informationen Sammeln
          */
 //        loadAnmeldung();
 //        loadQualiName();
-        txtLeaderGrid2.setText(qualiXml.toPath().toString());
-        loadxml(qualiXml.toPath(), txtLeaderGrid2);
+        loadxml(qualiXml.toPath());
 //        loadxml(Paths.get("G:\\SteamLibrary\\steamapps\\common\\rFactor 2\\UserData\\Log\\Results\\2021_11_13_11_50_58-01Q1.xml"));
         loadServer24hWeb(server);
-        txtLeaderGrid2.setText("2");
+
         //        try (BufferedReader in = new BufferedReader(new FileReader(new File("C:\\Users\\juerg\\OneDrive\\rF2LN\\VR-rF2LN\\s4\\strafen")))) {
         try (BufferedReader in = new BufferedReader(new FileReader(new File(qualiXml.getParent() + "\\strafen")))) {
             String zeile;
@@ -165,11 +166,7 @@ public class DataController {
                     System.out.println(zeile.indexOf("#"));
                 }
                 System.out.println(zeile);
-//                    System.out.println(zeile.substring(zeile.indexOf(" +") + 2 , zeile.indexOf(" St")));
-
             }
-//            System.out.println(strafenIni.toString());
-            //TODO write strafen.ini
             writeStrafenINI24h(qualiXml, strafenIni);
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,107 +185,178 @@ public class DataController {
         startgruppeCUP5 = new ArrayList<>();
         startgruppeH2 = new ArrayList<>();
         startgruppen24h();
-        sort24h(startgruppeGT3);
-        sort24h(startgruppeCUP2);
-        sort24h(startgruppeGT4);
-        sort24h(startgruppeSP3T);
-        sort24h(startgruppeCUP5);
-        sort24h(startgruppeH2);
-//        writeGridINI(startgruppeName);
-        System.out.println(startgruppeGT3 + "\n" +
-                startgruppeCUP2 + "\n" +
-                startgruppeGT4 + "\n" +
-                startgruppeSP3T + "\n" +
-                startgruppeCUP5 + "\n" +
-                startgruppeH2);
-        int x = 1;
-        for (String s : startgruppeGT3) {
-            insgesamtFahrerNeu.get(s).setPosition(x++);
-        }
-        for (String s : startgruppeSP3T) {
-            insgesamtFahrerNeu.get(s).setPosition(x++);
-        }
-        System.out.println(startgruppeGT3 + "\n" +
-                startgruppeSP3T);
-        txtLeaderGrid2.setText("3");
 
-        int strafe = 0;
-        do {
-            strafe = 0;
-            for (int i = (startgruppeGT3.size() - 1); i >= 0; i--) {
-//                System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
-                /**
-                 * Wenn eine Strafe vorliegt
-                 */
-                if (insgesamtFahrerNeu.get(startgruppeGT3.get(i)).besitztStrafe()) {
-//                    System.out.println(startgruppe.get(i));
-                    insgesamtFahrerNeu.get(startgruppeGT3.get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe() - 1);
-//                    System.out.println(strafe);
-//                    System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
-                    if (strafe < insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe()) {
-                        strafe = insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe();
-                    }
-//                    System.out.println("Strafe");
-                    /**
-                     * werden die Positionen getauscht
-                     */
-                    double v1 = insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getPosition();
-                    try {
-                        double v2 = insgesamtFahrerNeu.get(startgruppeGT3.get(i + 1)).getPosition();
-                        String temp = startgruppeGT3.get(i);
-                        startgruppeGT3.set(i, startgruppeGT3.get(i + 1));
-                        startgruppeGT3.set(i + 1, temp);
-                    } catch (IndexOutOfBoundsException e) {
-//                        System.out.println("letzter");
-                    }
+        // Neue startgruppen ArrayListe
+        ArrayList<ArrayList<String>> startgruppen = new ArrayList<ArrayList<String>>();
+        System.out.println(startgruppeClass.size() + " " + startgruppeClass);
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            startgruppen.add(new ArrayList<String>());
+        }
+
+        for (String f : fahrer) {
+            String[] element = f.split("##");
+            /**
+             * element[1] = Fahrzeugnummer
+             * element[2] = Fahrername
+             * element[3] = Position
+             * element[4] = CarClass
+             */
+            int nummer = Integer.parseInt(element[1]);
+            String carClass = element[4];
+
+            for (int i = 0; i < startgruppeClass.size(); i++) {
+                if (isStartgruppe(carClass, startgruppeClass.get(i))) {
+                    System.out.println(nummer);
+                    startgruppen.get(i).add(String.valueOf(nummer));
+                    break;
                 }
             }
-        } while (strafe > 0);
+        }
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            sort24h(startgruppen.get(i));
+        }
+        int pos = 1;
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            for (String s : startgruppen.get(i)) {
+                insgesamtFahrerNeu.get(s).setPosition(pos++);
+            }
+        }
+        for (int j = 0; j < startgruppeClass.size(); j++) {
+            int strafe = 0;
 
-        strafe = 0;
-        do {
-            strafe = 0;
-            for (int i = (startgruppeSP3T.size() - 1); i >= 0; i--) {
-//                System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
-                /**
-                 * Wenn eine Strafe vorliegt
-                 */
-                if (insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).besitztStrafe()) {
-//                    System.out.println(startgruppe.get(i));
-                    insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe() - 1);
-//                    System.out.println(strafe);
-//                    System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
-                    if (strafe < insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe()) {
-                        strafe = insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe();
-                    }
-//                    System.out.println("Strafe");
+            do {
+                strafe = 0;
+                for (int i = (startgruppen.get(j).size() - 1); i >= 0; i--) {
                     /**
-                     * werden die Positionen getauscht
+                     * Wenn eine Strafe vorliegt
                      */
-                    double v1 = insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getPosition();
-                    try {
-                        double v2 = insgesamtFahrerNeu.get(startgruppeSP3T.get(i + 1)).getPosition();
-                        String temp = startgruppeSP3T.get(i);
-                        startgruppeSP3T.set(i, startgruppeSP3T.get(i + 1));
-                        startgruppeSP3T.set(i + 1, temp);
-                    } catch (IndexOutOfBoundsException e) {
+                    if (insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).besitztStrafe()) {
+                        insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe() - 1);
+                        if (strafe < insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe()) {
+                            strafe = insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe();
+                        }
+                        /**
+                         * werden die Positionen getauscht
+                         */
+                        double v1 = insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getPosition();
+                        try {
+                            double v2 = insgesamtFahrerNeu.get(startgruppen.get(j).get(i + 1)).getPosition();
+                            String temp = startgruppen.get(j).get(i);
+                            startgruppen.get(j).set(i, startgruppen.get(j).get(i + 1));
+                            startgruppen.get(j).set(i + 1, temp);
+                        } catch (IndexOutOfBoundsException e) {
 //                        System.out.println("letzter");
+                        }
                     }
                 }
-            }
-        } while (strafe > 0);
-        txtLeaderGrid2.setText("4");
+            } while (strafe > 0);
+        }
+
+
+        // Alte startgruppen
+//        sort24h(startgruppeGT3);
+//        sort24h(startgruppeCUP2);
+//        sort24h(startgruppeGT4);
+//        sort24h(startgruppeSP3T);
+//        sort24h(startgruppeCUP5);
+//        sort24h(startgruppeH2);
+////        writeGridINI(startgruppeName);
+//        System.out.println(startgruppeGT3 + "\n" +
+//                startgruppeCUP2 + "\n" +
+//                startgruppeGT4 + "\n" +
+//                startgruppeSP3T + "\n" +
+//                startgruppeCUP5 + "\n" +
+//                startgruppeH2);
+//        int x = 1;
+//        for (String s : startgruppeGT3) {
+//            insgesamtFahrerNeu.get(s).setPosition(x++);
+//        }
+//        for (String s : startgruppeSP3T) {
+//            insgesamtFahrerNeu.get(s).setPosition(x++);
+//        }
+//        System.out.println(startgruppeGT3 + "\n" +
+//                startgruppeSP3T);
+//
+//        int strafe = 0;
+//        do {
+//            strafe = 0;
+//            for (int i = (startgruppeGT3.size() - 1); i >= 0; i--) {
+////                System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
+//                /**
+//                 * Wenn eine Strafe vorliegt
+//                 */
+//                if (insgesamtFahrerNeu.get(startgruppeGT3.get(i)).besitztStrafe()) {
+////                    System.out.println(startgruppe.get(i));
+//                    insgesamtFahrerNeu.get(startgruppeGT3.get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe() - 1);
+////                    System.out.println(strafe);
+////                    System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
+//                    if (strafe < insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe()) {
+//                        strafe = insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getStrafe();
+//                    }
+////                    System.out.println("Strafe");
+//                    /**
+//                     * werden die Positionen getauscht
+//                     */
+//                    double v1 = insgesamtFahrerNeu.get(startgruppeGT3.get(i)).getPosition();
+//                    try {
+//                        double v2 = insgesamtFahrerNeu.get(startgruppeGT3.get(i + 1)).getPosition();
+//                        String temp = startgruppeGT3.get(i);
+//                        startgruppeGT3.set(i, startgruppeGT3.get(i + 1));
+//                        startgruppeGT3.set(i + 1, temp);
+//                    } catch (IndexOutOfBoundsException e) {
+////                        System.out.println("letzter");
+//                    }
+//                }
+//            }
+//        } while (strafe > 0);
+//
+//        strafe = 0;
+//        do {
+//            strafe = 0;
+//            for (int i = (startgruppeSP3T.size() - 1); i >= 0; i--) {
+////                System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
+//                /**
+//                 * Wenn eine Strafe vorliegt
+//                 */
+//                if (insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).besitztStrafe()) {
+////                    System.out.println(startgruppe.get(i));
+//                    insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe() - 1);
+////                    System.out.println(strafe);
+////                    System.out.println(insgesamt.get(startgruppe.get(i)).getStrafe());
+//                    if (strafe < insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe()) {
+//                        strafe = insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getStrafe();
+//                    }
+////                    System.out.println("Strafe");
+//                    /**
+//                     * werden die Positionen getauscht
+//                     */
+//                    double v1 = insgesamtFahrerNeu.get(startgruppeSP3T.get(i)).getPosition();
+//                    try {
+//                        double v2 = insgesamtFahrerNeu.get(startgruppeSP3T.get(i + 1)).getPosition();
+//                        String temp = startgruppeSP3T.get(i);
+//                        startgruppeSP3T.set(i, startgruppeSP3T.get(i + 1));
+//                        startgruppeSP3T.set(i + 1, temp);
+//                    } catch (IndexOutOfBoundsException e) {
+////                        System.out.println("letzter");
+//                    }
+//                }
+//            }
+//        } while (strafe > 0);
 
         System.out.println(startgruppeGT3 + "\n" +
                 startgruppeSP3T);
 
         startgruppe24h = new ArrayList<String>();
-        startgruppe24h.addAll(startgruppeGT3);
-        startgruppe24h.addAll(startgruppeCUP2);
-        startgruppe24h.addAll(startgruppeGT4);
-        startgruppe24h.addAll(startgruppeSP3T);
-        startgruppe24h.addAll(startgruppeCUP5);
-        startgruppe24h.addAll(startgruppeH2);
+//        startgruppe24h.addAll(startgruppeGT3);
+//        startgruppe24h.addAll(startgruppeCUP2);
+//        startgruppe24h.addAll(startgruppeGT4);
+//        startgruppe24h.addAll(startgruppeSP3T);
+//        startgruppe24h.addAll(startgruppeCUP5);
+//        startgruppe24h.addAll(startgruppeH2);
+
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            startgruppe24h.addAll(startgruppen.get(i));
+        }
         System.out.println(insgesamtFahrerNeu);
 
         writeGridINI24h(qualiXml);
@@ -336,10 +404,12 @@ public class DataController {
              * element[1] = Fahrzeugnummer
              * element[2] = Fahrername
              * element[3] = Position
+             * element[4] = CarClass
              */
             int nummer = Integer.parseInt(element[1]);
             String fahrer = element[2];
             int position = Integer.parseInt(element[3]);
+            String carClass = element[4];
 
             if (nummer >= 100 && nummer <= 199 ||
                     nummer >= 10 && nummer <= 18 ||
@@ -361,6 +431,16 @@ public class DataController {
                 startgruppeSP3T.add(String.valueOf(nummer));
             }
         }
+    }
+
+
+    private boolean isStartgruppe(String carClass, ArrayList<String> startgruppeClass) {
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            if (carClass.equals(startgruppeClass.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sort24h(ArrayList<String> liste) {
@@ -430,7 +510,6 @@ public class DataController {
         WebUI web = new WebUI(server);
         fahrer = web.getFahrer();
 
-
         insgesamtFahrerNeu = new HashMap<>();
 
         for (String f : fahrer) {
@@ -438,29 +517,34 @@ public class DataController {
             int position = Integer.parseInt(element[3]) + 6000;
             int nummer = Integer.parseInt(element[1]);
             String name = element[2];
-            String team = element[4];
+            String carClass = element[4];
 
             if (insgesamtFahrer.containsKey(String.valueOf(nummer))) {
                 position = insgesamtFahrer.get(String.valueOf(nummer)).getPosition();
             }
-            insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, team));
+            insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, carClass));
         }
         System.out.println(insgesamtFahrerNeu);
     }
 
-    public void loadxml(Path path, JTextField txtLeaderGrid2) {
+    public void loadxml(Path path) {
         System.out.println("DataController.loadXml()");
         insgesamtFahrer = new HashMap<>();
-        txtLeaderGrid2.setText("22");
         ResultsFactory rf = new ResultsFactory();
         RFactorXML xml = rf.getResult(path);
-        txtLeaderGrid2.setText("33");
         System.out.println("xml...size(): " + xml.getRaceResult().getQualify().getDriver().size());
         for (Driver d : xml.getRaceResult().getQualify().getDriver()) {
-            insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName()));
-            System.out.println(d.getPosition());
+            insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
         }
         System.out.println("insgesamtFahrer.size(): " + insgesamtFahrer.size());
         System.out.println(insgesamtFahrer);
+    }
+
+    public ArrayList<ArrayList> getStartgruppeClass() {
+        return startgruppeClass;
+    }
+
+    public void setStartgruppeClass(ArrayList<ArrayList> startgruppeClass) {
+        this.startgruppeClass = startgruppeClass;
     }
 }

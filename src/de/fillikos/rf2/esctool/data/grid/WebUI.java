@@ -73,7 +73,7 @@ public class WebUI {
                     users[i].getCarNumber(),
                     users[i].getDriverName(),
                     users[i].getPosition(),
-                    users[i].getFullTeamName()));
+                    users[i].getCarClass()));
         }
         return fahrer;
     }
