@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.data.grid.webui.User;
-import de.fillikos.rf2.service.webui.httpss.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.IOException;
 import java.net.ConnectException;

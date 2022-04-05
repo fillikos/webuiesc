@@ -1,7 +1,7 @@
 package de.fillikos.rf2.esctool.controller;
 
 import de.fillikos.rf2.esctool.view.MainView;
-import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

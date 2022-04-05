@@ -1,9 +1,9 @@
 package de.fillikos.rf2.esctool.data;
 
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.service.webui.httpss.Connection;
-import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
-import de.fillikos.rf2.service.webui.httpss.model.User;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 public class ServerData {
 

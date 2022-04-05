@@ -5,9 +5,10 @@ import de.fillikos.rf2.esctool.data.esctool.ESCTool;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.data.grid.DataController;
 import de.fillikos.rf2.esctool.data.hotlap.Hotlap;
-import de.fillikos.rf2.service.webui.httpss.Connection;
-import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
-import de.fillikos.rf2.service.webui.httpss.model.User;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
+
 
 import javax.swing.*;
 import java.io.File;
@@ -22,12 +23,13 @@ import java.util.List;
 
 public class SessionController {
 
-    private RaceController raceController;
+    private RaceController raceController = new RaceController();
     private User[] users, usersOld;
-    private SessionInfo sessionInfo, sessionInfoOld;
+    private SessionInfo sessionInfo = new SessionInfo();
+    private SessionInfo sessionInfoOld = new SessionInfo();
     private PitVorgang pitVorgang;
-    private ESCTool escTool;
-    private List<Hotlap> hotlaps;
+    private ESCTool escTool = new ESCTool();
+    private List<Hotlap> hotlaps = new ArrayList<>();
     private File qualixml = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private boolean recordHotlaps = true;
     private boolean gridIniErstellt = false;
@@ -36,9 +38,7 @@ public class SessionController {
     private ArrayList<ArrayList> startgruppeClass;
 
     public SessionController() {
-        raceController = new RaceController();
-        hotlaps = new ArrayList<>();
-        escTool = new ESCTool();
+
     }
 
     public ESCTool getEscTool() {
@@ -51,13 +51,13 @@ public class SessionController {
 
     public void setNewData(User[] users, SessionInfo sessionInfo, PitVorgang pitVorgang) {
         sessionInfoOld = this.sessionInfo;
+        this.sessionInfo = sessionInfo;
         if (this.users != null) {
             this.usersOld = this.users;
         } else {
             this.usersOld = new User[0];
         }
         this.users = users;
-        this.sessionInfo = sessionInfo;
         this.pitVorgang = pitVorgang;
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
@@ -86,6 +86,7 @@ public class SessionController {
         long endEventTime = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf(".")));
         long currentEventTime = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")));
 
+        //TODO NullPointerException
         switch (sessionInfo.getSessionEnum()) {
             case TESTDAY:
                 break;
@@ -101,6 +102,7 @@ public class SessionController {
                 //60 Sekunden vor Ende des WarmUps wird die Automatische Startaufstellung durchlaufen
                 if (!gridIniErstellt && ((endEventTime - 30) < currentEventTime)) {
                     gridIniErstellt = true;
+                    System.out.println("WarmUp");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -119,37 +121,39 @@ public class SessionController {
                 }
                 break;
 
-            case PRACTICE1:
-                break;
-            case PRACTICE2:
-                break;
-            case PRACTICE3:
-                break;
-            case PRACTICE4:
-                break;
-            case PRACTICE5:
-                break;
-            case QUALIFY1:
-                break;
-            case QUALIFY2:
-                break;
-            case QUALIFY3:
-                break;
-            case QUALIFY4:
-                break;
-            case QUALIFY5:
-                break;
-            case RACE1:
-                break;
-            case RACE2:
-                break;
-            case RACE3:
-                break;
-            case RACE4:
-                break;
-            case RACE5:
-                break;
+//            case PRACTICE1:
+//                break;
+//            case PRACTICE2:
+//                break;
+//            case PRACTICE3:
+//                break;
+//            case PRACTICE4:
+//                break;
+//            case PRACTICE5:
+//                break;
+//            case QUALIFY1:
+//                break;
+//            case QUALIFY2:
+//                break;
+//            case QUALIFY3:
+//                break;
+//            case QUALIFY4:
+//                break;
+//            case QUALIFY5:
+//                break;
+//            case RACE1:
+//                break;
+//            case RACE2:
+//                break;
+//            case RACE3:
+//                break;
+//            case RACE4:
+//                break;
+//            case RACE5:
+//                break;
         }
+
+
     }
 
     private void gridINI() {

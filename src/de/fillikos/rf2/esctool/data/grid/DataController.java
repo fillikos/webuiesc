@@ -3,7 +3,7 @@ package de.fillikos.rf2.esctool.data.grid;
 import de.fillikos.rf2.esctool.data.grid.raceresult.RFactorXML;
 import de.fillikos.rf2.esctool.data.grid.raceresult.ResultsFactory;
 import de.fillikos.rf2.esctool.data.grid.raceresult.driver.Driver;
-import de.fillikos.rf2.service.webui.httpss.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
 import java.io.*;

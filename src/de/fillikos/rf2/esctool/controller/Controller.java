@@ -1,7 +1,7 @@
 package de.fillikos.rf2.esctool.controller;
 
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
-import de.fillikos.rf2.service.webui.httpss.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.service.webui.httpss.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,18 +56,7 @@ public class MainView {
                             Controller.setServer(new Connection("http://localhost:", "5397"));
                             break;
                     }
-                    ArrayList<String> startgruppeEins = new ArrayList<String>();
-                    startgruppeEins.add("SP3 GT9");
-                    startgruppeEins.add("Cup2");
-                    ArrayList<String> startgruppeZwei = new ArrayList<String>();
-                    startgruppeZwei.add("H2");
-                    startgruppeZwei.add("H4");
-                    startgruppeZwei.add("SP10 GT4");
-                    startgruppeZwei.add("SP3T");
-                    ArrayList<ArrayList> startgruppen = new ArrayList<ArrayList>();
-                    startgruppen.add(startgruppeEins);
-                    startgruppen.add(startgruppeZwei);
-                    Controller.setStartgruppen(startgruppen);
+
 
                     Controller.startUpdateServerData();
                 }
@@ -78,7 +67,24 @@ public class MainView {
 
         txtLeaderGrid2.setText("0");
         txtLeaderGrid2.setColumns(2);
-        JButton btnSetLeaderGrid2 = new JButton("nothing");
+        JButton btnSetLeaderGrid2 = new JButton("set SG");
+        btnSetLeaderGrid2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<String> startgruppeEins = new ArrayList<String>();
+                startgruppeEins.add("SP9 GT3");
+                startgruppeEins.add("Cup2");
+                ArrayList<String> startgruppeZwei = new ArrayList<String>();
+                startgruppeZwei.add("H2");
+                startgruppeZwei.add("H4");
+                startgruppeZwei.add("SP10 GT4");
+                startgruppeZwei.add("SP3T");
+                ArrayList<ArrayList> startgruppen = new ArrayList<ArrayList>();
+                startgruppen.add(startgruppeEins);
+                startgruppen.add(startgruppeZwei);
+                Controller.setStartgruppen(startgruppen);
+            }
+        });
 
         panSouth.add(btnSetLeaderGrid2);
         panSouth.add(txtLeaderGrid2);

@@ -1,24 +1,22 @@
 package de.fillikos.rf2.esctool.data;
 
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.service.webui.httpss.Connection;
-import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
-import de.fillikos.rf2.service.webui.httpss.model.User;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RaceController {
 
-    private int anzahlStartgruppen;
-    private int[] startLapPosition;
+    private int anzahlStartgruppen = 0;
+    private float[] startLapPosition = new float[0];
     private boolean setBeginnStartprozedur = false;
-    private boolean[] startgruppeGo;
-    private String[] gridPositionGridLeader;
+    private boolean[] startgruppeGo = new boolean[0];
     private boolean serververlassen = false;
     private Connection server;
-    private SessionInfo sessionInfo;
-    private ArrayList<ArrayList> startgruppeClass;
+    private SessionInfo sessionInfo = new SessionInfo();
+    private ArrayList<ArrayList> startgruppeClass = new ArrayList<>();
 
     public RaceController() {
 
@@ -27,10 +25,12 @@ public class RaceController {
     public void handleRace(SessionInfo sessionInfo, User[] users) {
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
-        if (this.sessionInfo.getGamePhase().equals("5") && sessionInfoOld.getGamePhase().equals("4")) {
+        System.out.println(sessionInfoOld.getGamePhase() + " " + sessionInfo.getGamePhase());
+        if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
             System.out.println("Start des Rennens");
             System.out.println("1. Startgruppe Los");
             server.sendchat("1. Startgruppe Los");
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -60,27 +60,29 @@ public class RaceController {
         for (int i = 0; i < startgruppeGo.length; i++) {
             if (startgruppeGo[i]) {
                 int startPos = 100;
+                String gridLeader = "";
                 for (User user : users) {
                     if (startgruppe(user, startgruppeClass.get(i))) {
 //                    if (u.getCarClass().equals("SP9 GT3") ||
 //                            u.getCarClass().equals("Cup2")) {
                         int position = Integer.parseInt(user.getPosition());
                         if (startPos > position) {
-                            gridPositionGridLeader[i] = String.valueOf(position);
+                            gridLeader = String.valueOf(position);
                             startPos = position;
                         }
                     }
                 }
+                System.out.println("startPos: " + startPos);
                 for (User user : users) {
-                    if (user.getPosition().equals(gridPositionGridLeader[i]) &&
+                    if (user.getPosition().equals(gridLeader) &&
                             (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
                         if (setBeginnStartprozedur) {
-                            if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.9) {
+                            if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
                                 Controller.setAktualisierungsrate(300);
                             }
                             if (Float.parseFloat(user.getLapDistance()) > startLapPosition[0] || user.getLapsCompleted().equals("1")) {
-                                System.out.println("Start " + i + ". Startgruppe");
-                                server.sendchat(i + ". Startgruppe Go Go Go");
+                                System.out.println("Start " + (i + 1) + ". Startgruppe");
+                                server.sendchat((i + 1) + ". Startgruppe Go Go Go");
                                 startgruppeGo[i] = false;
                                 if (i < (startgruppeGo.length - 1)) {
                                     startgruppeGo[i + 1] = true;
@@ -88,7 +90,9 @@ public class RaceController {
                                 Controller.setAktualisierungsrate(500);
                             }
                         }
-                        if (!setBeginnStartprozedur && Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5) {
+                        if (!setBeginnStartprozedur &&
+                                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5 &&
+                                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.7) {
                             setBeginnStartprozedur = true;
                         }
                     }
@@ -109,23 +113,24 @@ public class RaceController {
                 server.sendchat("Der Server kann jetzt verlassen werden.");
             }
         }
+
     }
 
     private boolean startgruppe(User user, ArrayList<String> startgruppeClass) {
-        for (String carClass : startgruppeClass) {
-            if (user.getCarClass().equals(carClass)) {
+        for (int i = 0; i < startgruppeClass.size(); i++) {
+            if (user.getCarClass().equals(startgruppeClass.get(i))) {
                 return true;
             }
         }
         return false;
     }
 
-    private int generateRandomStartPos() {
-        int startPos = 0;
-        for (int i = 0; i < anzahlStartgruppen; i++) {
+    private float generateRandomStartPos() {
+        float startPos = 0;
+        for (int i = 0; i < 1; i++) {
             do {
-                startLapPosition[i] = ((int) (24110 + (Math.random() * 1000)));
-            } while (startLapPosition[i] > Integer.parseInt(this.sessionInfo.getLapDistance()) - 15);
+                startPos = ((int) (24110 + (Math.random() * 1000)));
+            } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
         }
         return startPos;
     }
@@ -140,6 +145,8 @@ public class RaceController {
 
     public void setAnzahlStartgruppen(int anzahlStartgruppen) {
         this.anzahlStartgruppen = anzahlStartgruppen;
+        startgruppeGo = new boolean[anzahlStartgruppen];
+        startLapPosition = new float[anzahlStartgruppen];
         for (int i = 0; i < anzahlStartgruppen; i++) {
             startgruppeGo[i] = false;
             startLapPosition[i] = generateRandomStartPos();
@@ -156,11 +163,11 @@ public class RaceController {
         setAnzahlStartgruppen(startgruppeClass.size());
     }
 
-    public int[] getStartLapPosition() {
+    public float[] getStartLapPosition() {
         return startLapPosition;
     }
 
-    public void setStartLapPosition(int[] startLapPosition) {
+    public void setStartLapPosition(float[] startLapPosition) {
         this.startLapPosition = startLapPosition;
     }
 
@@ -180,14 +187,6 @@ public class RaceController {
         this.startgruppeGo = startgruppeGo;
     }
 
-    public String[] getGridPositionGridLeader() {
-        return gridPositionGridLeader;
-    }
-
-    public void setGridPositionGridLeader(String[] gridPositionGridLeader) {
-        this.gridPositionGridLeader = gridPositionGridLeader;
-    }
-
     public boolean isSerververlassen() {
         return serververlassen;
     }
@@ -198,5 +197,13 @@ public class RaceController {
 
     public Connection getServer() {
         return server;
+    }
+
+    public SessionInfo getSessionInfo() {
+        return sessionInfo;
+    }
+
+    public void setSessionInfo(SessionInfo sessionInfo) {
+        this.sessionInfo = sessionInfo;
     }
 }

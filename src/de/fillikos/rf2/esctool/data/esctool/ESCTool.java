@@ -1,9 +1,9 @@
 package de.fillikos.rf2.esctool.data.esctool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fillikos.rf2.service.webui.httpss.model.PitState;
-import de.fillikos.rf2.service.webui.httpss.model.SessionInfo;
-import de.fillikos.rf2.service.webui.httpss.model.User;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
+import de.fillikos.rf2.service.webui.httpss.model.standings.PitState;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.util.Date;
 public class ESCTool {
 
     private ArrayList<StrafenLog> strafen;
-    private SessionInfo sessionInfo;
+    private SessionInfo sessionInfo = new SessionInfo();
     private User[] usersOld = new User[0];
     private File pathname = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
 
