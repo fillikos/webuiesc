@@ -3,8 +3,9 @@ package de.fillikos.rf2.esctool.data.grid;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.fillikos.rf2.esctool.data.grid.webui.User;
+
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -23,7 +24,6 @@ public class WebUI {
      * vrrf2ln R    5725
      */
     private String port = "5735";
-    private String standings = "/rest/watch/standings";
     private User[] users;
 
     public WebUI(Connection server) {
@@ -36,6 +36,7 @@ public class WebUI {
         users = new User[0];
         ObjectMapper om = new ObjectMapper();
         try {
+            String standings = "/rest/watch/standings";
             users = om.readValue(new URL(server + port + standings), User[].class);
         } catch (MalformedURLException e) {
             System.out.println("Keine Verbindung zum Server");
@@ -56,10 +57,6 @@ public class WebUI {
         }
         System.out.println(users.length);
     }
-
-//    public HashMap<String, User> getUsers() {
-//        return users;
-//    }
 
     public ArrayList<String> getFahrer() {
         System.out.println("WebUI.getFahrer()");

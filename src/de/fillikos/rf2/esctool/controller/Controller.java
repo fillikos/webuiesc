@@ -43,7 +43,7 @@ public class Controller {
         dc.getServerData().setAktualisierungsrate(rate);
     }
 
-    public static void setStartgruppen(ArrayList<ArrayList> startgruppen) {
+    public static void setStartgruppen(ArrayList<ArrayList<String>> startgruppen) {
         dc.getSessionController().setStartgruppeClass(startgruppen);
     }
 

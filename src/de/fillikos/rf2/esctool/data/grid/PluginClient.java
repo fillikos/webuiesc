@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class Client {
+public class PluginClient {
 
     /**
      * #FahrzeugNummer#FahrerName#Platzierung
@@ -20,7 +20,7 @@ public class Client {
     private int m_currentSequence = -1;
     private Queue<ByteBuffer> m_buffers = new LinkedList<>();
 
-    public Client() {
+    public PluginClient() {
         fahrer = new ArrayList<String>();
     }
 

@@ -2,8 +2,8 @@ package de.fillikos.rf2.esctool.data.grid;
 
 public class Fahrzeug {
 
-    private int nummer, position, anmeldeztpkt, strafe, zaehler, zaeAnmeldung, zaeAbmeldung;
-    private String beschreibung, klasse, team, fahrer;
+    private int nummer, position, anmeldeztpkt, strafe, zaehler;
+    private String klasse, team, fahrer;
     private boolean anmeldung;
 
     public Fahrzeug() {
@@ -13,12 +13,6 @@ public class Fahrzeug {
     public Fahrzeug(int position, String fahrer) {
         this.position = position;
         this.fahrer = fahrer;
-    }
-
-    public Fahrzeug(int position, int nummer, String fahrer) {
-        this.position = position;
-        this.fahrer = fahrer;
-        this.nummer = nummer;
     }
 
     public Fahrzeug(int position, int nummer, String fahrer, String klasse) {

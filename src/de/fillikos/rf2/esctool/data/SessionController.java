@@ -3,14 +3,13 @@ package de.fillikos.rf2.esctool.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.data.esctool.ESCTool;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
-import de.fillikos.rf2.esctool.data.grid.DataController;
+import de.fillikos.rf2.esctool.data.grid.GridIniTool;
 import de.fillikos.rf2.esctool.data.hotlap.Hotlap;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -35,7 +34,7 @@ public class SessionController {
     private boolean gridIniErstellt = false;
     private Connection server;
     private boolean rennende = false;
-    private ArrayList<ArrayList> startgruppeClass;
+    private ArrayList<ArrayList<String>> startgruppeClass;
 
     public SessionController() {
 
@@ -188,10 +187,10 @@ public class SessionController {
         }
 
         //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
-        DataController dc = new DataController();
+        GridIniTool dc = new GridIniTool();
         if (!file.toString().equals("D:\\")) {
             System.out.println(file.toString());
-            dc.load24h(file, server, startgruppeClass);
+            dc.runGridIniTool(file, server, startgruppeClass);
             System.out.println("grid.ini und strafen.ini wurden erstellt");
             //4. Nach dem erstellen wird die grid.ini ausgeführt
             server.sendchat("/batch grid.ini");
@@ -330,11 +329,11 @@ public class SessionController {
         this.rennende = rennende;
     }
 
-    public ArrayList<ArrayList> getStartgruppeClass() {
+    public ArrayList<ArrayList<String>> getStartgruppeClass() {
         return startgruppeClass;
     }
 
-    public void setStartgruppeClass(ArrayList<ArrayList> startgruppeClass) {
+    public void setStartgruppeClass(ArrayList<ArrayList<String>> startgruppeClass) {
         this.startgruppeClass = startgruppeClass;
         raceController.setStartgruppeClass(startgruppeClass);
     }

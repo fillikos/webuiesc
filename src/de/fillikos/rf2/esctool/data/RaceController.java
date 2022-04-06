@@ -16,7 +16,7 @@ public class RaceController {
     private boolean serververlassen = false;
     private Connection server;
     private SessionInfo sessionInfo = new SessionInfo();
-    private ArrayList<ArrayList> startgruppeClass = new ArrayList<>();
+    private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
 
     public RaceController() {
 
@@ -154,11 +154,11 @@ public class RaceController {
         startgruppeGo[0] = true;
     }
 
-    public ArrayList<ArrayList> getStartgruppeClass() {
+    public ArrayList<ArrayList<String>> getStartgruppeClass() {
         return startgruppeClass;
     }
 
-    public void setStartgruppeClass(ArrayList<ArrayList> startgruppeClass) {
+    public void setStartgruppeClass(ArrayList<ArrayList<String>> startgruppeClass) {
         this.startgruppeClass = startgruppeClass;
         setAnzahlStartgruppen(startgruppeClass.size());
     }

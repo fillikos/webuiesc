@@ -79,7 +79,7 @@ public class MainView {
                 startgruppeZwei.add("H4");
                 startgruppeZwei.add("SP10 GT4");
                 startgruppeZwei.add("SP3T");
-                ArrayList<ArrayList> startgruppen = new ArrayList<ArrayList>();
+                ArrayList<ArrayList<String>> startgruppen = new ArrayList<ArrayList<String>>();
                 startgruppen.add(startgruppeEins);
                 startgruppen.add(startgruppeZwei);
                 Controller.setStartgruppen(startgruppen);
