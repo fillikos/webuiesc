@@ -1,7 +1,7 @@
 package de.fillikos.rf2.esctool.data.grid.raceresult.driver;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 public class ControlAndAids {
 

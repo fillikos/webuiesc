@@ -1,6 +1,6 @@
 package de.fillikos.rf2.esctool.data.sonstiges;
 
-import de.fillikos.rf2.service.webui.httpss.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.BufferedWriter;
 import java.io.File;

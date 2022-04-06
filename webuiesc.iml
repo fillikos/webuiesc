@@ -9,6 +9,5 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="webui" level="project" />
     <orderEntry type="library" name="jackson" level="project" />
-    <orderEntry type="library" name="jaxb" level="project" />
   </component>
 </module>

@@ -68,23 +68,20 @@ public class MainView {
         txtLeaderGrid2.setText("0");
         txtLeaderGrid2.setColumns(2);
         JButton btnSetLeaderGrid2 = new JButton("set SG");
-        btnSetLeaderGrid2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<String> startgruppeEins = new ArrayList<String>();
-                startgruppeEins.add("SP9 GT3");
-                startgruppeEins.add("Cup2");
-                ArrayList<String> startgruppeZwei = new ArrayList<String>();
-                startgruppeZwei.add("H2");
-                startgruppeZwei.add("H4");
-                startgruppeZwei.add("SP10 GT4");
-                startgruppeZwei.add("SP3T");
-                ArrayList<ArrayList<String>> startgruppen = new ArrayList<ArrayList<String>>();
-                startgruppen.add(startgruppeEins);
-                startgruppen.add(startgruppeZwei);
-                Controller.setStartgruppen(startgruppen);
-                Controller.loadGridINI();
-            }
+        btnSetLeaderGrid2.addActionListener(e -> {
+            ArrayList<String> startgruppeEins = new ArrayList<>();
+            startgruppeEins.add("SP9 GT3");
+            startgruppeEins.add("Cup2");
+            ArrayList<String> startgruppeZwei = new ArrayList<>();
+            startgruppeZwei.add("H2");
+            startgruppeZwei.add("H4");
+            startgruppeZwei.add("SP10 GT4");
+            startgruppeZwei.add("SP3T");
+            ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
+            startgruppen.add(startgruppeEins);
+            startgruppen.add(startgruppeZwei);
+            Controller.setStartgruppen(startgruppen);
+//                Controller.loadGridINI();
         });
 
         panSouth.add(btnSetLeaderGrid2);

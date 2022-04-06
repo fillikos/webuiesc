@@ -1,7 +1,6 @@
 package de.fillikos.rf2.esctool.data.grid.raceresult.typ;
 
-import jakarta.xml.bind.annotation.XmlElement;
-
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 
 public class Stream {

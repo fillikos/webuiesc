@@ -35,6 +35,7 @@ public class SessionController {
     private Connection server;
     private boolean rennende = false;
     private ArrayList<ArrayList<String>> startgruppeClass;
+    private ArrayList<String> garageSpotsAssigned = new ArrayList<>();
 
     public SessionController() {
 
@@ -68,14 +69,9 @@ public class SessionController {
         }).start();
 
         // 2. Runden Aufzeichnung
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (recordHotlaps) {
-                    hotlap();
-                }
-            }
-        }).start();
+        if (recordHotlaps) {
+            hotlap();
+        }
 
         // 3. Sessionwechsel
         if (sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
@@ -85,13 +81,13 @@ public class SessionController {
         long endEventTime = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf(".")));
         long currentEventTime = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")));
 
-        //TODO NullPointerException
         switch (sessionInfo.getSessionEnum()) {
             case TESTDAY:
                 break;
             case PRACTICE:
-                break;
             case QUALIFY:
+                assignPitByTeam(users);
+                checkDoppelTeam(users);
                 break;
             case WARMUP:
                 /**
@@ -102,13 +98,10 @@ public class SessionController {
                 if (!gridIniErstellt && ((endEventTime - 30) < currentEventTime)) {
                     gridIniErstellt = true;
                     System.out.println("WarmUp");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            gridINI();
-                        }
-                    }).start();
+                    gridINI();
                 }
+                checkDoppelTeam(users);
+                assignPitByTeam(users);
                 break;
             case RACE:
                 raceController.handleRace(sessionInfo, users);
@@ -155,76 +148,118 @@ public class SessionController {
 
     }
 
-    public void gridINI() {
-        raceController.setStartgruppeClass(startgruppeClass);
-        //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
-        DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
-        String timeString = df.format(new Date());
-
-        FileFilter ff = new FileFilter() {
+    private void assignPitByTeam(User[] users) {
+        new Thread(new Runnable() {
             @Override
-            public boolean accept(File pathname) {
-                if (pathname.toString().contains("Q1.xml") &&
-                        pathname.toString().contains(timeString)) {
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        //2. Die größte Datei wird verwendet
-        File[] files = qualixml.listFiles(ff);
-        File file = new File("D:\\");
-        if (files.length != 0) {
-            file = files[0];
-            if (files.length > 1) {
-                for (File f : files) {
-                    if (f.length() > file.length()) {
-                        file = f;
+            public void run() {
+                for (User user : users) {
+                    if (!garageSpotsAssigned.contains(user.getCarNumber())) {
+                        garageSpotsAssigned.add(user.getCarNumber());
+                        server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
+                        break;
                     }
                 }
             }
-        }
-
-        //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
-        GridIniTool dc = new GridIniTool();
-        if (!file.toString().equals("D:\\")) {
-            System.out.println(file.toString());
-            dc.runGridIniTool(file, server, startgruppeClass);
-            System.out.println("grid.ini und strafen.ini wurden erstellt");
-            //4. Nach dem erstellen wird die grid.ini ausgeführt
-            server.sendchat("/batch grid.ini");
-            System.out.println("grid.ini wurde ausgeführt");
-        }
+        }).start();
     }
 
-    private void hotlap() {
-        for (User user : users) {
-            for (User userOld : usersOld) {
-                if (user.getDriverName().equals(userOld.getDriverName())) {
-                    if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
-                        //Rundenzähler hat sich geändert
-                        hotlaps.add(new Hotlap(sessionInfo, user));
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                        String timeString = df.format(new Date());
-                        ObjectMapper om = new ObjectMapper();
-                        try {
-                            om.writeValue(Paths.get(qualixml + "\\" +
-                                    timeString +
-                                    "_" +
-                                    sessionInfo.getServerName() +
-                                    "_" +
-                                    sessionInfo.getSession().charAt(0) +
-                                    sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
-                                    ".hl").toFile(), hotlaps);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+    private void checkDoppelTeam(User[] users) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> userOld = new ArrayList<>();
+                for (User user : users) {
+                    if (userOld.contains(user.getCarNumber())) {
+                        server.sendchat("/callvote kick " + user.getDriverName());
+                        break;
+                    } else {
+                        userOld.add(user.getCarNumber());
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void gridINI() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                raceController.setStartgruppeClass(startgruppeClass);
+                //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
+                DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
+                String timeString = df.format(new Date());
+
+                FileFilter ff = new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        if (pathname.toString().contains("Q1.xml") &&
+                                pathname.toString().contains(timeString)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+
+                //2. Die größte Datei wird verwendet
+                File[] files = qualixml.listFiles(ff);
+                File file = new File("D:\\");
+                if (files.length != 0) {
+                    file = files[0];
+                    if (files.length > 1) {
+                        for (File f : files) {
+                            if (f.length() > file.length()) {
+                                file = f;
+                            }
                         }
                     }
                 }
-                break;
+
+                //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
+                GridIniTool dc = new GridIniTool();
+                if (!file.toString().equals("D:\\")) {
+                    System.out.println(file.toString());
+                    dc.runGridIniTool(file, server, startgruppeClass);
+                    System.out.println("grid.ini und strafen.ini wurden erstellt");
+                    //4. Nach dem erstellen wird die grid.ini ausgeführt
+                    server.sendchat("/batch grid.ini");
+                    System.out.println("grid.ini wurde ausgeführt");
+                }
             }
-        }
+        }).start();
+    }
+
+    private void hotlap() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (User user : users) {
+                    for (User userOld : usersOld) {
+                        if (user.getDriverName().equals(userOld.getDriverName())) {
+                            if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
+                                //Rundenzähler hat sich geändert
+                                hotlaps.add(new Hotlap(sessionInfo, user));
+                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                                String timeString = df.format(new Date());
+                                ObjectMapper om = new ObjectMapper();
+                                try {
+                                    om.writeValue(Paths.get(qualixml + "\\" +
+                                            timeString +
+                                            "_" +
+                                            sessionInfo.getServerName() +
+                                            "_" +
+                                            sessionInfo.getSession().charAt(0) +
+                                            sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
+                                            ".hl").toFile(), hotlaps);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }).start();
     }
 
 

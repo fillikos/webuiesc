@@ -1,10 +1,10 @@
 package de.fillikos.rf2.esctool.data.grid.raceresult.typ;
 
 import de.fillikos.rf2.esctool.data.grid.raceresult.driver.Driver;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 
 @XmlType(propOrder = {"dateTime", "timeString", "laps", "minutes", "stream",
