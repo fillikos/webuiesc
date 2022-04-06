@@ -23,7 +23,7 @@ public class GridIniTool {
     public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass) {
         System.out.println("DataController.runGridIniTool()");
 
-        /**
+        /*
          * Informationen Sammeln
          */
         // 1. Qualiergebniss aus der Quali.xml vom Server laden
@@ -33,19 +33,19 @@ public class GridIniTool {
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
 
-        /**
+        /*
          * Verarbeitung der Informationen der einzelnen Startgruppen
          */
         // 1. Startgruppen anlegen
-        ArrayList<ArrayList<String>> startgruppen = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
         System.out.println(startgruppeClass.size() + " " + startgruppeClass);
         for (int i = 0; i < startgruppeClass.size(); i++) {
-            startgruppen.add(new ArrayList<String>());
+            startgruppen.add(new ArrayList<>());
         }
         // 2. Fahrzeuge den Startgruppen zuweisen anhand der CarClass
         for (String f : fahrer) {
             String[] element = f.split("##");
-            /**
+            /*
              * element[1] = Fahrzeugnummer
              * element[2] = Fahrername
              * element[3] = Position
@@ -82,12 +82,12 @@ public class GridIniTool {
 
     private void allotPenalty(ArrayList<ArrayList<String>> startgruppeClass, ArrayList<ArrayList<String>> startgruppen) {
         for (int j = 0; j < startgruppeClass.size(); j++) {
-            int strafe = 0;
+            int strafe;
 
             do {
                 strafe = 0;
                 for (int i = (startgruppen.get(j).size() - 1); i >= 0; i--) {
-                    /**
+                    /*
                      * Wenn eine Strafe vorliegt
                      */
                     if (insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).besitztStrafe()) {
@@ -95,7 +95,7 @@ public class GridIniTool {
                         if (strafe < insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe()) {
                             strafe = insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe();
                         }
-                        /**
+                        /*
                          * werden die Positionen getauscht
                          */
                         try {
@@ -112,7 +112,7 @@ public class GridIniTool {
     }
 
     private void loadStrafenData(File qualiXml) {
-        try (BufferedReader in = new BufferedReader(new FileReader(new File(qualiXml.getParent() + "\\strafen")))) {
+        try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\strafen"))) {
             String zeile;
             StringBuilder strafenIni = new StringBuilder();
 
@@ -128,7 +128,7 @@ public class GridIniTool {
                                     .append("\n");
                         } else {
                             strafenIni.append("/addpenalty ")
-                                    .append(zeile.substring(zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden")))
+                                    .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
                                     .append(" ").append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
                                     .append("\n");
                         }
@@ -179,8 +179,8 @@ public class GridIniTool {
 
     private boolean isStartgruppe(String carClass, ArrayList<String> startgruppeClass) {
         System.out.println("DataController.isStartgruppe()");
-        for (int i = 0; i < startgruppeClass.size(); i++) {
-            if (carClass.equals(startgruppeClass.get(i))) {
+        for (String aClass : startgruppeClass) {
+            if (carClass.equals(aClass)) {
                 return true;
             }
         }
