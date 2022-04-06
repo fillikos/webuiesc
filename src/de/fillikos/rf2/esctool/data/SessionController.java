@@ -87,7 +87,7 @@ public class SessionController {
             case PRACTICE:
             case QUALIFY:
                 assignPitByTeam(users);
-                checkDoppelTeam(users);
+//                checkDoppelTeam(users);
                 break;
             case WARMUP:
                 /**
@@ -100,7 +100,7 @@ public class SessionController {
                     System.out.println("WarmUp");
                     gridINI();
                 }
-                checkDoppelTeam(users);
+//                checkDoppelTeam(users);
                 assignPitByTeam(users);
                 break;
             case RACE:
@@ -164,6 +164,7 @@ public class SessionController {
     }
 
     private void checkDoppelTeam(User[] users) {
+        // /callvote kick username funktioniert nicht als Server, nur als Chatbefehl im Spiel
         new Thread(new Runnable() {
             @Override
             public void run() {
