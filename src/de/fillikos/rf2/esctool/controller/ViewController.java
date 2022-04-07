@@ -53,4 +53,12 @@ public class ViewController {
 //            text.setText(Controller.setMainViewText());
         mainView.getText().repaint();
     }
+
+    public MainView getMainView() {
+        return mainView;
+    }
+
+    public void setMainView(MainView mainView) {
+        this.mainView = mainView;
+    }
 }

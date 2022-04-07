@@ -5,8 +5,6 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class MainView {
@@ -15,6 +13,7 @@ public class MainView {
     private boolean startload = false;
     private JLabel text;
     private JTextField txtLeaderGrid2 = new JTextField();
+    private MainMenu mainMenu;
 
     public MainView() {
         frame = new JFrame();
@@ -28,38 +27,36 @@ public class MainView {
         JPanel panSouth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panSouth.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
+        mainMenu = new MainMenu();
+
+
         String serverAuswahl[] = {"VRrF2LN R", "VRrF2LN T", "VRrF2LN L", "localhost"};
         JComboBox boxServer = new JComboBox(serverAuswahl);
 
         JButton btnStart = new JButton("start");
-        btnStart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (startload) {
-                    startload = false;
-                    btnStart.setText("Start");
-                    Controller.stopUpdateServerData();
-                } else {
-                    startload = true;
-                    btnStart.setText("Stopp");
-                    switch (boxServer.getSelectedIndex()) {
-                        case 0:
-                            Controller.setServer(new Connection("http://89.163.146.67:", "5725"));
-                            break;
-                        case 1:
-                            Controller.setServer(new Connection("http://89.163.146.67:", "5735"));
-                            break;
-                        case 2:
-                            Controller.setServer(new Connection("http://89.163.146.67:", "5715"));
-                            break;
-                        case 3:
-                            Controller.setServer(new Connection("http://localhost:", "5397"));
-                            break;
-                    }
-
-
-                    Controller.startUpdateServerData();
+        btnStart.addActionListener(e -> {
+            if (startload) {
+                startload = false;
+                btnStart.setText("Start");
+                Controller.stopUpdateServerData();
+            } else {
+                startload = true;
+                btnStart.setText("Stopp");
+                switch (boxServer.getSelectedIndex()) {
+                    case 0:
+                        Controller.setServer(new Connection("http://89.163.146.67:", "5725"));
+                        break;
+                    case 1:
+                        Controller.setServer(new Connection("http://89.163.146.67:", "5735"));
+                        break;
+                    case 2:
+                        Controller.setServer(new Connection("http://89.163.146.67:", "5715"));
+                        break;
+                    case 3:
+                        Controller.setServer(new Connection("http://localhost:", "5397"));
+                        break;
                 }
+                Controller.startUpdateServerData();
             }
         });
         panSouth.add(btnStart);
@@ -81,7 +78,7 @@ public class MainView {
             startgruppen.add(startgruppeEins);
             startgruppen.add(startgruppeZwei);
             Controller.setStartgruppen(startgruppen);
-//                Controller.loadGridINI();
+            Controller.loadGridINI();
         });
 
         panSouth.add(btnSetLeaderGrid2);
@@ -97,7 +94,8 @@ public class MainView {
         panNorth.add(text);
 
         Container contentPane = frame.getContentPane();
-        contentPane.add(panNorth, BorderLayout.NORTH);
+        contentPane.add(mainMenu, BorderLayout.NORTH);
+        contentPane.add(panNorth, BorderLayout.CENTER);
         contentPane.add(panSouth, BorderLayout.SOUTH);
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

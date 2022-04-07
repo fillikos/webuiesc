@@ -3,6 +3,7 @@ package de.fillikos.rf2.esctool.controller;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Controller {
@@ -49,5 +50,15 @@ public class Controller {
 
     public static void loadGridINI() {
         dc.getSessionController().gridINI();
+    }
+
+    public static void shutdown() {
+        dc.getServerData().setStart(false);
+        vc.getMainView().getFrame().dispose();
+    }
+
+    public static void setDir(File selectedFile) {
+        dc.getSessionController().setRfDir(selectedFile);
+        System.out.println(selectedFile);
     }
 }

@@ -19,7 +19,7 @@ public class ESCTool {
     private ArrayList<StrafenLog> strafen;
     private SessionInfo sessionInfo = new SessionInfo();
     private User[] usersOld = new User[0];
-    private File pathname = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
+    private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
 
 
     public ESCTool() {
@@ -179,7 +179,7 @@ public class ESCTool {
         String timeString = df.format(new Date());
         ObjectMapper om = new ObjectMapper();
         try {
-            om.writeValue(Paths.get(pathname + "\\" +
+            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
                     timeString +
                     "_" +
                     sessionInfo.getServerName() +
@@ -216,12 +216,12 @@ public class ESCTool {
         this.usersOld = usersOld;
     }
 
-    public File getPathname() {
-        return pathname;
+    public File getRfDir() {
+        return rfDir;
     }
 
-    public void setPathname(File pathname) {
-        this.pathname = pathname;
+    public void setRfDir(File rfDir) {
+        this.rfDir = rfDir;
     }
 
     @Override
@@ -230,7 +230,7 @@ public class ESCTool {
                 "strafen=" + strafen +
                 ", sessionInfo=" + sessionInfo +
                 ", usersOld=" + Arrays.toString(usersOld) +
-                ", pathname=" + pathname +
+                ", pathname=" + rfDir +
                 '}';
     }
 

@@ -29,13 +29,13 @@ public class SessionController {
     private PitVorgang pitVorgang;
     private ESCTool escTool = new ESCTool();
     private List<Hotlap> hotlaps = new ArrayList<>();
-    private File qualixml = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
+    private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private boolean recordHotlaps = true;
     private boolean gridIniErstellt = false;
     private Connection server;
     private boolean rennende = false;
     private ArrayList<ArrayList<String>> startgruppeClass;
-    private ArrayList<String> garageSpotsAssigned = new ArrayList<>();
+    private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
 
     public SessionController() {
 
@@ -61,12 +61,7 @@ public class SessionController {
         this.pitVorgang = pitVorgang;
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                escTool.handleESCRule(users, sessionInfo, pitVorgang);
-            }
-        }).start();
+        new Thread(() -> escTool.handleESCRule(users, sessionInfo, pitVorgang)).start();
 
         // 2. Runden Aufzeichnung
         if (recordHotlaps) {
@@ -90,7 +85,7 @@ public class SessionController {
 //                checkDoppelTeam(users);
                 break;
             case WARMUP:
-                /**
+                /*
                  * sessionInfo.getEndEventTimt()  ==>  15 Minuten + 30 Sekunden  ==> 930.0
                  * sessionInfo.getCurrentEventTime()
                  */
@@ -149,15 +144,12 @@ public class SessionController {
     }
 
     private void assignPitByTeam(User[] users) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (User user : users) {
-                    if (!garageSpotsAssigned.contains(user.getCarNumber())) {
-                        garageSpotsAssigned.add(user.getCarNumber());
-                        server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
-                        break;
-                    }
+        new Thread(() -> {
+            for (User user : users) {
+                if (!garageSpotsAssigned.contains(user.getCarNumber())) {
+                    garageSpotsAssigned.add(user.getCarNumber());
+                    server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
+                    break;
                 }
             }
         }).start();
@@ -165,99 +157,85 @@ public class SessionController {
 
     private void checkDoppelTeam(User[] users) {
         // /callvote kick username funktioniert nicht als Server, nur als Chatbefehl im Spiel
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<String> userOld = new ArrayList<>();
-                for (User user : users) {
-                    if (userOld.contains(user.getCarNumber())) {
-                        server.sendchat("/callvote kick " + user.getDriverName());
-                        break;
-                    } else {
-                        userOld.add(user.getCarNumber());
-                    }
+        new Thread(() -> {
+            ArrayList<String> userOld = new ArrayList<>();
+            for (User user : users) {
+                if (userOld.contains(user.getCarNumber())) {
+                    server.sendchat("/callvote kick " + user.getDriverName());
+                    break;
+                } else {
+                    userOld.add(user.getCarNumber());
                 }
             }
         }).start();
     }
 
     public void gridINI() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                raceController.setStartgruppeClass(startgruppeClass);
-                //1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
-                DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
-                String timeString = df.format(new Date());
+        new Thread(() -> {
+            raceController.setStartgruppeClass(startgruppeClass);
+            // 1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
+            DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
+            String timeString = df.format(new Date());
 
-                FileFilter ff = new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        if (pathname.toString().contains("Q1.xml") &&
-                                pathname.toString().contains(timeString)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                };
+            FileFilter ff = pathname -> pathname.toString().contains("Q1.xml") && pathname.toString().contains(timeString);
 
-                //2. Die größte Datei wird verwendet
-                File[] files = qualixml.listFiles(ff);
-                File file = new File("D:\\");
-                if (files.length != 0) {
-                    file = files[0];
-                    if (files.length > 1) {
-                        for (File f : files) {
-                            if (f.length() > file.length()) {
-                                file = f;
-                            }
+            // 2. Result-Ordner auswählen
+            File resultDir = new File(rfDir + "\\UserData\\Log\\Results");
+
+            // 3. Die größte Datei wird verwendet
+            File[] files = resultDir.listFiles(ff);
+            File file = new File("D:\\");
+            assert files != null;
+            if (files.length != 0) {
+                file = files[0];
+                if (files.length > 1) {
+                    for (File f : files) {
+                        if (f.length() > file.length()) {
+                            file = f;
                         }
                     }
                 }
+            }
 
-                //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
-                GridIniTool dc = new GridIniTool();
-                if (!file.toString().equals("D:\\")) {
-                    System.out.println(file.toString());
-                    dc.runGridIniTool(file, server, startgruppeClass);
-                    System.out.println("grid.ini und strafen.ini wurden erstellt");
-                    //4. Nach dem erstellen wird die grid.ini ausgeführt
-                    server.sendchat("/batch grid.ini");
-                    System.out.println("grid.ini wurde ausgeführt");
-                }
+            //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
+            GridIniTool dc = new GridIniTool();
+            if (!file.toString().equals("D:\\")) {
+                System.out.println(file);
+                dc.runGridIniTool(file, server, startgruppeClass);
+                System.out.println("grid.ini und strafen.ini wurden erstellt");
+                //4. Nach dem erstellen wird die grid.ini ausgeführt
+                server.sendchat("/batch grid.ini");
+                System.out.println("grid.ini wurde ausgeführt");
             }
         }).start();
     }
 
     private void hotlap() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (User user : users) {
-                    for (User userOld : usersOld) {
-                        if (user.getDriverName().equals(userOld.getDriverName())) {
-                            if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
-                                //Rundenzähler hat sich geändert
-                                hotlaps.add(new Hotlap(sessionInfo, user));
-                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                                String timeString = df.format(new Date());
-                                ObjectMapper om = new ObjectMapper();
-                                try {
-                                    om.writeValue(Paths.get(qualixml + "\\" +
-                                            timeString +
-                                            "_" +
-                                            sessionInfo.getServerName() +
-                                            "_" +
-                                            sessionInfo.getSession().charAt(0) +
-                                            sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
-                                            ".hl").toFile(), hotlaps);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+        new Thread(() -> {
+            for (User user : users) {
+                for (User userOld : usersOld) {
+                    if (user.getDriverName().equals(userOld.getDriverName())) {
+                        if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
+                            //Rundenzähler hat sich geändert
+                            hotlaps.add(new Hotlap(sessionInfo, user));
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                            String timeString = df.format(new Date());
+                            ObjectMapper om = new ObjectMapper();
+                            try {
+                                om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
+                                        timeString +
+                                        "_" +
+                                        sessionInfo.getServerName() +
+                                        "_" +
+                                        sessionInfo.getSession().charAt(0) +
+                                        sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
+                                        ".hl").toFile(), hotlaps);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
-                        break;
                     }
+                    break;
                 }
             }
         }).start();
@@ -317,12 +295,13 @@ public class SessionController {
         this.hotlaps = hotlaps;
     }
 
-    public File getQualixml() {
-        return qualixml;
+    public File getRfDir() {
+        return rfDir;
     }
 
-    public void setQualixml(File qualixml) {
-        this.qualixml = qualixml;
+    public void setRfDir(File rfDir) {
+        escTool.setRfDir(rfDir);
+        this.rfDir = rfDir;
     }
 
     public boolean isRecordHotlaps() {
