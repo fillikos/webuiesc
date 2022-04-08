@@ -15,6 +15,7 @@ public class GridIniTool {
     private HashMap<String, Fahrzeug> insgesamtFahrer;
     private HashMap<String, Fahrzeug> insgesamtFahrerNeu;
     private ArrayList<String> fahrer;
+    private boolean byDriverName = false;
 
     public GridIniTool() {
 
@@ -52,12 +53,17 @@ public class GridIniTool {
              * element[4] = CarClass
              */
             int nummer = Integer.parseInt(element[1]);
+            String driverName = element[2];
             String carClass = element[4];
 
             for (int i = 0; i < startgruppeClass.size(); i++) {
                 // isStartgruppe überprüft die CarClass
                 if (isStartgruppe(carClass, startgruppeClass.get(i))) {
-                    startgruppen.get(i).add(String.valueOf(nummer));
+                    if (isByDriverName()) {
+                        startgruppen.get(i).add(driverName);
+                    } else {
+                        startgruppen.get(i).add(String.valueOf(nummer));
+                    }
                     break;
                 }
             }
@@ -117,26 +123,49 @@ public class GridIniTool {
             StringBuilder strafenIni = new StringBuilder();
 
             while ((zeile = in.readLine()) != null) {
-                if (zeile.contains("#")) {
-                    String fahrzeugNummer = zeile.substring(zeile.indexOf("#") + 1, zeile.indexOf("#") + 4);
-                    if (insgesamtFahrerNeu.containsKey(fahrzeugNummer)) {
-                        if (zeile.contains("==> +")) {
-                            insgesamtFahrerNeu.get(fahrzeugNummer).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
-                        } else if (zeile.contains("==> D")) {
-                            strafenIni.append("/addpenalty -1 ")
-                                    .append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
-                                    .append("\n");
-                        } else {
-                            strafenIni.append("/addpenalty ")
-                                    .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
-                                    .append(" ").append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
-                                    .append("\n");
+                if (isByDriverName()) {
+                    if (zeile.contains("#")) {
+                        String driverName = zeile.substring(0, zeile.indexOf("#") - 1);
+                        if (insgesamtFahrerNeu.containsKey(driverName)) {
+                            if (zeile.contains("==> +")) {
+                                insgesamtFahrerNeu.get(driverName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                            } else if (zeile.contains("==> D")) {
+                                strafenIni.append("/addpenalty -1 ")
+                                        .append(driverName)
+                                        .append("\n");
+                            } else {
+                                strafenIni.append("/addpenalty ")
+                                        .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
+                                        .append(" ").append(driverName)
+                                        .append("\n");
+                            }
                         }
+                        System.out.println(driverName);
+                        System.out.println(zeile.indexOf("#"));
                     }
-                    System.out.println(fahrzeugNummer);
-                    System.out.println(zeile.indexOf("#"));
+                    System.out.println(zeile);
+                } else {
+                    if (zeile.contains("#")) {
+                        String fahrzeugNummer = zeile.substring(zeile.indexOf("#") + 1, zeile.indexOf("#") + 4);
+                        if (insgesamtFahrerNeu.containsKey(fahrzeugNummer)) {
+                            if (zeile.contains("==> +")) {
+                                insgesamtFahrerNeu.get(fahrzeugNummer).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                            } else if (zeile.contains("==> D")) {
+                                strafenIni.append("/addpenalty -1 ")
+                                        .append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
+                                        .append("\n");
+                            } else {
+                                strafenIni.append("/addpenalty ")
+                                        .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
+                                        .append(" ").append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
+                                        .append("\n");
+                            }
+                        }
+                        System.out.println(fahrzeugNummer);
+                        System.out.println(zeile.indexOf("#"));
+                    }
+                    System.out.println(zeile);
                 }
-                System.out.println(zeile);
             }
             writeStrafenIni(qualiXml, strafenIni);
         } catch (IOException e) {
@@ -150,13 +179,13 @@ public class GridIniTool {
         try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             int position = 1;
             for (ArrayList<String> startgruppe : startgruppen) {
-                for (String vehicleNumber : startgruppe) {
+                for (String identifier : startgruppe) {
                     br.write(String.format("/editgrid %d %s",
                             position++,
-                            insgesamtFahrerNeu.get(vehicleNumber).getFahrer()));
-                    System.out.println(insgesamtFahrerNeu.get(vehicleNumber).getNummer() + " " +
-                            insgesamtFahrerNeu.get(vehicleNumber).getFahrer() + " " +
-                            insgesamtFahrerNeu.get(vehicleNumber).getPosition());
+                            insgesamtFahrerNeu.get(identifier).getFahrer()));
+                    System.out.println(insgesamtFahrerNeu.get(identifier).getNummer() + " " +
+                            insgesamtFahrerNeu.get(identifier).getFahrer() + " " +
+                            insgesamtFahrerNeu.get(identifier).getPosition());
                     br.newLine();
                 }
             }
@@ -220,10 +249,17 @@ public class GridIniTool {
             String name = element[2];
             String carClass = element[4];
 
-            if (insgesamtFahrer.containsKey(String.valueOf(nummer))) {
-                position = insgesamtFahrer.get(String.valueOf(nummer)).getPosition();
+            if (isByDriverName()) {
+                if (insgesamtFahrer.containsKey(name)) {
+                    position = insgesamtFahrer.get(name).getPosition();
+                }
+                insgesamtFahrerNeu.put(name, new Fahrzeug(position, nummer, name, carClass));
+            } else {
+                if (insgesamtFahrer.containsKey(String.valueOf(nummer))) {
+                    position = insgesamtFahrer.get(String.valueOf(nummer)).getPosition();
+                }
+                insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, carClass));
             }
-            insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, carClass));
         }
         System.out.println(insgesamtFahrerNeu);
     }
@@ -235,10 +271,21 @@ public class GridIniTool {
         RFactorXML xml = rf.getResult(path);
         System.out.println("xml...size(): " + xml.getRaceResult().getQualify().getDriver().size());
         for (Driver d : xml.getRaceResult().getQualify().getDriver()) {
-            insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+            if (isByDriverName()) {
+                insgesamtFahrer.put(String.valueOf(d.getName()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+            } else {
+                insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+            }
         }
         System.out.println("insgesamtFahrer.size(): " + insgesamtFahrer.size());
         System.out.println(insgesamtFahrer);
     }
 
+    public boolean isByDriverName() {
+        return byDriverName;
+    }
+
+    public void setByDriverName(boolean byDriverName) {
+        this.byDriverName = byDriverName;
+    }
 }

@@ -12,8 +12,9 @@ public class MainView {
     private JFrame frame;
     private boolean startload = false;
     private JLabel text;
-    private JTextField txtLeaderGrid2 = new JTextField();
     private MainMenu mainMenu;
+    private final ArrayList<String> startgruppe = new ArrayList<>();
+    private final ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
 
     public MainView() {
         frame = new JFrame();
@@ -30,8 +31,11 @@ public class MainView {
         mainMenu = new MainMenu();
 
 
-        String serverAuswahl[] = {"VRrF2LN R", "VRrF2LN T", "VRrF2LN L", "localhost"};
+        String[] serverAuswahl = {"VRrF2LN R", "VRrF2LN T", "VRrF2LN L", "VES", "localhost"};
         JComboBox boxServer = new JComboBox(serverAuswahl);
+
+        String[] modAuswahl = {"VRrF2LN", "VES", "VRLSM"};
+        JComboBox boxMod = new JComboBox(modAuswahl);
 
         JButton btnStart = new JButton("start");
         btnStart.addActionListener(e -> {
@@ -53,36 +57,65 @@ public class MainView {
                         Controller.setServer(new Connection("http://89.163.146.67:", "5715"));
                         break;
                     case 3:
+                        Controller.setServer(new Connection("http://89.163.146.67:", "5397"));
+                        break;
+                    case 4:
                         Controller.setServer(new Connection("http://localhost:", "5397"));
                         break;
                 }
                 Controller.startUpdateServerData();
+                new Thread(() -> {
+                    int i = boxMod.getSelectedIndex();
+                    try {
+                        Thread.sleep(3_000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    switch (i) {
+                        case 0:
+                            startgruppen.clear();
+                            startgruppe.add("SP9 GT3");
+                            startgruppe.add("Cup2");
+                            startgruppen.add(startgruppe);
+                            startgruppe.clear();
+                            startgruppe.add("H2");
+                            startgruppe.add("H4");
+                            startgruppe.add("SP10 GT4");
+                            startgruppe.add("SP3T");
+                            startgruppen.add(startgruppe);
+                            startgruppe.clear();
+                            Controller.setStartgruppen(startgruppen);
+                            break;
+                        case 1:
+                            startgruppen.clear();
+                            startgruppe.add("LMP2");
+                            startgruppen.add(startgruppe);
+                            startgruppe.clear();
+                            startgruppe.add("LMP3");
+                            startgruppen.add(startgruppe);
+                            startgruppe.clear();
+                            startgruppe.add("GTD");
+                            startgruppen.add(startgruppe);
+                            startgruppe.clear();
+                            Controller.setStartgruppen(startgruppen);
+                            break;
+                        case 2:
+                            break;
+                    }
+                }).start();
             }
         });
+
         panSouth.add(btnStart);
         panSouth.add(boxServer);
+        panSouth.add(boxMod);
 
-        txtLeaderGrid2.setText("0");
-        txtLeaderGrid2.setColumns(2);
-        JButton btnSetLeaderGrid2 = new JButton("set SG");
+        JButton btnSetLeaderGrid2 = new JButton("load Grid");
         btnSetLeaderGrid2.addActionListener(e -> {
-            ArrayList<String> startgruppeEins = new ArrayList<>();
-            startgruppeEins.add("SP9 GT3");
-            startgruppeEins.add("Cup2");
-            ArrayList<String> startgruppeZwei = new ArrayList<>();
-            startgruppeZwei.add("H2");
-            startgruppeZwei.add("H4");
-            startgruppeZwei.add("SP10 GT4");
-            startgruppeZwei.add("SP3T");
-            ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
-            startgruppen.add(startgruppeEins);
-            startgruppen.add(startgruppeZwei);
-            Controller.setStartgruppen(startgruppen);
             Controller.loadGridINI();
         });
 
         panSouth.add(btnSetLeaderGrid2);
-        panSouth.add(txtLeaderGrid2);
 
         JPanel panNorth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panNorth.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -128,13 +161,5 @@ public class MainView {
 
     public void setText(JLabel text) {
         this.text = text;
-    }
-
-    public JTextField getTxtLeaderGrid2() {
-        return txtLeaderGrid2;
-    }
-
-    public void setTxtLeaderGrid2(JTextField txtLeaderGrid2) {
-        this.txtLeaderGrid2 = txtLeaderGrid2;
     }
 }

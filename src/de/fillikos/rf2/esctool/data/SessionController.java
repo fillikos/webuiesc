@@ -9,7 +9,6 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -36,6 +35,7 @@ public class SessionController {
     private boolean rennende = false;
     private ArrayList<ArrayList<String>> startgruppeClass;
     private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
+    private boolean fromUI = true;
 
     public SessionController() {
 
@@ -82,7 +82,7 @@ public class SessionController {
             case PRACTICE:
             case QUALIFY:
                 assignPitByTeam(users);
-//                checkDoppelTeam(users);
+                checkDoppelTeam(users);
                 break;
             case WARMUP:
                 /*
@@ -93,9 +93,10 @@ public class SessionController {
                 if (!gridIniErstellt && ((endEventTime - 30) < currentEventTime)) {
                     gridIniErstellt = true;
                     System.out.println("WarmUp");
+                    setFromUI(false);
                     gridINI();
                 }
-//                checkDoppelTeam(users);
+                checkDoppelTeam(users);
                 assignPitByTeam(users);
                 break;
             case RACE:
@@ -155,13 +156,26 @@ public class SessionController {
         }).start();
     }
 
+    private void assignPitByDriver(User[] users) {
+        new Thread(() -> {
+            for (User user : users) {
+                if (!garageSpotsAssigned.contains(user.getDriverName())) {
+                    garageSpotsAssigned.add(user.getDriverName());
+                    server.sendchat("/pitbydriver " + garageSpotsAssigned.size() + " " + user.getDriverName());
+                    break;
+                }
+            }
+        }).start();
+    }
+
     private void checkDoppelTeam(User[] users) {
         // /callvote kick username funktioniert nicht als Server, nur als Chatbefehl im Spiel
         new Thread(() -> {
             ArrayList<String> userOld = new ArrayList<>();
             for (User user : users) {
                 if (userOld.contains(user.getCarNumber())) {
-                    server.sendchat("/callvote kick " + user.getDriverName());
+                    server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
+                    server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
                     break;
                 } else {
                     userOld.add(user.getCarNumber());
@@ -172,6 +186,7 @@ public class SessionController {
 
     public void gridINI() {
         new Thread(() -> {
+            System.out.println("hier");
             raceController.setStartgruppeClass(startgruppeClass);
             // 1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
@@ -204,8 +219,11 @@ public class SessionController {
                 dc.runGridIniTool(file, server, startgruppeClass);
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
-                server.sendchat("/batch grid.ini");
-                System.out.println("grid.ini wurde ausgeführt");
+                if (!isFromUI()) {
+                    server.sendchat("/batch grid.ini");
+                    System.out.println("grid.ini wurde ausgeführt");
+                    setFromUI(true);
+                }
             }
         }).start();
     }
@@ -351,5 +369,13 @@ public class SessionController {
     public void setStartgruppeClass(ArrayList<ArrayList<String>> startgruppeClass) {
         this.startgruppeClass = startgruppeClass;
         raceController.setStartgruppeClass(startgruppeClass);
+    }
+
+    public boolean isFromUI() {
+        return fromUI;
+    }
+
+    public void setFromUI(boolean fromUI) {
+        this.fromUI = fromUI;
     }
 }

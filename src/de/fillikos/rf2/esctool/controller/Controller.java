@@ -61,4 +61,12 @@ public class Controller {
         dc.getSessionController().setRfDir(selectedFile);
         System.out.println(selectedFile);
     }
+
+    public static void showServerView() {
+        vc.getServerView().getFrame().setVisible(true);
+    }
+
+    public static void setServerManagement() {
+        //Beim Schließen des ServerManagements werden die Daten aktualisiert
+    }
 }

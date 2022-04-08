@@ -1,6 +1,8 @@
 package de.fillikos.rf2.esctool.controller;
 
+import de.fillikos.rf2.esctool.data.ModData;
 import de.fillikos.rf2.esctool.view.MainView;
+import de.fillikos.rf2.esctool.view.ServerView;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 
 import java.text.DateFormat;
@@ -11,9 +13,13 @@ import java.util.TimeZone;
 public class ViewController {
 
     private MainView mainView;
+    private ServerView serverView;
+    private ModData modData;
 
     public ViewController() {
         mainView = new MainView();
+        serverView = new ServerView();
+        modData = new ModData();
     }
 
     public void showView() {
@@ -48,7 +54,6 @@ public class ViewController {
         textinsert.append("</body></html>");
 
 //            txtLeaderGrid2.setText(esctool.getGridPositionGridLeader());
-        mainView.getTxtLeaderGrid2().repaint();
         mainView.getText().setText(textinsert.toString());
 //            text.setText(Controller.setMainViewText());
         mainView.getText().repaint();
@@ -60,5 +65,21 @@ public class ViewController {
 
     public void setMainView(MainView mainView) {
         this.mainView = mainView;
+    }
+
+    public ServerView getServerView() {
+        return serverView;
+    }
+
+    public void setServerView(ServerView serverView) {
+        this.serverView = serverView;
+    }
+
+    public ModData getModData() {
+        return modData;
+    }
+
+    public void setModData(ModData modData) {
+        this.modData = modData;
     }
 }

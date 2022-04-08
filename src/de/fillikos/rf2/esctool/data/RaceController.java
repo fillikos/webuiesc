@@ -17,6 +17,7 @@ public class RaceController {
     private Connection server;
     private SessionInfo sessionInfo = new SessionInfo();
     private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
+    private long timeBetweenSG = 150;
 
     public RaceController() {
 
@@ -27,22 +28,30 @@ public class RaceController {
         this.sessionInfo = sessionInfo;
         System.out.println(sessionInfoOld.getGamePhase() + " " + sessionInfo.getGamePhase());
         if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
-            System.out.println("Start des Rennens");
-            System.out.println("1. Startgruppe Los");
-            server.sendchat("1. Startgruppe Los");
+            if (startgruppeClass.size() > 1) {
+                System.out.println("Start des Rennens");
+                System.out.println("1. Startgruppe Los");
+                server.sendchat("1. Startgruppe Los");
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(150 * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("2. Startgruppe Los");
-                    server.sendchat("2. Startgruppe Los");
+                // Beginn bei 1, da bei einer Startgruppe keine weiteren freigegeben werden
+                for (int i = 1; i < startgruppeClass.size(); i++) {
+                    long startgruppe = i + 1;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(timeBetweenSG * 1000 * (startgruppe - 1));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println(startgruppe + ". Startgruppe Los");
+                            server.sendchat(startgruppe + ". Startgruppe Los");
+                        }
+                    }).start();
                 }
-            }).start();
+            }
+
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -129,7 +138,7 @@ public class RaceController {
         float startPos = 0;
         for (int i = 0; i < 1; i++) {
             do {
-                startPos = ((int) (24110 + (Math.random() * 1000)));
+                startPos = ((int) (Float.parseFloat(sessionInfo.getLapDistance()) - 214 + (Math.random() * 1_000)));
             } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
         }
         return startPos;
@@ -205,5 +214,13 @@ public class RaceController {
 
     public void setSessionInfo(SessionInfo sessionInfo) {
         this.sessionInfo = sessionInfo;
+    }
+
+    public long getTimeBetweenSG() {
+        return timeBetweenSG;
+    }
+
+    public void setTimeBetweenSG(long timeBetweenSG) {
+        this.timeBetweenSG = timeBetweenSG;
     }
 }
