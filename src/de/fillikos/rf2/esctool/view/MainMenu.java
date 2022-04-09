@@ -42,6 +42,9 @@ public class MainMenu extends JMenuBar {
 
         JMenu menuServer = new JMenu("Server");
         JMenuItem itemModKonfigurieren = new JMenuItem("Mod konfigurieren");
+        itemModKonfigurieren.addActionListener(e -> {
+            Controller.showModView();
+        });
         JMenuItem itemServerAuswahl = new JMenuItem("Server verwalten");
         itemServerAuswahl.addActionListener(e -> {
             Controller.showServerView();

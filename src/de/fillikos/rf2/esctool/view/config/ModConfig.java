@@ -1,11 +1,11 @@
-package de.fillikos.rf2.esctool.data;
+package de.fillikos.rf2.esctool.view.config;
 
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class ModData {
+public class ModConfig {
 
     private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
     private String modName = "";
@@ -19,8 +19,8 @@ public class ModData {
     private boolean rennfreigabeByChat = true;
     private PitVorgang pitVorgang = new PitVorgang();
 
-    public ModData() {
-
+    public ModConfig() {
+        super();
     }
 
     public ArrayList<ArrayList<String>> getStartgruppeClass() {
@@ -114,9 +114,9 @@ public class ModData {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ModData)) return false;
-        ModData modData = (ModData) o;
-        return timeBetweenSG == modData.timeBetweenSG && assignPitByTeam == modData.assignPitByTeam && assignPitByDriver == modData.assignPitByDriver && byDriverName == modData.byDriverName && checkDoppelTeam == modData.checkDoppelTeam && gridIniErstellen == modData.gridIniErstellen && recordHotlaps == modData.recordHotlaps && rennfreigabeByChat == modData.rennfreigabeByChat && Objects.equals(startgruppeClass, modData.startgruppeClass) && Objects.equals(modName, modData.modName) && Objects.equals(pitVorgang, modData.pitVorgang);
+        if (!(o instanceof ModConfig)) return false;
+        ModConfig modConfig = (ModConfig) o;
+        return timeBetweenSG == modConfig.timeBetweenSG && assignPitByTeam == modConfig.assignPitByTeam && assignPitByDriver == modConfig.assignPitByDriver && byDriverName == modConfig.byDriverName && checkDoppelTeam == modConfig.checkDoppelTeam && gridIniErstellen == modConfig.gridIniErstellen && recordHotlaps == modConfig.recordHotlaps && rennfreigabeByChat == modConfig.rennfreigabeByChat && Objects.equals(startgruppeClass, modConfig.startgruppeClass) && Objects.equals(modName, modConfig.modName) && Objects.equals(pitVorgang, modConfig.pitVorgang);
     }
 
     @Override

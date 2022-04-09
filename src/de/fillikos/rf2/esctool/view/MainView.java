@@ -1,10 +1,14 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
+import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class MainView {
@@ -15,27 +19,33 @@ public class MainView {
     private MainMenu mainMenu;
     private final ArrayList<String> startgruppe = new ArrayList<>();
     private final ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
+    private ArrayList<ServerConfig> serverConfigList = new ArrayList<>();
+    private ArrayList<ModConfig> modConfigList = new ArrayList<>();
+    private JComboBox boxServer;
+    private JComboBox boxMod;
 
     public MainView() {
         frame = new JFrame();
         frame.setTitle("ESC-Tool");
         frame.setSize(390, 240);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation((int) (screenSize.getWidth() / 2 - frame.getWidth() / 2),
-                (int) (screenSize.getHeight() / 2 - frame.getHeight() / 2));
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Controller.shutdown();
+                super.windowClosing(e);
+            }
+        });
 
         JPanel panSouth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panSouth.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         mainMenu = new MainMenu();
-
-
-        String[] serverAuswahl = {"VRrF2LN R", "VRrF2LN T", "VRrF2LN L", "VES", "localhost"};
-        JComboBox boxServer = new JComboBox(serverAuswahl);
+        boxServer = new JComboBox();
+        boxMod = new JComboBox();
 
         String[] modAuswahl = {"VRrF2LN", "VES", "VRLSM"};
-        JComboBox boxMod = new JComboBox(modAuswahl);
+
 
         JButton btnStart = new JButton("start");
         btnStart.addActionListener(e -> {
@@ -46,63 +56,17 @@ public class MainView {
             } else {
                 startload = true;
                 btnStart.setText("Stopp");
-                switch (boxServer.getSelectedIndex()) {
-                    case 0:
-                        Controller.setServer(new Connection("http://89.163.146.67:", "5725"));
-                        break;
-                    case 1:
-                        Controller.setServer(new Connection("http://89.163.146.67:", "5735"));
-                        break;
-                    case 2:
-                        Controller.setServer(new Connection("http://89.163.146.67:", "5715"));
-                        break;
-                    case 3:
-                        Controller.setServer(new Connection("http://89.163.146.67:", "5397"));
-                        break;
-                    case 4:
-                        Controller.setServer(new Connection("http://localhost:", "5397"));
-                        break;
+                // TODO
+                for (ServerConfig server : serverConfigList) {
+                    if (server.getServerName().equals(boxServer.getSelectedItem())) {
+                        Controller.setServer(new Connection("http://" + server.getIp() + ":", server.getPort()));
+                        for (ModConfig mod : modConfigList) {
+                            if (mod.getModName().equals(boxMod.getSelectedItem())) {
+                                Controller.startUpdateServerData(mod);
+                            }
+                        }
+                    }
                 }
-                Controller.startUpdateServerData();
-                new Thread(() -> {
-                    int i = boxMod.getSelectedIndex();
-                    try {
-                        Thread.sleep(3_000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    switch (i) {
-                        case 0:
-                            startgruppen.clear();
-                            startgruppe.add("SP9 GT3");
-                            startgruppe.add("Cup2");
-                            startgruppen.add(startgruppe);
-                            startgruppe.clear();
-                            startgruppe.add("H2");
-                            startgruppe.add("H4");
-                            startgruppe.add("SP10 GT4");
-                            startgruppe.add("SP3T");
-                            startgruppen.add(startgruppe);
-                            startgruppe.clear();
-                            Controller.setStartgruppen(startgruppen);
-                            break;
-                        case 1:
-                            startgruppen.clear();
-                            startgruppe.add("LMP2");
-                            startgruppen.add(startgruppe);
-                            startgruppe.clear();
-                            startgruppe.add("LMP3");
-                            startgruppen.add(startgruppe);
-                            startgruppe.clear();
-                            startgruppe.add("GTD");
-                            startgruppen.add(startgruppe);
-                            startgruppe.clear();
-                            Controller.setStartgruppen(startgruppen);
-                            break;
-                        case 2:
-                            break;
-                    }
-                }).start();
             }
         });
 
@@ -161,5 +125,25 @@ public class MainView {
 
     public void setText(JLabel text) {
         this.text = text;
+    }
+
+    public ArrayList<ServerConfig> getServerConfigList() {
+        return serverConfigList;
+    }
+
+    public void setServerConfigList(ArrayList<ServerConfig> serverConfigList) {
+        this.serverConfigList = serverConfigList;
+        boxServer.removeAllItems();
+        for (ServerConfig server : serverConfigList) {
+            boxServer.addItem(server.getServerName());
+        }
+    }
+
+    public void setModConfigList(ArrayList<ModConfig> modConfigList) {
+        this.modConfigList = modConfigList;
+        boxMod.removeAllItems();
+        for (ModConfig mod : modConfigList) {
+            boxMod.addItem(mod.getModName());
+        }
     }
 }

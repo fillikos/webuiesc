@@ -1,12 +1,21 @@
 package de.fillikos.rf2.esctool.controller;
 
-import de.fillikos.rf2.esctool.data.ModData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import de.fillikos.rf2.esctool.view.MainView;
+import de.fillikos.rf2.esctool.view.ModView;
 import de.fillikos.rf2.esctool.view.ServerView;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
+import de.fillikos.rf2.esctool.view.config.ServerConfig;
+import de.fillikos.rf2.esctool.view.config.ViewConfig;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -14,16 +23,79 @@ public class ViewController {
 
     private MainView mainView;
     private ServerView serverView;
-    private ModData modData;
+    private ModView modView;
+    private ArrayList<ModConfig> modConfigList = new ArrayList<>();
+    private ArrayList<ServerConfig> serverDataList = new ArrayList<>();
+    private ViewConfig viewConfig = new ViewConfig();
+    private File tmpDir = new File(System.getProperty("user.home") + "\\.rf2ServerManager");
 
     public ViewController() {
         mainView = new MainView();
         serverView = new ServerView();
-        modData = new ModData();
+        modView = new ModView();
+        loadTempData();
+        setTempData();
+    }
+
+    private void setTempData() {
+        serverView.setServerConfigList(serverDataList);
+        modView.setModConfigList(modConfigList);
+        mainView.setServerConfigList(serverDataList);
+        mainView.setModConfigList(modConfigList);
+    }
+
+    private void saveTempData() {
+
+    }
+
+    private void loadTempData() {
+        // Ordner nicht vorhanden -> erstellen
+        if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
+            if (tmpDir.mkdirs()) {
+                System.out.println(tmpDir + " Ordner erstellt");
+            } else {
+                // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
+                System.out.println("Fehler");
+            }
+        }
+        loadModConfig();
+        loadServerConfig();
+        loadViewConfig();
+
+    }
+
+    private void loadViewConfig() {
+        ObjectMapper om = new ObjectMapper();
+        try {
+            viewConfig = om.readValue(new File(tmpDir + "\\ViewConfig.json"), ViewConfig.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadServerConfig() {
+        ObjectMapper om = new ObjectMapper();
+        try {
+            CollectionType typeReference = TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, ServerConfig.class);
+            serverDataList = om.readValue(new File(tmpDir + "\\ServerConfig.json"), typeReference);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadModConfig() {
+        ObjectMapper om = new ObjectMapper();
+        try {
+            CollectionType typeReference = TypeFactory.defaultInstance().constructCollectionType(ArrayList.class, ModConfig.class);
+            modConfigList = om.readValue(new File(tmpDir + "\\ModConfig.json"), typeReference);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showView() {
         mainView.showView();
+        mainView.getFrame().setLocation(viewConfig.tempPosition(mainView.getFrame()));
     }
 
     public void setViewData(SessionInfo sessionInfo) {
@@ -75,11 +147,106 @@ public class ViewController {
         this.serverView = serverView;
     }
 
-    public ModData getModData() {
-        return modData;
+    public ArrayList<ModConfig> getModConfigList() {
+        return modConfigList;
     }
 
-    public void setModData(ModData modData) {
-        this.modData = modData;
+    public void setModConfigList(ArrayList<ModConfig> modConfigList) {
+        this.modConfigList = modConfigList;
+    }
+
+    public ArrayList<ServerConfig> getServerDataList() {
+        return serverDataList;
+    }
+
+    public void setServerDataList(ArrayList<ServerConfig> serverDataList) {
+        this.serverDataList = serverDataList;
+    }
+
+    public ViewConfig getViewConfig() {
+        return viewConfig;
+    }
+
+    public void setViewConfig(ViewConfig viewConfig) {
+        this.viewConfig = viewConfig;
+    }
+
+    public void saveTemp() {
+        // 1. Temp Ordner suchen
+        File tmpDir = new File(System.getProperty("user.home") + "\\.rf2ServerManager");
+        // Ordner nicht vorhanden -> erstellen
+        if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
+            if (tmpDir.mkdirs()) {
+                System.out.println(tmpDir + " Ordner erstellt");
+            } else {
+                // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
+                System.out.println("Fehler");
+            }
+        }
+        // 2. TempDateien laden
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(new File(tmpDir + "\\ViewConfig.json"), viewConfig);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveServerConfig() {
+        // 1. Temp Ordner suchen
+        File tmpDir = new File(System.getProperty("user.home") + "\\.rf2ServerManager");
+        // Ordner nicht vorhanden -> erstellen
+        if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
+            if (tmpDir.mkdirs()) {
+                System.out.println(tmpDir + " Ordner erstellt");
+            } else {
+                // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
+                System.out.println("Fehler");
+            }
+        }
+        // 2. TempDateien laden
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(new File(tmpDir + "\\ServerConfig.json"), serverDataList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveModConfig() {
+        // 1. Temp Ordner suchen
+        File tmpDir = new File(System.getProperty("user.home") + "\\.rf2ServerManager");
+        // Ordner nicht vorhanden -> erstellen
+        if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
+            if (tmpDir.mkdirs()) {
+                System.out.println(tmpDir + " Ordner erstellt");
+            } else {
+                // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
+                System.out.println("Fehler");
+            }
+        }
+        // 2. TempDateien laden
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(new File(tmpDir + "\\ModConfig.json"), modConfigList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ModView getModView() {
+        return modView;
+    }
+
+    public void setModView(ModView modView) {
+        this.modView = modView;
+    }
+
+    public File getTmpDir() {
+        return tmpDir;
+    }
+
+    public void setTmpDir(File tmpDir) {
+        this.tmpDir = tmpDir;
     }
 }

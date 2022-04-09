@@ -5,6 +5,9 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class ServerData {
 
     private Connection server;
@@ -75,5 +78,31 @@ public class ServerData {
 
     public void setStart(boolean start) {
         this.start = start;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ServerData)) return false;
+        ServerData that = (ServerData) o;
+        return isStart() == that.isStart() && getAktualisierungsrate() == that.getAktualisierungsrate() && Objects.equals(getServer(), that.getServer()) && Objects.equals(getSessionInfo(), that.getSessionInfo()) && Arrays.equals(getUsers(), that.getUsers());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getServer(), getSessionInfo(), isStart(), getAktualisierungsrate());
+        result = 31 * result + Arrays.hashCode(getUsers());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerData{" +
+                "server=" + server +
+                ", sessionInfo=" + sessionInfo +
+                ", users=" + Arrays.toString(users) +
+                ", start=" + start +
+                ", aktualisierungsrate=" + aktualisierungsrate +
+                '}';
     }
 }

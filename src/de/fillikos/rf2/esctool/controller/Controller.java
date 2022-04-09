@@ -1,6 +1,8 @@
 package de.fillikos.rf2.esctool.controller;
 
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
+import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.File;
@@ -21,7 +23,7 @@ public class Controller {
         dc.getSessionController().getRaceController().setServer(connection);
     }
 
-    public static void startUpdateServerData() {
+    public static void startUpdateServerData(ModConfig mod) {
         dc.getServerData().setStart(true);
         dc.getServerData().start();
     }
@@ -52,11 +54,6 @@ public class Controller {
         dc.getSessionController().gridINI();
     }
 
-    public static void shutdown() {
-        dc.getServerData().setStart(false);
-        vc.getMainView().getFrame().dispose();
-    }
-
     public static void setDir(File selectedFile) {
         dc.getSessionController().setRfDir(selectedFile);
         System.out.println(selectedFile);
@@ -64,9 +61,39 @@ public class Controller {
 
     public static void showServerView() {
         vc.getServerView().getFrame().setVisible(true);
+        vc.getServerView().getFrame().setLocation(vc.getMainView().getFrame().getLocation());
     }
 
-    public static void setServerManagement() {
+    public static void showModView() {
+        vc.getModView().getFrame().setVisible(true);
+        vc.getModView().getFrame().setLocation(vc.getMainView().getFrame().getLocation());
+    }
+
+    public static void shutdown() {
+        vc.getViewConfig().viewPosition(vc.getMainView().getFrame());
+        vc.saveTemp();
+        dc.getServerData().setStart(false);
+        vc.getMainView().getFrame().dispose();
+    }
+
+    public static void setServerManagement(ArrayList<ServerConfig> serverConfigList) {
         //Beim Schließen des ServerManagements werden die Daten aktualisiert
+        vc.getMainView().setServerConfigList(serverConfigList);
+        System.out.println("hier");
+    }
+
+    public static void setModManagement() {
+        //Beim Schließen des ServerManagements werden die Daten aktualisiert
+        System.out.println("hier");
+    }
+
+    public static void saveServerConfig(ArrayList<ServerConfig> serverConfigList) {
+        vc.setServerDataList(serverConfigList);
+        vc.saveServerConfig();
+    }
+
+    public static void saveModConfig(ArrayList<ModConfig> modConfigList) {
+        vc.setModConfigList(modConfigList);
+        vc.saveModConfig();
     }
 }
