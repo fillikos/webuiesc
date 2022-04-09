@@ -21,9 +21,9 @@ public class GridIniTool {
 
     }
 
-    public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass) {
+    public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean byDriverName) {
         System.out.println("DataController.runGridIniTool()");
-
+        this.byDriverName = byDriverName;
         /*
          * Informationen Sammeln
          */
@@ -39,7 +39,12 @@ public class GridIniTool {
          */
         // 1. Startgruppen anlegen
         ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
-        System.out.println(startgruppeClass.size() + " " + startgruppeClass);
+        if (startgruppeClass.size() == 0) {
+            ArrayList<String> all = new ArrayList<>();
+            String alleKlassen = "all";
+            all.add(alleKlassen);
+            startgruppeClass.add(all);
+        }
         for (int i = 0; i < startgruppeClass.size(); i++) {
             startgruppen.add(new ArrayList<>());
         }
@@ -57,14 +62,22 @@ public class GridIniTool {
             String carClass = element[4];
 
             for (int i = 0; i < startgruppeClass.size(); i++) {
-                // isStartgruppe überprüft die CarClass
-                if (isStartgruppe(carClass, startgruppeClass.get(i))) {
+                if (startgruppeClass.get(0).get(0).equals("all")) {
+                    // Keine Sortierung nach Klassen
                     if (isByDriverName()) {
                         startgruppen.get(i).add(driverName);
                     } else {
                         startgruppen.get(i).add(String.valueOf(nummer));
                     }
-                    break;
+                } else {
+                    // isStartgruppe überprüft die CarClass
+                    if (isStartgruppe(carClass, startgruppeClass.get(i))) {
+                        if (isByDriverName()) {
+                            startgruppen.get(i).add(driverName);
+                        } else {
+                            startgruppen.get(i).add(String.valueOf(nummer));
+                        }
+                    }
                 }
             }
         }

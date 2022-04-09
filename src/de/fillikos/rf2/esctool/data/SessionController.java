@@ -5,6 +5,7 @@ import de.fillikos.rf2.esctool.data.esctool.ESCTool;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.data.grid.GridIniTool;
 import de.fillikos.rf2.esctool.data.hotlap.Hotlap;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
@@ -36,6 +37,7 @@ public class SessionController {
     private ArrayList<ArrayList<String>> startgruppeClass;
     private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
     private boolean fromUI = true;
+    private ModConfig modConfig;
 
     public SessionController() {
 
@@ -49,7 +51,8 @@ public class SessionController {
         this.escTool = escTool;
     }
 
-    public void setNewData(User[] users, SessionInfo sessionInfo, PitVorgang pitVorgang) {
+    public void setNewData(User[] users, SessionInfo sessionInfo, ModConfig modConfig) {
+        this.modConfig = modConfig;
         sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
         if (this.users != null) {
@@ -58,13 +61,13 @@ public class SessionController {
             this.usersOld = new User[0];
         }
         this.users = users;
-        this.pitVorgang = pitVorgang;
+        this.pitVorgang = modConfig.getPitVorgang();
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
         new Thread(() -> escTool.handleESCRule(users, sessionInfo, pitVorgang)).start();
 
         // 2. Runden Aufzeichnung
-        if (recordHotlaps) {
+        if (modConfig.isRecordHotlaps()) {
             hotlap();
         }
 
@@ -81,8 +84,15 @@ public class SessionController {
                 break;
             case PRACTICE:
             case QUALIFY:
-                assignPitByTeam(users);
-                checkDoppelTeam(users);
+                if (modConfig.isAssignPitByTeam()) {
+                    assignPitByTeam(users);
+                }
+                if (modConfig.isAssignPitByDriver()) {
+                    assignPitByDriver(users);
+                }
+                if (modConfig.isCheckDoppelTeam()) {
+                    checkDoppelTeam(users);
+                }
                 break;
             case WARMUP:
                 /*
@@ -94,13 +104,24 @@ public class SessionController {
                     gridIniErstellt = true;
                     System.out.println("WarmUp");
                     setFromUI(false);
-                    gridINI();
+                    if (modConfig.isGridIniErstellen()) {
+                        gridINI();
+                    }
                 }
-                checkDoppelTeam(users);
-                assignPitByTeam(users);
+                if (modConfig.isAssignPitByTeam()) {
+                    assignPitByTeam(users);
+                }
+                if (modConfig.isAssignPitByDriver()) {
+                    assignPitByDriver(users);
+                }
+                if (modConfig.isCheckDoppelTeam()) {
+                    checkDoppelTeam(users);
+                }
                 break;
             case RACE:
-                raceController.handleRace(sessionInfo, users);
+                if (modConfig.isRennfreigabeByChat()) {
+                    raceController.handleRace(sessionInfo, users, modConfig.getTimeBetweenSG());
+                }
                 if (sessionInfo.getGamePhase().equals("8")) {
                     if (!rennende) {
                         rennende = true;
@@ -186,7 +207,6 @@ public class SessionController {
 
     public void gridINI() {
         new Thread(() -> {
-            System.out.println("hier");
             raceController.setStartgruppeClass(startgruppeClass);
             // 1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
@@ -216,7 +236,7 @@ public class SessionController {
             GridIniTool dc = new GridIniTool();
             if (!file.toString().equals("D:\\")) {
                 System.out.println(file);
-                dc.runGridIniTool(file, server, startgruppeClass);
+                dc.runGridIniTool(file, server, startgruppeClass, modConfig.isByDriverName());
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
                 if (!isFromUI()) {

@@ -23,7 +23,8 @@ public class RaceController {
 
     }
 
-    public void handleRace(SessionInfo sessionInfo, User[] users) {
+    public void handleRace(SessionInfo sessionInfo, User[] users, long timeBetweenSG) {
+        this.timeBetweenSG = timeBetweenSG;
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
         System.out.println(sessionInfoOld.getGamePhase() + " " + sessionInfo.getGamePhase());

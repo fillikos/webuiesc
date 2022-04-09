@@ -1,6 +1,7 @@
 package de.fillikos.rf2.esctool.data;
 
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
@@ -20,7 +21,7 @@ public class ServerData {
 
     }
 
-    public void start() {
+    public void start(ModConfig modConfig) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -29,7 +30,7 @@ public class ServerData {
                     users = server.getStandings();
                     sessionInfo = server.getSessionInfo();
                     Controller.setViewData();
-                    Controller.runDataHandling();
+                    Controller.runDataHandling(modConfig);
                     try {
                         Thread.sleep(aktualisierungsrate);
                     } catch (InterruptedException e) {

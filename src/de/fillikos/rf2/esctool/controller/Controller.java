@@ -1,6 +1,5 @@
 package de.fillikos.rf2.esctool.controller;
 
-import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
@@ -25,7 +24,7 @@ public class Controller {
 
     public static void startUpdateServerData(ModConfig mod) {
         dc.getServerData().setStart(true);
-        dc.getServerData().start();
+        dc.getServerData().start(mod);
     }
 
     public static void stopUpdateServerData() {
@@ -37,8 +36,8 @@ public class Controller {
         vc.setViewData(dc.getServerData().getSessionInfo());
     }
 
-    public static void runDataHandling() {
-        dc.getSessionController().setNewData(dc.getServerData().getUsers(), dc.getServerData().getSessionInfo(), new PitVorgang());
+    public static void runDataHandling(ModConfig modConfig) {
+        dc.getSessionController().setNewData(dc.getServerData().getUsers(), dc.getServerData().getSessionInfo(), modConfig);
         dc.getSessionController().getRaceController().setSessionInfo(dc.getServerData().getSessionInfo());
     }
 
@@ -76,14 +75,15 @@ public class Controller {
         vc.getMainView().getFrame().dispose();
     }
 
-    public static void setServerManagement(ArrayList<ServerConfig> serverConfigList) {
+    public static void setServerManagement() {
         //Beim Schließen des ServerManagements werden die Daten aktualisiert
-        vc.getMainView().setServerConfigList(serverConfigList);
+        vc.getMainView().setServerConfigList(vc.getServerView().getServerConfigList());
         System.out.println("hier");
     }
 
     public static void setModManagement() {
         //Beim Schließen des ServerManagements werden die Daten aktualisiert
+        vc.getMainView().setModConfigList(vc.getModView().getModConfigList());
         System.out.println("hier");
     }
 

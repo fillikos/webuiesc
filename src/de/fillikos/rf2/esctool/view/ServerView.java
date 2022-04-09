@@ -27,7 +27,7 @@ public class ServerView {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Controller.setServerManagement(serverConfigList);
+                Controller.setServerManagement();
                 frame.dispose();
             }
         });
@@ -41,7 +41,7 @@ public class ServerView {
                         (String) tableModel.getValueAt(i, 2)
                 ));
             }
-            Controller.setServerManagement(serverConfigList);
+            Controller.setServerManagement();
             Controller.saveServerConfig(serverConfigList);
         });
         JButton btnNew = new JButton("Neu ...");

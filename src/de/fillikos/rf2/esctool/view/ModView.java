@@ -5,6 +5,8 @@ import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +19,8 @@ public class ModView {
     private JFrame frame;
     private ArrayList<ModConfig> modConfigList;
     private JComboBox boxMods;
+    private DefaultTableModel dtm;
+    private JTable tabSG;
 
     private JTextField txtModName;
     private JTextField txtTimeBtSg;
@@ -54,12 +58,28 @@ public class ModView {
         JButton btnRemove = new JButton("Entfernen");
         btnRemove.addActionListener(e -> {
             System.out.println(boxMods.getSelectedItem());
-            for (ModConfig mod : modConfigList) {
-                if (mod.getModName().equals(boxMods.getSelectedItem())) {
-                    modConfigList.remove(mod);
+            modConfigList.removeIf(mod -> mod.getModName().equals(boxMods.getSelectedItem()));
+            refreshModConfigList();
+        });
+
+        JButton btnAddSg = new JButton("+SG");
+        btnAddSg.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = dtm.getRowCount();
+                dtm.addRow(new String[]{String.valueOf(i + 1), ""});
+            }
+        });
+
+        JButton btnRemSg = new JButton("-SG");
+        btnRemSg.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = dtm.getRowCount();
+                if (i > 0) {
+                    dtm.removeRow(i - 1);
                 }
             }
-            refreshModConfigList();
         });
 
         boxMods = new JComboBox();
@@ -86,14 +106,15 @@ public class ModView {
             for (int i = 0; i < boxMods.getItemCount(); i++) {
                 if (boxMods.getItemAt(i).equals("Unbenannt")) {
                     vorhanden = true;
+                    break;
                 }
             }
             if (!vorhanden) {
-                boxMods.addItem("Unbenannt");
                 boxMods.setSelectedItem("Unbenannt");
                 ModConfig mod = new ModConfig();
                 mod.setModName("Unbenannt");
                 modConfigList.add(mod);
+                refreshModConfigList();
                 showCurrentMod(mod);
             }
         });
@@ -102,28 +123,65 @@ public class ModView {
         GridBagConstraints g = new GridBagConstraints();
         panCenter.setLayout(new GridBagLayout());
 
+        String[] columns = new String[]{"SG", "Klassen (trennen mit KOMMA)"};
+        dtm = new DefaultTableModel(columns, 0);
+        tabSG = new JTable(dtm);
+        JScrollPane scrModTab = new JScrollPane(tabSG);
+        scrModTab.setPreferredSize(new Dimension(220, 100));
+
+        TableColumn column = null;
+        for (int i = 0; i < columns.length; i++) {
+            column = tabSG.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            column.setPreferredWidth(width);
+        }
+
 
         txtModName = new JTextField();
         txtModName.setColumns(15);
         txtTimeBtSg = new JTextField();
         txtTimeBtSg.setColumns(4);
-        lblSekZwSg = new JLabel("sek zwischen SG");
+        lblSekZwSg = new JLabel("sek zwischen Startgruppen");
 
 
-        cbGridIniErstellen = new JCheckBox("grid.ini erstellen");
-        cbRecordHotlaps = new JCheckBox("hotlaps aufzeichnen");
-        cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
+        cbDoppelTeam = new JCheckBox("Prüfe auf doppelte Teamfahrzeuge");
         cbPitByTeam = new JCheckBox("Boxenplätze durch PitByTeam zuweisen");
         cbPitByDriver = new JCheckBox("Boxenplätze durch PitByDriver zuweisen");
+        cbGridIniErstellen = new JCheckBox("grid.ini erstellen");
+        cbRecordHotlaps = new JCheckBox("Hotlaps aufzeichnen");
         cbByDriverName = new JCheckBox("Startgruppen anhand Fahrer anstelle Teams");
-        cbDoppelTeam = new JCheckBox("Überprüfen auf doppelte Teamfahrzeuge");
+        // Zeit zwischen Startgruppen
+        cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
+
+        cbPitByDriver.addActionListener(e -> {
+            if (cbPitByDriver.isSelected()) {
+                cbPitByTeam.setSelected(false);
+            }
+        });
+        cbPitByTeam.addActionListener(e -> {
+            if (cbPitByTeam.isSelected()) {
+                cbPitByDriver.setSelected(false);
+            }
+        });
+
         lblPitVorgang = new JLabel("Aufzeichnung von folgenden Vorgängen:");
         cbPit1 = new JCheckBox("Aus der Box fahren");
         cbPit2 = new JCheckBox("ESC auf der Strecke");
-        cbPit3 = new JCheckBox("Boxenstopp angeforder");
+        cbPit3 = new JCheckBox("Boxenstopp angefordert");
         cbPit4 = new JCheckBox("Boxenstoppanfrage abgebrochen");
         cbPit5 = new JCheckBox("ESC in der Box");
-        cbPit6 = new JCheckBox("Boxenstopp beginn");
+        cbPit6 = new JCheckBox("Boxenstopp beginnt");
         cbPit7 = new JCheckBox("Boxenstopp beendet");
         cbPit8 = new JCheckBox("In die Box gefahren");
 
@@ -137,53 +195,65 @@ public class ModView {
         panCenter.add(txtModName, g);
         g.gridx = 0;
         g.gridy = 1;
-        panCenter.add(cbGridIniErstellen, g);
+        panCenter.add(cbDoppelTeam, g);
         g.gridx = 4;
         panCenter.add(lblPitVorgang, g);
         g.gridx = 0;
         g.gridy = 2;
-        panCenter.add(cbRecordHotlaps, g);
+        panCenter.add(cbPitByTeam, g);
         g.gridx = 4;
         panCenter.add(cbPit1, g);
         g.gridx = 0;
         g.gridy = 3;
-        panCenter.add(cbRennfreigabe, g);
+        panCenter.add(cbPitByDriver, g);
         g.gridx = 4;
         panCenter.add(cbPit2, g);
+        g.gridx = 0;
         g.gridy = 4;
+        panCenter.add(cbGridIniErstellen, g);
         g.gridx = 4;
         panCenter.add(cbPit3, g);
+        g.gridx = 0;
+        g.gridy = 5;
+        panCenter.add(cbRecordHotlaps, g);
+        g.gridx = 4;
+        panCenter.add(cbPit4, g);
+        g.gridx = 0;
+        g.gridy = 6;
+        panCenter.add(cbByDriverName, g);
+        g.gridx = 3;
+        panCenter.add(cbPit5, g);
+
+        g.gridy = 7;
         g.gridx = 0;
         g.gridwidth = 1;
         panCenter.add(txtTimeBtSg, g);
         g.gridx = 1;
         g.gridwidth = 2;
         panCenter.add(lblSekZwSg, g);
-        g.gridx = 0;
-        g.gridy = 5;
         g.gridwidth = 3;
-        panCenter.add(cbPitByTeam, g);
-        g.gridx = 4;
-        panCenter.add(cbPit4, g);
-        g.gridx = 0;
-        g.gridy = 6;
-        panCenter.add(cbPitByDriver, g);
-        g.gridx = 4;
-        panCenter.add(cbPit5, g);
-        g.gridx = 0;
-        g.gridy = 7;
-        panCenter.add(cbByDriverName, g);
         g.gridx = 4;
         panCenter.add(cbPit6, g);
         g.gridx = 0;
         g.gridy = 8;
-        panCenter.add(cbDoppelTeam, g);
+        panCenter.add(cbRennfreigabe, g);
         g.gridx = 4;
         panCenter.add(cbPit7, g);
         g.gridx = 4;
         g.gridy = 9;
         panCenter.add(cbPit8, g);
-
+        g.gridy = 11;
+        g.gridx = 1;
+        g.gridwidth = 4;
+        g.gridheight = 2;
+        panCenter.add(scrModTab, g);
+        g.gridwidth = 1;
+        g.gridheight = 1;
+        g.gridx = 4;
+        g.gridy = 12;
+        panCenter.add(btnAddSg, g);
+        g.gridx = 5;
+        panCenter.add(btnRemSg, g);
 
         JPanel flowSouth = new JPanel(new FlowLayout());
         flowSouth.add(btnNew);
@@ -204,11 +274,7 @@ public class ModView {
     }
 
     private void saveModToList() {
-        for (ModConfig old : modConfigList) {
-            if (old.getModName().equals(txtModName.getText())) {
-                modConfigList.remove(old);
-            }
-        }
+        modConfigList.removeIf(old -> old.getModName().equals(txtModName.getText()));
         ModConfig mod = new ModConfig();
         mod.setModName(txtModName.getText());
         mod.setTimeBetweenSG(Long.parseLong(txtTimeBtSg.getText()));
@@ -229,6 +295,18 @@ public class ModView {
         pitVorgang.setBoxenstop_ende(cbPit7.isSelected());
         pitVorgang.setIn_die_box(cbPit8.isSelected());
         mod.setPitVorgang(pitVorgang);
+
+        ArrayList<ArrayList<String>> startgruppenList = new ArrayList<>();
+        for (int i = 0; i < dtm.getRowCount(); i++) {
+            String klassen = dtm.getValueAt(i, 1).toString();
+            String[] klasse = klassen.split(",");
+            ArrayList<String> klassenListe = new ArrayList<>();
+            for (int j = 0; j < klasse.length; j++) {
+                klassenListe.add(klasse[j]);
+            }
+            startgruppenList.add(klassenListe);
+        }
+        mod.setStartgruppeClass(startgruppenList);
         modConfigList.add(mod);
     }
 
@@ -250,6 +328,21 @@ public class ModView {
         cbPit6.setSelected(mod.getPitVorgang().isBoxenstop_beginn());
         cbPit7.setSelected(mod.getPitVorgang().isBoxenstop_ende());
         cbPit8.setSelected(mod.getPitVorgang().isIn_die_box());
+        if (tabSG.getRowCount() > 0) {
+            for (int i = tabSG.getRowCount(); i > 0; i--) {
+                dtm.removeRow(i - 1);
+            }
+        }
+        int i = 1;
+        for (ArrayList<String> klassen : mod.getStartgruppeClass()) {
+            StringBuilder klassenString = new StringBuilder();
+            for (String klasse : klassen) {
+                klassenString.append(klasse);
+                klassenString.append(",");
+            }
+            klassenString.deleteCharAt(klassenString.length() - 1);
+            dtm.addRow(new String[]{String.valueOf(i++), klassenString.toString()});
+        }
     }
 
     public JFrame getFrame() {
