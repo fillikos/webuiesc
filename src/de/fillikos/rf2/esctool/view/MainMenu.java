@@ -1,12 +1,15 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.view.config.ViewConfig;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 
 public class MainMenu extends JMenuBar {
+
+    private ViewConfig viewConfig;
 
     public MainMenu() {
         super();
@@ -18,6 +21,7 @@ public class MainMenu extends JMenuBar {
             FileFilter ff = File::isDirectory;
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setSelectedFile(viewConfig.getRf2Dir());
             chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
                 @Override
                 public boolean accept(File f) {
@@ -29,7 +33,7 @@ public class MainMenu extends JMenuBar {
                     return null;
                 }
             });
-            int rc = chooser.showDialog(null, "rFactor 2 Hauptverzeichnis auswählen");
+            int rc = chooser.showDialog(this, "rFactor 2 Hauptverzeichnis auswählen");
             if (rc == JFileChooser.APPROVE_OPTION) {
                 Controller.setDir(chooser.getSelectedFile());
             }
@@ -53,5 +57,13 @@ public class MainMenu extends JMenuBar {
         menuServer.add(itemModKonfigurieren);
         menuServer.add(itemServerAuswahl);
         this.add(menuServer);
+    }
+
+    public ViewConfig getViewConfig() {
+        return viewConfig;
+    }
+
+    public void setViewConfig(ViewConfig viewConfig) {
+        this.viewConfig = viewConfig;
     }
 }

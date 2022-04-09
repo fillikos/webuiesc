@@ -2,11 +2,13 @@ package de.fillikos.rf2.esctool.view.config;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Objects;
 
 public class ViewConfig {
 
     private Point point = new Point();
+    private File rf2Dir;
 
     public ViewConfig() {
 
@@ -50,23 +52,32 @@ public class ViewConfig {
         this.point = point;
     }
 
+    public File getRf2Dir() {
+        return rf2Dir;
+    }
+
+    public void setRf2Dir(File rf2Dir) {
+        this.rf2Dir = rf2Dir;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ViewConfig)) return false;
         ViewConfig that = (ViewConfig) o;
-        return Objects.equals(getPoint(), that.getPoint());
+        return Objects.equals(getPoint(), that.getPoint()) && Objects.equals(rf2Dir, that.rf2Dir);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPoint());
+        return Objects.hash(getPoint(), rf2Dir);
     }
 
     @Override
     public String toString() {
         return "ViewConfig{" +
                 "point=" + point +
+                ", rf2Dir=" + rf2Dir +
                 '}';
     }
 }

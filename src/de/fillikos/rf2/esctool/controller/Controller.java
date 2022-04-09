@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 public class Controller {
 
-    private static DataController dc = new DataController();
-    private static ViewController vc = new ViewController();
+    private static final DataController dc = new DataController();
+    private static final ViewController vc = new ViewController();
 
     public static void showView() {
         vc.showView();
@@ -45,17 +45,15 @@ public class Controller {
         dc.getServerData().setAktualisierungsrate(rate);
     }
 
-    public static void setStartgruppen(ArrayList<ArrayList<String>> startgruppen) {
-        dc.getSessionController().setStartgruppeClass(startgruppen);
-    }
-
     public static void loadGridINI() {
         dc.getSessionController().gridINI();
     }
 
     public static void setDir(File selectedFile) {
         dc.getSessionController().setRfDir(selectedFile);
-        System.out.println(selectedFile);
+        vc.getViewConfig().setRf2Dir(selectedFile);
+        vc.getMainView().getMainMenu().setViewConfig(vc.getViewConfig());
+        vc.saveViewConfig();
     }
 
     public static void showServerView() {
@@ -78,13 +76,15 @@ public class Controller {
     public static void setServerManagement() {
         //Beim Schließen des ServerManagements werden die Daten aktualisiert
         vc.getMainView().setServerConfigList(vc.getServerView().getServerConfigList());
-        System.out.println("hier");
     }
 
     public static void setModManagement() {
         //Beim Schließen des ServerManagements werden die Daten aktualisiert
         vc.getMainView().setModConfigList(vc.getModView().getModConfigList());
-        System.out.println("hier");
+    }
+
+    public static void setViewManagement() {
+        vc.getMainView().getMainMenu().setViewConfig(vc.getViewConfig());
     }
 
     public static void saveServerConfig(ArrayList<ServerConfig> serverConfigList) {

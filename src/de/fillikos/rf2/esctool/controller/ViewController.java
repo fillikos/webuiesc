@@ -42,6 +42,7 @@ public class ViewController {
         modView.setModConfigList(modConfigList);
         mainView.setServerConfigList(serverDataList);
         mainView.setModConfigList(modConfigList);
+        mainView.getMainMenu().setViewConfig(viewConfig);
     }
 
     private void saveTempData() {
@@ -248,5 +249,26 @@ public class ViewController {
 
     public void setTmpDir(File tmpDir) {
         this.tmpDir = tmpDir;
+    }
+
+    public void saveViewConfig() {
+        // 1. Temp Ordner suchen
+        File tmpDir = new File(System.getProperty("user.home") + "\\.rf2ServerManager");
+        // Ordner nicht vorhanden -> erstellen
+        if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
+            if (tmpDir.mkdirs()) {
+                System.out.println(tmpDir + " Ordner erstellt");
+            } else {
+                // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
+                System.out.println("Fehler");
+            }
+        }
+        // 2. TempDateien laden
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(new File(tmpDir + "\\ViewConfig.json"), viewConfig);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

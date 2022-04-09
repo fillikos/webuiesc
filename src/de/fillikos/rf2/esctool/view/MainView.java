@@ -146,4 +146,12 @@ public class MainView {
             boxMod.addItem(mod.getModName());
         }
     }
+
+    public MainMenu getMainMenu() {
+        return mainMenu;
+    }
+
+    public void setMainMenu(MainMenu mainMenu) {
+        this.mainMenu = mainMenu;
+    }
 }
