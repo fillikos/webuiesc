@@ -34,7 +34,7 @@ public class SessionController {
     private boolean gridIniErstellt = false;
     private Connection server;
     private boolean rennende = false;
-    private ArrayList<ArrayList<String>> startgruppeClass;
+    private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
     private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
     private boolean fromUI = true;
     private ModConfig modConfig;
@@ -207,7 +207,6 @@ public class SessionController {
 
     public void gridINI() {
         new Thread(() -> {
-            raceController.setStartgruppeClass(startgruppeClass);
             // 1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
             String timeString = df.format(new Date());
@@ -216,6 +215,7 @@ public class SessionController {
 
             // 2. Result-Ordner auswählen
             File resultDir = new File(rfDir + "\\UserData\\Log\\Results");
+            System.out.println(resultDir);
 
             // 3. Die größte Datei wird verwendet
             File[] files = resultDir.listFiles(ff);
@@ -236,7 +236,7 @@ public class SessionController {
             GridIniTool dc = new GridIniTool();
             if (!file.toString().equals("D:\\")) {
                 System.out.println(file);
-                dc.runGridIniTool(file, server, startgruppeClass, modConfig.isByDriverName());
+                dc.runGridIniTool(file, server, modConfig.getStartgruppeClass(), modConfig.isTeamEvent());
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
                 if (!isFromUI()) {

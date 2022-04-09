@@ -43,6 +43,7 @@ public class ViewController {
         mainView.setServerConfigList(serverDataList);
         mainView.setModConfigList(modConfigList);
         mainView.getMainMenu().setViewConfig(viewConfig);
+        Controller.setDirOnStartUp(viewConfig.getRf2Dir());
     }
 
     private void saveTempData() {
@@ -62,7 +63,6 @@ public class ViewController {
         loadModConfig();
         loadServerConfig();
         loadViewConfig();
-
     }
 
     private void loadViewConfig() {

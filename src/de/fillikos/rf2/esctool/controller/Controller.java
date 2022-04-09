@@ -56,6 +56,10 @@ public class Controller {
         vc.saveViewConfig();
     }
 
+    public static void setDirOnStartUp(File rf2Dir) {
+        dc.getSessionController().setRfDir(rf2Dir);
+    }
+
     public static void showServerView() {
         vc.getServerView().getFrame().setVisible(true);
         vc.getServerView().getFrame().setLocation(vc.getMainView().getFrame().getLocation());

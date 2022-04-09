@@ -15,15 +15,15 @@ public class GridIniTool {
     private HashMap<String, Fahrzeug> insgesamtFahrer;
     private HashMap<String, Fahrzeug> insgesamtFahrerNeu;
     private ArrayList<String> fahrer;
-    private boolean byDriverName = false;
+    private boolean teamEvent = false;
 
     public GridIniTool() {
 
     }
 
-    public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean byDriverName) {
+    public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean teamEvent) {
         System.out.println("DataController.runGridIniTool()");
-        this.byDriverName = byDriverName;
+        this.teamEvent = teamEvent;
         /*
          * Informationen Sammeln
          */
@@ -64,18 +64,18 @@ public class GridIniTool {
             for (int i = 0; i < startgruppeClass.size(); i++) {
                 if (startgruppeClass.get(0).get(0).equals("all")) {
                     // Keine Sortierung nach Klassen
-                    if (isByDriverName()) {
-                        startgruppen.get(i).add(driverName);
-                    } else {
+                    if (isTeamEvent()) {
                         startgruppen.get(i).add(String.valueOf(nummer));
+                    } else {
+                        startgruppen.get(i).add(driverName);
                     }
                 } else {
                     // isStartgruppe überprüft die CarClass
                     if (isStartgruppe(carClass, startgruppeClass.get(i))) {
-                        if (isByDriverName()) {
-                            startgruppen.get(i).add(driverName);
-                        } else {
+                        if (isTeamEvent()) {
                             startgruppen.get(i).add(String.valueOf(nummer));
+                        } else {
+                            startgruppen.get(i).add(driverName);
                         }
                     }
                 }
@@ -136,28 +136,7 @@ public class GridIniTool {
             StringBuilder strafenIni = new StringBuilder();
 
             while ((zeile = in.readLine()) != null) {
-                if (isByDriverName()) {
-                    if (zeile.contains("#")) {
-                        String driverName = zeile.substring(0, zeile.indexOf("#") - 1);
-                        if (insgesamtFahrerNeu.containsKey(driverName)) {
-                            if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(driverName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
-                            } else if (zeile.contains("==> D")) {
-                                strafenIni.append("/addpenalty -1 ")
-                                        .append(driverName)
-                                        .append("\n");
-                            } else {
-                                strafenIni.append("/addpenalty ")
-                                        .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
-                                        .append(" ").append(driverName)
-                                        .append("\n");
-                            }
-                        }
-                        System.out.println(driverName);
-                        System.out.println(zeile.indexOf("#"));
-                    }
-                    System.out.println(zeile);
-                } else {
+                if (isTeamEvent()) {
                     if (zeile.contains("#")) {
                         String fahrzeugNummer = zeile.substring(zeile.indexOf("#") + 1, zeile.indexOf("#") + 4);
                         if (insgesamtFahrerNeu.containsKey(fahrzeugNummer)) {
@@ -175,6 +154,27 @@ public class GridIniTool {
                             }
                         }
                         System.out.println(fahrzeugNummer);
+                        System.out.println(zeile.indexOf("#"));
+                    }
+                    System.out.println(zeile);
+                } else {
+                    if (zeile.contains("#")) {
+                        String driverName = zeile.substring(0, zeile.indexOf("#") - 1);
+                        if (insgesamtFahrerNeu.containsKey(driverName)) {
+                            if (zeile.contains("==> +")) {
+                                insgesamtFahrerNeu.get(driverName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                            } else if (zeile.contains("==> D")) {
+                                strafenIni.append("/addpenalty -1 ")
+                                        .append(driverName)
+                                        .append("\n");
+                            } else {
+                                strafenIni.append("/addpenalty ")
+                                        .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
+                                        .append(" ").append(driverName)
+                                        .append("\n");
+                            }
+                        }
+                        System.out.println(driverName);
                         System.out.println(zeile.indexOf("#"));
                     }
                     System.out.println(zeile);
@@ -220,7 +220,6 @@ public class GridIniTool {
     }
 
     private boolean isStartgruppe(String carClass, ArrayList<String> startgruppeClass) {
-        System.out.println("DataController.isStartgruppe()");
         for (String aClass : startgruppeClass) {
             if (carClass.equals(aClass)) {
                 return true;
@@ -262,16 +261,16 @@ public class GridIniTool {
             String name = element[2];
             String carClass = element[4];
 
-            if (isByDriverName()) {
-                if (insgesamtFahrer.containsKey(name)) {
-                    position = insgesamtFahrer.get(name).getPosition();
-                }
-                insgesamtFahrerNeu.put(name, new Fahrzeug(position, nummer, name, carClass));
-            } else {
+            if (isTeamEvent()) {
                 if (insgesamtFahrer.containsKey(String.valueOf(nummer))) {
                     position = insgesamtFahrer.get(String.valueOf(nummer)).getPosition();
                 }
                 insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, carClass));
+            } else {
+                if (insgesamtFahrer.containsKey(name)) {
+                    position = insgesamtFahrer.get(name).getPosition();
+                }
+                insgesamtFahrerNeu.put(name, new Fahrzeug(position, nummer, name, carClass));
             }
         }
         System.out.println(insgesamtFahrerNeu);
@@ -284,21 +283,21 @@ public class GridIniTool {
         RFactorXML xml = rf.getResult(path);
         System.out.println("xml...size(): " + xml.getRaceResult().getQualify().getDriver().size());
         for (Driver d : xml.getRaceResult().getQualify().getDriver()) {
-            if (isByDriverName()) {
-                insgesamtFahrer.put(String.valueOf(d.getName()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
-            } else {
+            if (isTeamEvent()) {
                 insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+            } else {
+                insgesamtFahrer.put(String.valueOf(d.getName()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
             }
         }
         System.out.println("insgesamtFahrer.size(): " + insgesamtFahrer.size());
         System.out.println(insgesamtFahrer);
     }
 
-    public boolean isByDriverName() {
-        return byDriverName;
+    public boolean isTeamEvent() {
+        return teamEvent;
     }
 
-    public void setByDriverName(boolean byDriverName) {
-        this.byDriverName = byDriverName;
+    public void setTeamEvent(boolean teamEvent) {
+        this.teamEvent = teamEvent;
     }
 }

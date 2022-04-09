@@ -127,7 +127,7 @@ public class ModView {
         dtm = new DefaultTableModel(columns, 0);
         tabSG = new JTable(dtm);
         JScrollPane scrModTab = new JScrollPane(tabSG);
-        scrModTab.setPreferredSize(new Dimension(220, 100));
+        scrModTab.setPreferredSize(new Dimension(240, 100));
 
         TableColumn column = null;
         for (int i = 0; i < columns.length; i++) {
@@ -160,7 +160,7 @@ public class ModView {
         cbPitByDriver = new JCheckBox("Boxenplätze durch PitByDriver zuweisen");
         cbGridIniErstellen = new JCheckBox("grid.ini erstellen");
         cbRecordHotlaps = new JCheckBox("Hotlaps aufzeichnen");
-        cbByDriverName = new JCheckBox("Startgruppen anhand Fahrer anstelle Teams");
+        cbByDriverName = new JCheckBox("Teamevents");
         // Zeit zwischen Startgruppen
         cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
 
@@ -243,7 +243,7 @@ public class ModView {
         g.gridy = 9;
         panCenter.add(cbPit8, g);
         g.gridy = 11;
-        g.gridx = 1;
+        g.gridx = 0;
         g.gridwidth = 4;
         g.gridheight = 2;
         panCenter.add(scrModTab, g);
@@ -283,7 +283,7 @@ public class ModView {
         mod.setRennfreigabeByChat(cbRennfreigabe.isSelected());
         mod.setAssignPitByTeam(cbPitByTeam.isSelected());
         mod.setAssignPitByDriver(cbPitByDriver.isSelected());
-        mod.setByDriverName(cbByDriverName.isSelected());
+        mod.setTeamEvent(cbByDriverName.isSelected());
         mod.setCheckDoppelTeam(cbDoppelTeam.isSelected());
         PitVorgang pitVorgang = new PitVorgang();
         pitVorgang.setAus_der_box_gefahren(cbPit1.isSelected());
@@ -318,7 +318,7 @@ public class ModView {
         cbRennfreigabe.setSelected(mod.isRennfreigabeByChat());
         cbPitByTeam.setSelected(mod.isAssignPitByTeam());
         cbPitByDriver.setSelected(mod.isAssignPitByDriver());
-        cbByDriverName.setSelected(mod.isByDriverName());
+        cbByDriverName.setSelected(mod.isTeamEvent());
         cbDoppelTeam.setSelected(mod.isCheckDoppelTeam());
         cbPit1.setSelected(mod.getPitVorgang().isAus_der_box_gefahren());
         cbPit2.setSelected(mod.getPitVorgang().isEsc_auf_strecke());

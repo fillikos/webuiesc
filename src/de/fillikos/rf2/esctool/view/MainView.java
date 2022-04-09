@@ -56,7 +56,6 @@ public class MainView {
             } else {
                 startload = true;
                 btnStart.setText("Stopp");
-                // TODO
                 for (ServerConfig server : serverConfigList) {
                     if (server.getServerName().equals(boxServer.getSelectedItem())) {
                         Controller.setServer(new Connection("http://" + server.getIp() + ":", server.getPort()));
