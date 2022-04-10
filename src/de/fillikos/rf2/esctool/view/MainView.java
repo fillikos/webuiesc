@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainView {
@@ -23,11 +24,13 @@ public class MainView {
     private ArrayList<ModConfig> modConfigList = new ArrayList<>();
     private JComboBox boxServer;
     private JComboBox boxMod;
+    private JButton btnCreateGrid;
+    private File rf2Dir = new File("C:");
 
     public MainView() {
         frame = new JFrame();
-        frame.setTitle("ESC-Tool");
-        frame.setSize(390, 240);
+        frame.setTitle("rF2 Admin Tool - " + rf2Dir);
+        frame.setSize(450, 240);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -50,10 +53,12 @@ public class MainView {
         JButton btnStart = new JButton("start");
         btnStart.addActionListener(e -> {
             if (startload) {
+                btnCreateGrid.setEnabled(false);
                 startload = false;
                 btnStart.setText("Start");
                 Controller.stopUpdateServerData();
             } else {
+                btnCreateGrid.setEnabled(true);
                 startload = true;
                 btnStart.setText("Stopp");
                 for (ServerConfig server : serverConfigList) {
@@ -73,19 +78,24 @@ public class MainView {
         panSouth.add(boxServer);
         panSouth.add(boxMod);
 
-        JButton btnSetLeaderGrid2 = new JButton("load Grid");
-        btnSetLeaderGrid2.addActionListener(e -> {
+        btnCreateGrid = new JButton("erstelle grid.ini");
+        btnCreateGrid.setEnabled(false);
+        btnCreateGrid.addActionListener(e -> {
             Controller.loadGridINI();
         });
 
-        panSouth.add(btnSetLeaderGrid2);
+        panSouth.add(btnCreateGrid);
 
         JPanel panNorth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panNorth.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
         text = new JLabel();
-        text.setText("<html><body>hallo<br>" +
-                "Bitte den Rennserver auswählen,<br>" +
+        text.setText("<html><body>Hallo<br>" +
+                "1. rF2 Hauptverzeichnis auswählen (Titel),<br>" +
+                "2. Mod anlegen und auswählen,<br>" +
+                "3. Server anlegen und auswählen,<br>" +
+                "4. Start drücken und alles läuft automatisch<br><t>&nbsp&nbsp&nbsp&nbsp(Serverdaten werden gezeigt),<br>" +
+                "5. grid.ini <u>kann</u> manuell erstellt werden, muss aber nicht<br>" +
                 "</body></html>");
         panNorth.add(text);
 
@@ -152,5 +162,11 @@ public class MainView {
 
     public void setMainMenu(MainMenu mainMenu) {
         this.mainMenu = mainMenu;
+    }
+
+    public void setRf2Dir(File rf2Dir) {
+        this.rf2Dir = rf2Dir;
+        frame.setTitle("rF2 Admin Tool - " + rf2Dir);
+        frame.repaint();
     }
 }

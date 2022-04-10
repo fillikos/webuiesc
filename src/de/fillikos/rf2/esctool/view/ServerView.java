@@ -23,6 +23,7 @@ public class ServerView {
         frame = new JFrame();
         frame.setTitle("Server Management");
         frame.setSize(390, 240);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -48,9 +49,13 @@ public class ServerView {
         btnNew.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")) {
+                if (tableModel.getRowCount() > 0) {
+                    if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")) {
+                        tableModel.addRow(new String[]{"", "", ""});
+                    }
+                } else {
                     tableModel.addRow(new String[]{"", "", ""});
                 }
             }

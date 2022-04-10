@@ -11,6 +11,7 @@ public class Controller {
 
     private static final DataController dc = new DataController();
     private static final ViewController vc = new ViewController();
+    private static final String version = "1.0.0-1";
 
     public static void showView() {
         vc.showView();
@@ -99,5 +100,9 @@ public class Controller {
     public static void saveModConfig(ArrayList<ModConfig> modConfigList) {
         vc.setModConfigList(modConfigList);
         vc.saveModConfig();
+    }
+
+    public static String getVersion() {
+        return version;
     }
 }

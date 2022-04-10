@@ -46,10 +46,19 @@ public class ModView {
         frame = new JFrame();
         frame.setTitle("Mod Management");
         frame.setSize(560, 440);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                for (ModConfig mod : modConfigList) {
+                    if (mod.getModName().equals("Unbenannt")) {
+                        modConfigList.remove(mod);
+                        refreshModConfigList();
+                        saveModToList();
+                        Controller.saveModConfig(modConfigList);
+                    }
+                }
                 Controller.setModManagement();
                 frame.dispose();
             }
@@ -57,7 +66,6 @@ public class ModView {
 
         JButton btnRemove = new JButton("Entfernen");
         btnRemove.addActionListener(e -> {
-            System.out.println(boxMods.getSelectedItem());
             modConfigList.removeIf(mod -> mod.getModName().equals(boxMods.getSelectedItem()));
             refreshModConfigList();
         });

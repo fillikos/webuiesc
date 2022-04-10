@@ -57,6 +57,13 @@ public class MainMenu extends JMenuBar {
         menuServer.add(itemModKonfigurieren);
         menuServer.add(itemServerAuswahl);
         this.add(menuServer);
+
+
+        JMenu menuInfo = new JMenu("Info");
+        JMenuItem itemInfo = new JMenuItem("Version");
+        itemInfo.addActionListener(e -> JOptionPane.showMessageDialog(menuInfo, "rF2 Admin Tool\n" + Controller.getVersion() + "\nby fillikos\n"));
+        menuInfo.add(itemInfo);
+        this.add(menuInfo);
     }
 
     public ViewConfig getViewConfig() {
