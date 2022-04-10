@@ -84,6 +84,14 @@ public class SessionController {
                 break;
             case PRACTICE:
             case QUALIFY:
+                //TODO ESC-Regel Auswertung
+                //TODO Qualistartsignale der VRES / VLSM einfügen
+//                00 Min Start GT3
+//                15 Min Ende GT3
+//                17 Min Start LMP3
+//                32 Min Ende LMP3
+//                35 Min Start LMP2
+                //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);
                 }
