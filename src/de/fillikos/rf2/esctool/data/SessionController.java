@@ -34,10 +34,10 @@ public class SessionController {
     private boolean gridIniErstellt = false;
     private Connection server;
     private boolean rennende = false;
-    private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
     private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
     private boolean fromUI = true;
     private ModConfig modConfig;
+    private boolean[] startQuali = {false, false, false, false, false, false};
 
     public SessionController() {
 
@@ -83,6 +83,16 @@ public class SessionController {
             case TESTDAY:
                 break;
             case PRACTICE:
+                if (modConfig.isAssignPitByTeam()) {
+                    assignPitByTeam(users);
+                }
+                if (modConfig.isAssignPitByDriver()) {
+                    assignPitByDriver(users);
+                }
+                if (modConfig.isCheckDoppelTeam()) {
+                    checkDoppelTeam(users);
+                }
+                break;
             case QUALIFY:
                 //TODO ESC-Regel Auswertung
                 //TODO Qualistartsignale der VRES / VLSM einfügen
@@ -91,6 +101,75 @@ public class SessionController {
 //                17 Min Start LMP3
 //                32 Min Ende LMP3
 //                35 Min Start LMP2
+//                15 * 60 = 900 + 30 pre Session
+                if (sessionInfoOld.getGamePhase().equals("0") && sessionInfo.getGamePhase().equals("5")) {
+                    server.sendchat("Start GT3 - Thread");
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(900 * 1_000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        server.sendchat("Ende GT3 - Thread");
+                    }).start();
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1050 * 1_000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        server.sendchat("Start LMP3 - Thread");
+                    }).start();
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1950 * 1_000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        server.sendchat("Ende LMP3 - Thread");
+                    }).start();
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2070 * 1_000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        server.sendchat("Start LMP2 - Thread");
+                    }).start();
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(2970 * 1_000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        server.sendchat("Ende LMP2 - Thread");
+                    }).start();
+                }
+                if (!startQuali[0] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 29) {
+                    server.sendchat("Start GT3 - if()");
+                    startQuali[0] = true;
+                }
+                if (!startQuali[1] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 929) {
+                    server.sendchat("Ende GT3 - if()");
+                    startQuali[1] = true;
+                }
+                if (!startQuali[2] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1049) {
+                    server.sendchat("Start LMP3 - if()");
+                    startQuali[2] = true;
+                }
+                if (!startQuali[3] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1949) {
+                    server.sendchat("Ende LMP3 - if()");
+                    startQuali[3] = true;
+                }
+                if (!startQuali[4] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2069) {
+                    server.sendchat("Start LMP2 - if()");
+                    startQuali[4] = true;
+                }
+                if (!startQuali[5] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2970) {
+                    server.sendchat("Ende LMP2 - if()");
+                    startQuali[5] = true;
+                }
+
                 //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);
@@ -128,7 +207,7 @@ public class SessionController {
                 break;
             case RACE:
                 if (modConfig.isRennfreigabeByChat()) {
-                    raceController.handleRace(sessionInfo, users, modConfig.getTimeBetweenSG());
+                    raceController.handleRace(sessionInfo, users, modConfig);
                 }
                 if (sessionInfo.getGamePhase().equals("8")) {
                     if (!rennende) {
@@ -388,15 +467,6 @@ public class SessionController {
 
     public void setRennende(boolean rennende) {
         this.rennende = rennende;
-    }
-
-    public ArrayList<ArrayList<String>> getStartgruppeClass() {
-        return startgruppeClass;
-    }
-
-    public void setStartgruppeClass(ArrayList<ArrayList<String>> startgruppeClass) {
-        this.startgruppeClass = startgruppeClass;
-        raceController.setStartgruppeClass(startgruppeClass);
     }
 
     public boolean isFromUI() {
