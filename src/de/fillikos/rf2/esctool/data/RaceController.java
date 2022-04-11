@@ -1,6 +1,7 @@
 package de.fillikos.rf2.esctool.data;
 
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
@@ -9,39 +10,35 @@ import java.util.ArrayList;
 
 public class RaceController {
 
-    private int anzahlStartgruppen = 0;
     private float[] startLapPosition = new float[0];
     private boolean setBeginnStartprozedur = false;
     private boolean[] startgruppeGo = new boolean[0];
     private boolean serververlassen = false;
     private Connection server;
     private SessionInfo sessionInfo = new SessionInfo();
-    private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
-    private long timeBetweenSG = 150;
 
     public RaceController() {
 
     }
 
-    public void handleRace(SessionInfo sessionInfo, User[] users, long timeBetweenSG) {
-        this.timeBetweenSG = timeBetweenSG;
+    public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig) {
+        settingUpStartgruppen(modConfig.getStartgruppeClass().size());
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
-        System.out.println(sessionInfoOld.getGamePhase() + " " + sessionInfo.getGamePhase());
         if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
-            if (startgruppeClass.size() > 1) {
+            if (modConfig.getStartgruppeClass().size() > 1) {
                 System.out.println("Start des Rennens");
                 System.out.println("1. Startgruppe Los");
                 server.sendchat("1. Startgruppe Los");
 
                 // Beginn bei 1, da bei einer Startgruppe keine weiteren freigegeben werden
-                for (int i = 1; i < startgruppeClass.size(); i++) {
+                for (int i = 1; i < modConfig.getStartgruppeClass().size(); i++) {
                     long startgruppe = i + 1;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                Thread.sleep(timeBetweenSG * 1000 * (startgruppe - 1));
+                                Thread.sleep(modConfig.getTimeBetweenSG() * 1000 * (startgruppe - 1));
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -72,9 +69,7 @@ public class RaceController {
                 int startPos = 100;
                 String gridLeader = "";
                 for (User user : users) {
-                    if (startgruppe(user, startgruppeClass.get(i))) {
-//                    if (u.getCarClass().equals("SP9 GT3") ||
-//                            u.getCarClass().equals("Cup2")) {
+                    if (startgruppe(user, modConfig.getStartgruppeClass().get(i))) {
                         int position = Integer.parseInt(user.getPosition());
                         if (startPos > position) {
                             gridLeader = String.valueOf(position);
@@ -90,7 +85,7 @@ public class RaceController {
                             if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
                                 Controller.setAktualisierungsrate(300);
                             }
-                            if (Float.parseFloat(user.getLapDistance()) > startLapPosition[0] || user.getLapsCompleted().equals("1")) {
+                            if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] || user.getLapsCompleted().equals("1")) {
                                 System.out.println("Start " + (i + 1) + ". Startgruppe");
                                 server.sendchat((i + 1) + ". Startgruppe Go Go Go");
                                 startgruppeGo[i] = false;
@@ -149,12 +144,7 @@ public class RaceController {
         this.server = connection;
     }
 
-    public int getAnzahlStartgruppen() {
-        return anzahlStartgruppen;
-    }
-
-    public void setAnzahlStartgruppen(int anzahlStartgruppen) {
-        this.anzahlStartgruppen = anzahlStartgruppen;
+    public void settingUpStartgruppen(int anzahlStartgruppen) {
         startgruppeGo = new boolean[anzahlStartgruppen];
         startLapPosition = new float[anzahlStartgruppen];
         for (int i = 0; i < anzahlStartgruppen; i++) {
@@ -162,15 +152,6 @@ public class RaceController {
             startLapPosition[i] = generateRandomStartPos();
         }
         startgruppeGo[0] = true;
-    }
-
-    public ArrayList<ArrayList<String>> getStartgruppeClass() {
-        return startgruppeClass;
-    }
-
-    public void setStartgruppeClass(ArrayList<ArrayList<String>> startgruppeClass) {
-        this.startgruppeClass = startgruppeClass;
-        setAnzahlStartgruppen(startgruppeClass.size());
     }
 
     public float[] getStartLapPosition() {
@@ -217,11 +198,4 @@ public class RaceController {
         this.sessionInfo = sessionInfo;
     }
 
-    public long getTimeBetweenSG() {
-        return timeBetweenSG;
-    }
-
-    public void setTimeBetweenSG(long timeBetweenSG) {
-        this.timeBetweenSG = timeBetweenSG;
-    }
 }

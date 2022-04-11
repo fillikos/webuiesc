@@ -11,7 +11,7 @@ public class Controller {
 
     private static final DataController dc = new DataController();
     private static final ViewController vc = new ViewController();
-    private static final String version = "1.0.0-1";
+    private static final String version = "1.0.0-2";
 
     public static void showView() {
         vc.showView();
@@ -88,10 +88,6 @@ public class Controller {
         vc.getMainView().setModConfigList(vc.getModView().getModConfigList());
     }
 
-    public static void setViewManagement() {
-        vc.getMainView().getMainMenu().setViewConfig(vc.getViewConfig());
-    }
-
     public static void saveServerConfig(ArrayList<ServerConfig> serverConfigList) {
         vc.setServerDataList(serverConfigList);
         vc.saveServerConfig();
@@ -104,5 +100,9 @@ public class Controller {
 
     public static String getVersion() {
         return version;
+    }
+
+    public static void sendChat(String tEst) {
+        dc.getServerData().getServer().sendchat(tEst);
     }
 }
