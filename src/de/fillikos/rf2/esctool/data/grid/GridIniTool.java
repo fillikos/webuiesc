@@ -181,6 +181,8 @@ public class GridIniTool {
                 }
             }
             writeStrafenIni(qualiXml, strafenIni);
+        } catch (FileNotFoundException e) {
+            System.out.println("Keine strafen-Datei vorhanden");
         } catch (IOException e) {
             e.printStackTrace();
         }
