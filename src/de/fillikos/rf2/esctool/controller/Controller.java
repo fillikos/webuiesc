@@ -11,7 +11,7 @@ public class Controller {
 
     private static final DataController dc = new DataController();
     private static final ViewController vc = new ViewController();
-    private static final String version = "1.0.1-2";
+    private static final String version = "1.0.2-3";
 
     public static void showView() {
         vc.showView();
