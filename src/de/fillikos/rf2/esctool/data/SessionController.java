@@ -102,73 +102,32 @@ public class SessionController {
 //                32 Min Ende LMP3
 //                35 Min Start LMP2
 //                15 * 60 = 900 + 30 pre Session
-//                if (sessionInfoOld.getGamePhase().equals("0") && sessionInfo.getGamePhase().equals("5")) {
-//                    server.sendchat("Start GT3 - Thread");
-//                    new Thread(() -> {
-//                        try {
-//                            Thread.sleep(900 * 1_000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        server.sendchat("Ende GT3 - Thread");
-//                    }).start();
-//                    new Thread(() -> {
-//                        try {
-//                            Thread.sleep(1050 * 1_000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        server.sendchat("Start LMP3 - Thread");
-//                    }).start();
-//                    new Thread(() -> {
-//                        try {
-//                            Thread.sleep(1950 * 1_000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        server.sendchat("Ende LMP3 - Thread");
-//                    }).start();
-//                    new Thread(() -> {
-//                        try {
-//                            Thread.sleep(2070 * 1_000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        server.sendchat("Start LMP2 - Thread");
-//                    }).start();
-//                    new Thread(() -> {
-//                        try {
-//                            Thread.sleep(2970 * 1_000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        server.sendchat("Ende LMP2 - Thread");
-//                    }).start();
-//                }
-//                if (!startQuali[0] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 29) {
-//                    server.sendchat("Start GT3 - if()");
-//                    startQuali[0] = true;
-//                }
-//                if (!startQuali[1] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 929) {
-//                    server.sendchat("Ende GT3 - if()");
-//                    startQuali[1] = true;
-//                }
-//                if (!startQuali[2] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1049) {
-//                    server.sendchat("Start LMP3 - if()");
-//                    startQuali[2] = true;
-//                }
-//                if (!startQuali[3] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1949) {
-//                    server.sendchat("Ende LMP3 - if()");
-//                    startQuali[3] = true;
-//                }
-//                if (!startQuali[4] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2069) {
-//                    server.sendchat("Start LMP2 - if()");
-//                    startQuali[4] = true;
-//                }
-//                if (!startQuali[5] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2970) {
-//                    server.sendchat("Ende LMP2 - if()");
-//                    startQuali[5] = true;
-//                }
+                if (modConfig.isQualiVR()) {
+                    if (!startQuali[0] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 30) {
+                        server.sendchat("Start GT3 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[0] = true;
+                    }
+                    if (!startQuali[1] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 930) {
+                        server.sendchat("Ende GT3 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[1] = true;
+                    }
+                    if (!startQuali[2] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1050) {
+                        server.sendchat("Start LMP3 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[2] = true;
+                    }
+                    if (!startQuali[3] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1950) {
+                        server.sendchat("Ende LMP3 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[3] = true;
+                    }
+                    if (!startQuali[4] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2070) {
+                        server.sendchat("Start LMP2 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[4] = true;
+                    }
+                    if (!startQuali[5] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2970) {
+                        server.sendchat("Ende LMP2 - if() " + sessionInfo.getCurrentEventTime());
+                        startQuali[5] = true;
+                    }
+                }
 
                 //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
                 if (modConfig.isAssignPitByTeam()) {
@@ -187,7 +146,7 @@ public class SessionController {
                  * sessionInfo.getCurrentEventTime()
                  */
                 //60 Sekunden vor Ende des WarmUps wird die Automatische Startaufstellung durchlaufen
-                if (!gridIniErstellt && ((endEventTime - 30) < currentEventTime)) {
+                if (!gridIniErstellt && ((endEventTime - 1) < currentEventTime)) {
                     gridIniErstellt = true;
                     System.out.println("WarmUp");
                     setFromUI(false);

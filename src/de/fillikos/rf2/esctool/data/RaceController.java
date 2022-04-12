@@ -16,13 +16,17 @@ public class RaceController {
     private boolean serververlassen = false;
     private Connection server;
     private SessionInfo sessionInfo = new SessionInfo();
+    private boolean startgruppenInitialized = false;
 
     public RaceController() {
 
     }
 
     public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig) {
-        settingUpStartgruppen(modConfig.getStartgruppeClass().size());
+        if (!startgruppenInitialized) {
+            startgruppenInitialized = true;
+            settingUpStartgruppen(modConfig.getStartgruppeClass().size());
+        }
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
         if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
@@ -137,10 +141,14 @@ public class RaceController {
 
     private float generateRandomStartPos() {
         float startPos = 0;
-        for (int i = 0; i < 1; i++) {
-            do {
-                startPos = ((int) (Float.parseFloat(sessionInfo.getLapDistance()) - 214 + (Math.random() * 1_000)));
-            } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
+        try {
+            for (int i = 0; i < 1; i++) {
+                do {
+                    startPos = ((int) (Float.parseFloat(sessionInfo.getLapDistance()) - 214 + (Math.random() * 1_000)));
+                } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
+            }
+        } catch (NumberFormatException e) {
+            startgruppenInitialized = false;
         }
         return startPos;
     }
