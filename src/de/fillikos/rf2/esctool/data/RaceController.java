@@ -70,6 +70,11 @@ public class RaceController {
                 String gridLeader = "";
                 for (User user : users) {
                     if (startgruppe(user, modConfig.getStartgruppeClass().get(i))) {
+                        // Test für variable Startfreigabe vor und nach Start / Ziel
+                        // negative LapDistance muss umgerechnet werden oä
+                        if (user.getLapDistance().charAt(0) == '-') {
+                            System.out.println(user.getLapDistance());
+                        }
                         int position = Integer.parseInt(user.getPosition());
                         if (startPos > position) {
                             gridLeader = String.valueOf(position);
