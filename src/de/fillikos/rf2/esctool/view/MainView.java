@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainView {
 
@@ -66,6 +67,10 @@ public class MainView {
                         Controller.setServer(new Connection("http://" + server.getIp() + ":", server.getPort()));
                         for (ModConfig mod : modConfigList) {
                             if (mod.getModName().equals(boxMod.getSelectedItem())) {
+                                HashMap<Integer, String> test = new HashMap<>();
+                                test.put(30, "das Ist ein Test bei 30 Sek");
+                                test.put(60, "Das ist ein zweiter Test bei 60 sek");
+                                mod.setQualiNachrichten(test);
                                 Controller.startUpdateServerData(mod);
                             }
                         }

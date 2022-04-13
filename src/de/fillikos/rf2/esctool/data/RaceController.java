@@ -58,7 +58,7 @@ public class RaceController {
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(210 * 1_000);
+                        Thread.sleep(modConfig.getTimeToDoStrafen() * 1_000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

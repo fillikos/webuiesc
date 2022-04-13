@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ModView {
 
@@ -21,6 +22,8 @@ public class ModView {
     private JComboBox boxMods;
     private DefaultTableModel dtm;
     private JTable tabSG;
+    private DefaultTableModel dtmChat;
+    private JTable tabSGChat;
 
     private JTextField txtModName;
     private JTextField txtTimeBtSg;
@@ -46,8 +49,8 @@ public class ModView {
     public ModView() {
         frame = new JFrame();
         frame.setTitle("Mod Management");
-        frame.setSize(560, 440);
-        frame.setResizable(false);
+        frame.setSize(640, 540);
+//        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -87,6 +90,24 @@ public class ModView {
                 int i = dtm.getRowCount();
                 if (i > 0) {
                     dtm.removeRow(i - 1);
+                }
+            }
+        });
+        JButton btnAddCN = new JButton("+Chat");
+        btnAddCN.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dtmChat.addRow(new String[]{"", ""});
+            }
+        });
+
+        JButton btnRemCN = new JButton("-Chat");
+        btnRemCN.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = dtmChat.getRowCount();
+                if (i > 0) {
+                    dtmChat.removeRow(i - 1);
                 }
             }
         });
@@ -154,6 +175,30 @@ public class ModView {
                     break;
             }
             column.setPreferredWidth(width);
+        }
+
+        String[] columnsChat = new String[]{"Nach sek", "Chatnachricht"};
+        dtmChat = new DefaultTableModel(columnsChat, 0);
+        tabSGChat = new JTable(dtmChat);
+        JScrollPane scrModTabChat = new JScrollPane(tabSGChat);
+        scrModTabChat.setPreferredSize(new Dimension(240, 100));
+
+        TableColumn columnChat = null;
+        for (int i = 0; i < columnsChat.length; i++) {
+            columnChat = tabSGChat.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            columnChat.setPreferredWidth(width);
         }
 
 
@@ -256,16 +301,22 @@ public class ModView {
         panCenter.add(cbPit8, g);
         g.gridy = 11;
         g.gridx = 0;
-        g.gridwidth = 4;
+        g.gridwidth = 3;
         g.gridheight = 2;
         panCenter.add(scrModTab, g);
+        g.gridx = 4;
+        panCenter.add(scrModTabChat, g);
         g.gridwidth = 1;
         g.gridheight = 1;
-        g.gridx = 4;
-        g.gridy = 12;
+        g.gridy = 13;
+        g.gridx = 1;
         panCenter.add(btnAddSg, g);
-        g.gridx = 5;
+        g.gridx = 2;
         panCenter.add(btnRemSg, g);
+        g.gridx = 5;
+        panCenter.add(btnAddCN, g);
+        g.gridx = 6;
+        panCenter.add(btnRemCN, g);
 
         JPanel flowSouth = new JPanel(new FlowLayout());
         flowSouth.add(btnNew);
@@ -321,6 +372,12 @@ public class ModView {
             startgruppenList.add(klassenListe);
         }
         mod.setStartgruppeClass(startgruppenList);
+
+        HashMap<Integer, String> qualiNachrichten = new HashMap<>();
+        for (int i = 0; i < dtmChat.getRowCount(); i++) {
+            qualiNachrichten.put(Integer.parseInt((String) dtmChat.getValueAt(i, 0)), (String) dtmChat.getValueAt(i, 1));
+        }
+        mod.setQualiNachrichten(qualiNachrichten);
         modConfigList.add(mod);
     }
 
@@ -357,6 +414,23 @@ public class ModView {
             }
             klassenString.deleteCharAt(klassenString.length() - 1);
             dtm.addRow(new String[]{String.valueOf(i++), klassenString.toString()});
+        }
+
+        if (tabSGChat.getRowCount() > 0) {
+            for (i = tabSGChat.getRowCount(); i > 0; i--) {
+                dtm.removeRow(i - 1);
+            }
+        }
+        for (int j = 0; j < mod.getQualiNachrichten().size(); j++) {
+            dtmChat.addRow(new String[]{"", ""});
+        }
+        i = 0;
+        for (int time : mod.getQualiNachrichten().keySet()) {
+            tabSGChat.setValueAt(time, i++, 0);
+        }
+        i = 0;
+        for (String chat : mod.getQualiNachrichten().values()) {
+            tabSGChat.setValueAt(chat, i++, 1);
         }
     }
 

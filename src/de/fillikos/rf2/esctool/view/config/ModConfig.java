@@ -3,6 +3,7 @@ package de.fillikos.rf2.esctool.view.config;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ModConfig {
@@ -10,6 +11,7 @@ public class ModConfig {
     private ArrayList<ArrayList<String>> startgruppeClass = new ArrayList<>();
     private String modName = "";
     private long timeBetweenSG = 150;
+    private long timeToDoStrafen = 210;
     private boolean assignPitByTeam = false;
     private boolean assignPitByDriver = false;
     private boolean teamEvent = false;
@@ -19,6 +21,7 @@ public class ModConfig {
     private boolean rennfreigabeByChat = true;
     private boolean qualiVR = false;
     private PitVorgang pitVorgang = new PitVorgang();
+    private HashMap<Integer, String> qualiNachrichten = new HashMap<>();
 
     public ModConfig() {
         super();
@@ -120,17 +123,33 @@ public class ModConfig {
         this.qualiVR = qualiVR;
     }
 
+    public long getTimeToDoStrafen() {
+        return timeToDoStrafen;
+    }
+
+    public void setTimeToDoStrafen(long timeToDoStrafen) {
+        this.timeToDoStrafen = timeToDoStrafen;
+    }
+
+    public HashMap<Integer, String> getQualiNachrichten() {
+        return qualiNachrichten;
+    }
+
+    public void setQualiNachrichten(HashMap<Integer, String> qualiNachrichten) {
+        this.qualiNachrichten = qualiNachrichten;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ModConfig)) return false;
         ModConfig modConfig = (ModConfig) o;
-        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang());
+        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getQualiNachrichten(), modConfig.getQualiNachrichten());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), isAssignPitByTeam(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang());
+        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getQualiNachrichten());
     }
 
     @Override
@@ -139,6 +158,7 @@ public class ModConfig {
                 "startgruppeClass=" + startgruppeClass +
                 ", modName='" + modName + '\'' +
                 ", timeBetweenSG=" + timeBetweenSG +
+                ", timeToDoStrafen=" + timeToDoStrafen +
                 ", assignPitByTeam=" + assignPitByTeam +
                 ", assignPitByDriver=" + assignPitByDriver +
                 ", teamEvent=" + teamEvent +
@@ -148,6 +168,7 @@ public class ModConfig {
                 ", rennfreigabeByChat=" + rennfreigabeByChat +
                 ", qualiVR=" + qualiVR +
                 ", pitVorgang=" + pitVorgang +
+                ", chatnachrichten=" + qualiNachrichten +
                 '}';
     }
 

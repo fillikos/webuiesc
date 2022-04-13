@@ -106,6 +106,10 @@ public class SessionController {
                 }
                 break;
             case QUALIFY:
+                if (modConfig.getQualiNachrichten().containsKey(Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))))) {
+                    server.sendchat(modConfig.getQualiNachrichten().get(Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")))));
+                }
+
                 //TODO ESC-Regel Auswertung
                 //TODO Qualistartsignale der VRES / VLSM einfügen
 //                00 Min Start GT3
