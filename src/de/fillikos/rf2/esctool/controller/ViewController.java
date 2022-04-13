@@ -106,13 +106,21 @@ public class ViewController {
         }
         textinsert.delete(0, textinsert.length());
 
-        if (!(sessionInfo == null)) {
-            time = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1000;
-        } else {
-            time = 0;
+        switch (sessionInfo.getSessionEnum()) {
+            case TESTDAY:
+                time = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1000;
+                break;
+            case RACE:
+            case WARMUP:
+            case QUALIFY:
+            case PRACTICE:
+                time = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf("."))) -
+                        Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1000;
+                break;
         }
-        DateFormat df = new SimpleDateFormat("hh:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("GMT0"));
 
         textinsert.append("<html><body>");
         textinsert.append(sessionInfo.getServerName() + "<br>" +
@@ -123,9 +131,7 @@ public class ViewController {
         );
         textinsert.append("</body></html>");
 
-//            txtLeaderGrid2.setText(esctool.getGridPositionGridLeader());
         mainView.getText().setText(textinsert.toString());
-//            text.setText(Controller.setMainViewText());
         mainView.getText().repaint();
     }
 
