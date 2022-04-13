@@ -31,6 +31,7 @@ public class SessionController {
     private PitVorgang pitVorgang;
     private ESCTool escTool = new ESCTool();
     private List<Hotlap> hotlaps = new ArrayList<>();
+    private ArrayList<String> doubleTeamsList = new ArrayList<>();
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private boolean recordHotlaps = true;
     private boolean gridIniErstellt = false;
@@ -253,6 +254,7 @@ public class SessionController {
         // /callvote kick username funktioniert nicht als Server, nur als Chatbefehl im Spiel
         new Thread(() -> {
             ArrayList<String> vehicles = new ArrayList<>();
+            ArrayList<String> doubleTeams = new ArrayList<>();
             for (User user : users) {
                 if (vehicles.contains(user.getFullTeamName())) {
                     if (doppel.containsKey(user.getFullTeamName())) {
@@ -263,13 +265,19 @@ public class SessionController {
                             doppel.remove(user.getFullTeamName());
                         }
                     } else {
-                        server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
-                        server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
+                        doubleTeams.add(user.getFullTeamName());
                         doppel.put(user.getFullTeamName(), 10);
-                        Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getFullTeamName() + ")");
                     }
                 } else {
                     vehicles.add(user.getFullTeamName());
+                }
+            }
+            for (User user : users) {
+                if (doubleTeams.contains(user.getFullTeamName())) {
+                    server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
+                    server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getFullTeamName());
+                    server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
+                    Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getFullTeamName() + ")");
                 }
             }
         }).start();
