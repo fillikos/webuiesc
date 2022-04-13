@@ -1,10 +1,12 @@
 package de.fillikos.rf2.esctool.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Controller {
@@ -105,6 +107,12 @@ public class Controller {
         dc.getServerData().setStart(false);
         vc.getMainView().getFrame().dispose();
         addLog("Controller.shutdown() geladen");
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(new File(vc.getTmpDir() + "\\log.html"), vc.getMainView().getMainMenu().getLogs().toString() + "</body></html>");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void setServerManagement() {
