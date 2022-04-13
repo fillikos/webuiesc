@@ -18,14 +18,18 @@ public class ServerData {
     private int aktualisierungsrate = 500;
 
     public ServerData() {
-
+        Controller.addLog("ServerData()");
+        Controller.addLog("ServerData() geladen");
     }
 
     public void start(ModConfig modConfig) {
+        Controller.addLog("ServerData.start()");
+        Controller.addLog(modConfig.toString());
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (start) {
+                    Controller.addLog("ServerData.start.run()");
                     server.loadData();
                     users = server.getStandings();
                     sessionInfo = server.getSessionInfo();
@@ -39,6 +43,7 @@ public class ServerData {
                 }
             }
         }).start();
+        Controller.addLog("ServerData.start() beendet");
     }
 
     public Connection getServer() {

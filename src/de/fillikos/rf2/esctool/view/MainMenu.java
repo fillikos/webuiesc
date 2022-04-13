@@ -67,10 +67,9 @@ public class MainMenu extends JMenuBar {
         JMenu menuInfo = new JMenu("Info");
         JMenuItem itemLog = new JMenuItem("Logs");
         itemLog.addActionListener(e -> {
-            logs.append("</body></html>");
-            JLabel lblLog = new JLabel(logs.toString());
+            JLabel lblLog = new JLabel(logs.toString() + "</body></html>");
             JScrollPane spLogs = new JScrollPane(lblLog);
-            spLogs.setPreferredSize(new Dimension(400, 200));
+            spLogs.setPreferredSize(new Dimension(800, 200));
             JOptionPane.showMessageDialog(this, spLogs, "Log´s", JOptionPane.PLAIN_MESSAGE);
         });
         JMenuItem itemInfo = new JMenuItem("Version");
@@ -98,7 +97,25 @@ public class MainMenu extends JMenuBar {
 
     public void addLog(String log) {
         DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
-        logs.append("<p>");
+        logs.append("<p style=\"font-family:'Courier New'\"><font color='#818181'>");
+        logs.append(df.format(new Date()));
+        logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
+        logs.append(log);
+        logs.append("</font></p>");
+    }
+
+    public void addWarning(String log) {
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        logs.append("<p style=\"font-family:'Courier New'\"><font color='#000000'>");
+        logs.append(df.format(new Date()));
+        logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
+        logs.append(log);
+        logs.append("</font></p>");
+    }
+
+    public void addError(String log) {
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        logs.append("<p style=\"color:#ED1515;\">");
         logs.append(df.format(new Date()));
         logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
         logs.append(log);

@@ -9,8 +9,10 @@ public class DataController {
     private SessionController sessionController;
 
     public DataController() {
+        Controller.addLog("DataController()");
         serverData = new ServerData();
         sessionController = new SessionController();
+        Controller.addLog("DataController() geladen");
     }
 
     public ServerData getServerData() {

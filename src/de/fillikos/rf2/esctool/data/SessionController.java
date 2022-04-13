@@ -1,6 +1,7 @@
 package de.fillikos.rf2.esctool.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.data.esctool.ESCTool;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.data.grid.GridIniTool;
@@ -54,6 +55,7 @@ public class SessionController {
     }
 
     public void setNewData(User[] users, SessionInfo sessionInfo, ModConfig modConfig) {
+        Controller.addLog("SessionController.setNewData()");
         this.modConfig = modConfig;
         sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
@@ -66,21 +68,28 @@ public class SessionController {
         this.pitVorgang = modConfig.getPitVorgang();
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
-        new Thread(() -> escTool.handleESCRule(users, sessionInfo, pitVorgang)).start();
+        new Thread(() -> {
+            Controller.addLog("SessionController -> handleESCRule()");
+            escTool.handleESCRule(users, sessionInfo, pitVorgang);
+        }).start();
 
         // 2. Runden Aufzeichnung
         if (modConfig.isRecordHotlaps()) {
+            Controller.addLog("SessionController -> hotlap() recordHotlaps: " + modConfig.isRecordHotlaps());
             hotlap();
         }
 
         // 3. Sessionwechsel
-        if (sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
+        if (!sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
+            Controller.addWarning("SessionController -> Sessionwechsel: -> cleanData()");
             cleanData();
         }
 
         long endEventTime = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf(".")));
         long currentEventTime = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")));
 
+        Controller.addLog("SessionController Session: " + sessionInfo.getSession());
+        Controller.addLog(modConfig.toString());
         switch (sessionInfo.getSessionEnum()) {
             case TESTDAY:
                 break;
@@ -105,6 +114,7 @@ public class SessionController {
 //                35 Min Start LMP2
 //                15 * 60 = 900 + 30 pre Session
                 if (modConfig.isQualiVR()) {
+                    Controller.addWarning("SessionController -> VRLSM Quali Mode aktiv");
                     if (!startQuali[0] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 30) {
                         server.sendchat("Start GT3");
                         startQuali[0] = true;
@@ -153,6 +163,7 @@ public class SessionController {
                     System.out.println("WarmUp");
                     setFromUI(false);
                     if (modConfig.isGridIniErstellen()) {
+                        Controller.addError("SessionController.GridINI() wird ausgeführt");
                         gridINI();
                     }
                 }
@@ -168,6 +179,7 @@ public class SessionController {
                 break;
             case RACE:
                 if (modConfig.isRennfreigabeByChat()) {
+                    Controller.addError("SessionController -> handleRace() wird ausgeührt");
                     raceController.handleRace(sessionInfo, users, modConfig);
                 }
                 if (sessionInfo.getGamePhase().equals("8")) {
@@ -254,6 +266,7 @@ public class SessionController {
                         server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
                         server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
                         doppel.put(user.getCarNumber(), 10);
+                        Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getFullTeamName() + ")");
                     }
                 } else {
                     vehicles.add(user.getCarNumber());
@@ -263,6 +276,7 @@ public class SessionController {
     }
 
     public void gridINI() {
+        Controller.addWarning("SessionController.gridINI()");
         new Thread(() -> {
             // 1. Alle Q1.xml Dateien vom heutigen Tag aus dem Results Verzeichnis sammeln
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_");
@@ -272,7 +286,7 @@ public class SessionController {
 
             // 2. Result-Ordner auswählen
             File resultDir = new File(rfDir + "\\UserData\\Log\\Results");
-            System.out.println(resultDir);
+            Controller.addWarning("gridINI(): resultDir: " + resultDir.toString());
 
             // 3. Die größte Datei wird verwendet
             File[] files = resultDir.listFiles(ff);
@@ -288,6 +302,7 @@ public class SessionController {
                     }
                 }
             }
+            Controller.addWarning("gridINI(): file: " + file.toString());
 
             //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
             GridIniTool dc = new GridIniTool();
@@ -295,10 +310,12 @@ public class SessionController {
                 System.out.println(file);
                 dc.runGridIniTool(file, server, modConfig.getStartgruppeClass(), modConfig.isTeamEvent());
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
+                Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
                 if (!isFromUI()) {
                     server.sendchat("/batch grid.ini");
                     System.out.println("grid.ini wurde ausgeführt");
+                    Controller.addWarning("gridINI(): grid.ini wurde ausgeführt");
                     setFromUI(true);
                 }
             }

@@ -1,5 +1,6 @@
 package de.fillikos.rf2.esctool.data.grid;
 
+import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.data.grid.raceresult.RFactorXML;
 import de.fillikos.rf2.esctool.data.grid.raceresult.ResultsFactory;
 import de.fillikos.rf2.esctool.data.grid.raceresult.driver.Driver;
@@ -23,16 +24,20 @@ public class GridIniTool {
 
     public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean teamEvent) {
         System.out.println("DataController.runGridIniTool()");
+        Controller.addWarning("GridIniTool.runGridIniTool()");
         this.teamEvent = teamEvent;
         /*
          * Informationen Sammeln
          */
         // 1. Qualiergebniss aus der Quali.xml vom Server laden
         loadQualiXml(qualiXml.toPath());
+        Controller.addWarning("runGridIniTool(): quali.xml geladen: " + insgesamtFahrer);
         // 2. Aktuelle User vom Server laden
         loadServerData(server);
+        Controller.addWarning("runGridIniTool(): server geladen: " + insgesamtFahrerNeu);
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
+        Controller.addWarning("runGridIniTool(): strafen geladen");
 
         /*
          * Verarbeitung der Informationen der einzelnen Startgruppen
@@ -48,6 +53,7 @@ public class GridIniTool {
         for (int i = 0; i < startgruppeClass.size(); i++) {
             startgruppen.add(new ArrayList<>());
         }
+        Controller.addWarning("runGridIniTool(): Startgruppen angelegt Anzahl: " + startgruppen.size());
         // 2. Fahrzeuge den Startgruppen zuweisen anhand der CarClass
         for (String f : fahrer) {
             String[] element = f.split("##");
@@ -84,6 +90,7 @@ public class GridIniTool {
         // 3. erste Sortierung der Startgruppen
         for (int i = 0; i < startgruppeClass.size(); i++) {
             sortStartgruppe(startgruppen.get(i));
+            Controller.addWarning("runGridIniTool(): Startgruppen Sortiert: " + startgruppen.get(i).toString());
         }
         // 4. Startgruppe neu Positionieren, damit die Startgruppen hintereinander starten und nicht durchmischt sind
         int pos = 1;
@@ -136,6 +143,7 @@ public class GridIniTool {
             StringBuilder strafenIni = new StringBuilder();
 
             while ((zeile = in.readLine()) != null) {
+                Controller.addWarning(zeile);
                 if (isTeamEvent()) {
                     if (zeile.contains("#")) {
                         String fahrzeugNummer = zeile.substring(zeile.indexOf("#") + 1, zeile.indexOf("#") + 4);
@@ -182,6 +190,7 @@ public class GridIniTool {
             }
             writeStrafenIni(qualiXml, strafenIni);
         } catch (FileNotFoundException e) {
+            Controller.addError("loadStrafenData: keine Strafen-Datei vorhanden");
             System.out.println("Keine strafen-Datei vorhanden");
         } catch (IOException e) {
             e.printStackTrace();
@@ -190,6 +199,7 @@ public class GridIniTool {
 
     private void writeGridIni(File qualiXml, ArrayList<ArrayList<String>> startgruppen) {
         System.out.println("DataController.writeGridIni()");
+        Controller.addWarning("runGridIniTool(): writeGridIni() " + startgruppen.toString());
         File file = new File(qualiXml.getParent() + "\\grid.ini");
         try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             int position = 1;
