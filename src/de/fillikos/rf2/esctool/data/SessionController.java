@@ -228,8 +228,8 @@ public class SessionController {
     private void assignPitByTeam(User[] users) {
         new Thread(() -> {
             for (User user : users) {
-                if (!garageSpotsAssigned.contains(user.getCarNumber())) {
-                    garageSpotsAssigned.add(user.getCarNumber());
+                if (!garageSpotsAssigned.contains(user.getFullTeamName())) {
+                    garageSpotsAssigned.add(user.getFullTeamName());
                     server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
                     break;
                 }
@@ -254,22 +254,22 @@ public class SessionController {
         new Thread(() -> {
             ArrayList<String> vehicles = new ArrayList<>();
             for (User user : users) {
-                if (vehicles.contains(user.getCarNumber())) {
-                    if (doppel.containsKey(user.getCarNumber())) {
-                        if (doppel.get(user.getCarNumber()) > 0) {
-                            int i = doppel.get(user.getCarNumber());
-                            doppel.replace(user.getCarNumber(), (i - 1));
+                if (vehicles.contains(user.getFullTeamName())) {
+                    if (doppel.containsKey(user.getFullTeamName())) {
+                        if (doppel.get(user.getFullTeamName()) > 0) {
+                            int i = doppel.get(user.getFullTeamName());
+                            doppel.replace(user.getFullTeamName(), (i - 1));
                         } else {
-                            doppel.remove(user.getCarNumber());
+                            doppel.remove(user.getFullTeamName());
                         }
                     } else {
                         server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
                         server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
-                        doppel.put(user.getCarNumber(), 10);
+                        doppel.put(user.getFullTeamName(), 10);
                         Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getFullTeamName() + ")");
                     }
                 } else {
-                    vehicles.add(user.getCarNumber());
+                    vehicles.add(user.getFullTeamName());
                 }
             }
         }).start();
@@ -312,8 +312,8 @@ public class SessionController {
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
+                server.sendchat("/batch grid.ini");
                 if (!isFromUI()) {
-                    server.sendchat("/batch grid.ini");
                     System.out.println("grid.ini wurde ausgeführt");
                     Controller.addWarning("gridINI(): grid.ini wurde ausgeführt");
                     setFromUI(true);

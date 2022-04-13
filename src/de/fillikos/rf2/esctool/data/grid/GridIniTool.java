@@ -58,12 +58,12 @@ public class GridIniTool {
         for (String f : fahrer) {
             String[] element = f.split("##");
             /*
-             * element[1] = Fahrzeugnummer
+             * element[1] = vehName
              * element[2] = Fahrername
              * element[3] = Position
              * element[4] = CarClass
              */
-            int nummer = Integer.parseInt(element[1]);
+            String vehName = element[1];
             String driverName = element[2];
             String carClass = element[4];
 
@@ -71,7 +71,7 @@ public class GridIniTool {
                 if (startgruppeClass.get(0).get(0).equals("all")) {
                     // Keine Sortierung nach Klassen
                     if (isTeamEvent()) {
-                        startgruppen.get(i).add(String.valueOf(nummer));
+                        startgruppen.get(i).add(vehName);
                     } else {
                         startgruppen.get(i).add(driverName);
                     }
@@ -79,7 +79,7 @@ public class GridIniTool {
                     // isStartgruppe überprüft die CarClass
                     if (isStartgruppe(carClass, startgruppeClass.get(i))) {
                         if (isTeamEvent()) {
-                            startgruppen.get(i).add(String.valueOf(nummer));
+                            startgruppen.get(i).add(vehName);
                         } else {
                             startgruppen.get(i).add(driverName);
                         }
@@ -145,29 +145,29 @@ public class GridIniTool {
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning(zeile);
                 if (isTeamEvent()) {
-                    if (zeile.contains("#")) {
-                        String fahrzeugNummer = zeile.substring(zeile.indexOf("#") + 1, zeile.indexOf("#") + 4);
-                        if (insgesamtFahrerNeu.containsKey(fahrzeugNummer)) {
+                    if (zeile.contains("==>")) {
+                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
+                        if (insgesamtFahrerNeu.containsKey(vehName)) {
                             if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(fahrzeugNummer).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                                insgesamtFahrerNeu.get(vehName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
                             } else if (zeile.contains("==> D")) {
                                 strafenIni.append("/addpenalty -1 ")
-                                        .append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
+                                        .append(insgesamtFahrerNeu.get(vehName).getFahrer())
                                         .append("\n");
                             } else {
                                 strafenIni.append("/addpenalty ")
                                         .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
-                                        .append(" ").append(insgesamtFahrerNeu.get(fahrzeugNummer).getFahrer())
+                                        .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
                                         .append("\n");
                             }
                         }
-                        System.out.println(fahrzeugNummer);
+                        System.out.println(vehName);
                         System.out.println(zeile.indexOf("#"));
                     }
                     System.out.println(zeile);
                 } else {
-                    if (zeile.contains("#")) {
-                        String driverName = zeile.substring(0, zeile.indexOf("#") - 1);
+                    if (zeile.contains("==>")) {
+                        String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(driverName)) {
                             if (zeile.contains("==> +")) {
                                 insgesamtFahrerNeu.get(driverName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
@@ -208,7 +208,7 @@ public class GridIniTool {
                     br.write(String.format("/editgrid %d %s",
                             position++,
                             insgesamtFahrerNeu.get(identifier).getFahrer()));
-                    System.out.println(insgesamtFahrerNeu.get(identifier).getNummer() + " " +
+                    System.out.println(insgesamtFahrerNeu.get(identifier).getVehName() + " " +
                             insgesamtFahrerNeu.get(identifier).getFahrer() + " " +
                             insgesamtFahrerNeu.get(identifier).getPosition());
                     br.newLine();
@@ -269,20 +269,20 @@ public class GridIniTool {
         for (String f : fahrer) {
             String[] element = f.split("##");
             int position = Integer.parseInt(element[3]) + 6000;
-            int nummer = Integer.parseInt(element[1]);
+            String vehName = element[1];
             String name = element[2];
             String carClass = element[4];
 
             if (isTeamEvent()) {
-                if (insgesamtFahrer.containsKey(String.valueOf(nummer))) {
-                    position = insgesamtFahrer.get(String.valueOf(nummer)).getPosition();
+                if (insgesamtFahrer.containsKey(String.valueOf(vehName))) {
+                    position = insgesamtFahrer.get(vehName).getPosition();
                 }
-                insgesamtFahrerNeu.put(String.valueOf(nummer), new Fahrzeug(position, nummer, name, carClass));
+                insgesamtFahrerNeu.put(vehName, new Fahrzeug(position, vehName, name, carClass));
             } else {
                 if (insgesamtFahrer.containsKey(name)) {
                     position = insgesamtFahrer.get(name).getPosition();
                 }
-                insgesamtFahrerNeu.put(name, new Fahrzeug(position, nummer, name, carClass));
+                insgesamtFahrerNeu.put(name, new Fahrzeug(position, vehName, name, carClass));
             }
         }
         System.out.println(insgesamtFahrerNeu);
@@ -296,9 +296,9 @@ public class GridIniTool {
         System.out.println("xml...size(): " + xml.getRaceResult().getQualify().getDriver().size());
         for (Driver d : xml.getRaceResult().getQualify().getDriver()) {
             if (isTeamEvent()) {
-                insgesamtFahrer.put(String.valueOf(d.getCarNumber()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+                insgesamtFahrer.put(d.getVehName(), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getVehName(), d.getName(), d.getCarClass()));
             } else {
-                insgesamtFahrer.put(String.valueOf(d.getName()), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getCarNumber(), d.getName(), d.getCarClass()));
+                insgesamtFahrer.put(d.getName(), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getVehName(), d.getName(), d.getCarClass()));
             }
         }
         System.out.println("insgesamtFahrer.size(): " + insgesamtFahrer.size());

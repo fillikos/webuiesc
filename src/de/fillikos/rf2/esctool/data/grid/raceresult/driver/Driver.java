@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class Driver {
 
     private String name, vehFile, upgradeCode, vehName, category, carType, carClass, teamName,
-            finishStatus, bestLapTime, dnfReason;
-    private int connected, carNumber, isPlayer, serverScored, position, classPosition,
+            finishStatus, bestLapTime, dnfReason, carNumber;
+    private int connected, isPlayer, serverScored, position, classPosition,
             lapRankIncludingDiscos, laps, pitstops, gridPos, classGridPos, points, classPoints;
     private ControlAndAids control;
     private ArrayList<Lap> lap;
@@ -125,11 +125,11 @@ public class Driver {
     }
 
     @XmlElement(name = "CarNumber")
-    public int getCarNumber() {
+    public String getCarNumber() {
         return carNumber;
     }
 
-    public void setCarNumber(int carNumber) {
+    public void setCarNumber(String carNumber) {
         this.carNumber = carNumber;
     }
 

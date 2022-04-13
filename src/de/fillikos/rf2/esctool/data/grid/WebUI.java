@@ -3,7 +3,6 @@ package de.fillikos.rf2.esctool.data.grid;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
@@ -67,7 +66,7 @@ public class WebUI {
 
         for (int i = 0; i < users.length; i++) {
             fahrer.add(String.format("##%s##%s##%s##%s",
-                    users[i].getCarNumber(),
+                    users[i].getVehicleName(),
                     users[i].getDriverName(),
                     users[i].getPosition(),
                     users[i].getCarClass()));

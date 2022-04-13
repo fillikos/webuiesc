@@ -143,7 +143,7 @@ public class AnmeldeThred {
 //                    System.out.println("ohne Meldung");
 //                    System.out.println("Fahrzeug Nummer: " + s.substring(2,5));
 //                    System.out.println("Team Name: " + s.substring(7,s.indexOf(", ", 7)));
-                insgesamt.put(Integer.parseInt(s.substring(2, 5)), new Fahrzeug(Integer.parseInt(s.substring(2, 5)), 0, s.substring(7, s.indexOf(", ", 7)), false));
+//                insgesamt.put(Integer.parseInt(s.substring(2, 5)), new Fahrzeug(Integer.parseInt(s.substring(2, 5)), 0, s.substring(7, s.indexOf(", ", 7)), false));
 //                    System.out.println(insgesamt.get(Integer.parseInt(s.substring(2,5))).getPosition());
 
             } else if (s.startsWith("\n<span style=\"color:#008000\">")) {
@@ -151,7 +151,7 @@ public class AnmeldeThred {
 //                    System.out.println("Fahrzeug Nummer: " + s.substring(30,33));
 //                    System.out.println("Team Name: " + s.substring(35,s.indexOf(", ", 36)));
 //                    System.out.println("Anmeldezeitpunkt: " + s.substring(s.indexOf(" - ") + 3));
-                insgesamt.put(Integer.parseInt(s.substring(30, 33)), new Fahrzeug(Integer.parseInt(s.substring(30, 33)), Integer.parseInt(s.substring(s.indexOf(" - ") + 3)), s.substring(35, s.indexOf(", ", 36)), true));
+//                insgesamt.put(Integer.parseInt(s.substring(30, 33)), new Fahrzeug(Integer.parseInt(s.substring(30, 33)), Integer.parseInt(s.substring(s.indexOf(" - ") + 3)), s.substring(35, s.indexOf(", ", 36)), true));
 //                    System.out.println(insgesamt.get(Integer.parseInt(s.substring(30,33))).getPosition());
 
             } else if (s.startsWith("\n<span style=\"color:#FF0000\">")) {
@@ -159,7 +159,7 @@ public class AnmeldeThred {
 //                    System.out.println("Fahrzeug Nummer: " + s.substring(30,33));
 //                    System.out.println("Team Name: " + s.substring(35,s.indexOf(", ", 36)));
 //                    System.out.println("Anmeldezeitpunkt: " + s.substring(s.indexOf(" - ") + 3));
-                insgesamt.put(Integer.parseInt(s.substring(30, 33)), new Fahrzeug(Integer.parseInt(s.substring(30, 33)), Integer.parseInt(s.substring(s.indexOf(" - ") + 3)), s.substring(35, s.indexOf(", ", 36)), false));
+//                insgesamt.put(Integer.parseInt(s.substring(30, 33)), new Fahrzeug(Integer.parseInt(s.substring(30, 33)), Integer.parseInt(s.substring(s.indexOf(" - ") + 3)), s.substring(35, s.indexOf(", ", 36)), false));
 //                    System.out.println(insgesamt.get(Integer.parseInt(s.substring(30,33))).getPosition());
 
             }
