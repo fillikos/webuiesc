@@ -4,15 +4,21 @@ import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.view.config.ViewConfig;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainMenu extends JMenuBar {
 
     private ViewConfig viewConfig;
+    private StringBuilder logs = new StringBuilder();
 
     public MainMenu() {
         super();
+        logs.append("<html><body>");
         JMenu menuDatei = new JMenu("Datei");
         JMenuItem itemOpen = new JMenuItem("Öffnen");
         JMenuItem itemClose = new JMenuItem("Schließen");
@@ -58,10 +64,18 @@ public class MainMenu extends JMenuBar {
         menuServer.add(itemServerAuswahl);
         this.add(menuServer);
 
-
         JMenu menuInfo = new JMenu("Info");
+        JMenuItem itemLog = new JMenuItem("Logs");
+        itemLog.addActionListener(e -> {
+            logs.append("</body></html>");
+            JLabel lblLog = new JLabel(logs.toString());
+            JScrollPane spLogs = new JScrollPane(lblLog);
+            spLogs.setPreferredSize(new Dimension(400, 200));
+            JOptionPane.showMessageDialog(this, spLogs, "Log´s", JOptionPane.PLAIN_MESSAGE);
+        });
         JMenuItem itemInfo = new JMenuItem("Version");
         itemInfo.addActionListener(e -> JOptionPane.showMessageDialog(menuInfo, "rF2 Admin Tool\n" + Controller.getVersion() + "\nby fillikos\n"));
+        menuInfo.add(itemLog);
         menuInfo.add(itemInfo);
         this.add(menuInfo);
     }
@@ -72,5 +86,22 @@ public class MainMenu extends JMenuBar {
 
     public void setViewConfig(ViewConfig viewConfig) {
         this.viewConfig = viewConfig;
+    }
+
+    public StringBuilder getLogs() {
+        return logs;
+    }
+
+    public void setLogs(StringBuilder logs) {
+        this.logs = logs;
+    }
+
+    public void addLog(String log) {
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        logs.append("<p>");
+        logs.append(df.format(new Date()));
+        logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
+        logs.append(log);
+        logs.append("</p>");
     }
 }

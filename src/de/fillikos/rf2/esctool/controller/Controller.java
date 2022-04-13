@@ -105,4 +105,8 @@ public class Controller {
     public static void sendChat(String tEst) {
         dc.getServerData().getServer().sendchat(tEst);
     }
+
+    public static void addLog(String string) {
+        vc.getMainView().getMainMenu().addLog(string);
+    }
 }
