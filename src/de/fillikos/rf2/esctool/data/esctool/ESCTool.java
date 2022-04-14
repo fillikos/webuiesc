@@ -1,6 +1,8 @@
 package de.fillikos.rf2.esctool.data.esctool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.Session;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.PitState;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
@@ -182,20 +184,23 @@ public class ESCTool {
     }
 
     private void writeBackOnTrack() {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String timeString = df.format(new Date());
-        ObjectMapper om = new ObjectMapper();
-        try {
-            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
-                    timeString +
-                    "_" +
-                    sessionInfo.getServerName() +
-                    "_" +
-                    sessionInfo.getSession().charAt(0) +
-                    sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
-                    ".txt").toFile(), backOnTrack);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (sessionInfo.getSessionEnum() == Session.QUALIFY) {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String timeString = df.format(new Date());
+            ObjectMapper om = new ObjectMapper();
+            try {
+                om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
+                        timeString +
+                        "_" +
+                        sessionInfo.getServerName() +
+                        "_" +
+                        sessionInfo.getSession().charAt(0) +
+                        sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
+                        ".txt").toFile(), backOnTrack);
+            } catch (IOException e) {
+                Controller.addError(Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
+            }
         }
     }
 
@@ -214,6 +219,7 @@ public class ESCTool {
                     sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
                     ".te").toFile(), strafen);
         } catch (IOException e) {
+            Controller.addError(Arrays.toString(e.getStackTrace()));
             e.printStackTrace();
         }
     }
