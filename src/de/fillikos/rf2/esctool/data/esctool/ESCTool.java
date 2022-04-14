@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class ESCTool {
 
@@ -20,6 +21,8 @@ public class ESCTool {
     private SessionInfo sessionInfo = new SessionInfo();
     private User[] usersOld = new User[0];
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
+    private ArrayList<String> escOnTrack = new ArrayList<>();
+    private ArrayList<String> backOnTrack = new ArrayList<>();
 
 
     public ESCTool() {
@@ -65,6 +68,10 @@ public class ESCTool {
                         case EXITING:
                             if (pitVorgang.isAus_der_box_gefahren()) {
                                 write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
+                                if (escOnTrack.contains(user.getDriverName())) {
+                                    backOnTrack.add(user.getVehicleName() + " ==> +30");
+                                    writeBackOnTrack();
+                                }
                             }
                             break;
                         case REQUEST:
@@ -122,6 +129,7 @@ public class ESCTool {
                             //Wichtig auch für die Auswertung nach dem Rennen
                             if (pitVorgang.isEsc_auf_strecke()) {
                                 write(new StrafenLog(sessionInfo, user, "ESC auf der strecke"));
+                                escOnTrack.add(user.getDriverName());
                             }
                             break;
                         case INPITLANE:
@@ -170,6 +178,24 @@ public class ESCTool {
                     }
                     break;
             }
+        }
+    }
+
+    private void writeBackOnTrack() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String timeString = df.format(new Date());
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
+                    timeString +
+                    "_" +
+                    sessionInfo.getServerName() +
+                    "_" +
+                    sessionInfo.getSession().charAt(0) +
+                    sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
+                    ".txt").toFile(), backOnTrack);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -224,13 +250,46 @@ public class ESCTool {
         this.rfDir = rfDir;
     }
 
+    public ArrayList<String> getEscOnTrack() {
+        return escOnTrack;
+    }
+
+    public void setEscOnTrack(ArrayList<String> escOnTrack) {
+        this.escOnTrack = escOnTrack;
+    }
+
+    public ArrayList<String> getBackOnTrack() {
+        return backOnTrack;
+    }
+
+    public void setBackOnTrack(ArrayList<String> backOnTrack) {
+        this.backOnTrack = backOnTrack;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ESCTool)) return false;
+        ESCTool escTool = (ESCTool) o;
+        return Objects.equals(getStrafen(), escTool.getStrafen()) && Objects.equals(getSessionInfo(), escTool.getSessionInfo()) && Arrays.equals(getUsersOld(), escTool.getUsersOld()) && Objects.equals(getRfDir(), escTool.getRfDir()) && Objects.equals(getEscOnTrack(), escTool.getEscOnTrack()) && Objects.equals(getBackOnTrack(), escTool.getBackOnTrack());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getStrafen(), getSessionInfo(), getRfDir(), getEscOnTrack(), getBackOnTrack());
+        result = 31 * result + Arrays.hashCode(getUsersOld());
+        return result;
+    }
+
     @Override
     public String toString() {
         return "ESCTool{" +
                 "strafen=" + strafen +
                 ", sessionInfo=" + sessionInfo +
                 ", usersOld=" + Arrays.toString(usersOld) +
-                ", pathname=" + rfDir +
+                ", rfDir=" + rfDir +
+                ", escOnTrack=" + escOnTrack +
+                ", backOnTrack=" + backOnTrack +
                 '}';
     }
 

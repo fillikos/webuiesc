@@ -83,7 +83,6 @@ public class SessionController {
         // 3. Sessionwechsel
         if (!sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
             Controller.addWarning("SessionController -> Sessionwechsel: -> cleanData()");
-            manuellChatGesendet.clear();
             cleanData();
         }
 
@@ -379,6 +378,7 @@ public class SessionController {
 
 
     public void cleanData() {
+        manuellChatGesendet.clear();
         hotlaps.clear();
         escTool.cleanData();
     }
