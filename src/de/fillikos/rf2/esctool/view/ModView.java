@@ -522,6 +522,11 @@ public class ModView {
 
     private void saveModToList() {
         tabSG.getDefaultEditor(Object.class).stopCellEditing();
+        tabChatTD.getDefaultEditor(Object.class).stopCellEditing();
+        tabChatPractise.getDefaultEditor(Object.class).stopCellEditing();
+        tabChatQuali.getDefaultEditor(Object.class).stopCellEditing();
+        tabChatWarmUp.getDefaultEditor(Object.class).stopCellEditing();
+        tabChatRace.getDefaultEditor(Object.class).stopCellEditing();
         modConfigList.removeIf(old -> old.getModName().equals(txtModName.getText()));
         ModConfig mod = new ModConfig();
         mod.setModName(txtModName.getText());

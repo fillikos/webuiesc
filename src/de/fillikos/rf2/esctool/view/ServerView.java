@@ -18,6 +18,7 @@ public class ServerView {
     private JFrame frame;
     private ArrayList<ServerConfig> serverConfigList = new ArrayList<>();
     private DefaultTableModel tableModel;
+    private JTable tabLiveView;
 
     public ServerView() {
         frame = new JFrame();
@@ -36,6 +37,7 @@ public class ServerView {
         btnSave.addActionListener(e -> {
             serverConfigList.clear();
             for (int i = 0; i < tableModel.getRowCount(); i++) {
+                tabLiveView.getDefaultEditor(Object.class).stopCellEditing();
                 serverConfigList.add(new ServerConfig(
                         (String) tableModel.getValueAt(i, 0),
                         (String) tableModel.getValueAt(i, 1),
@@ -61,6 +63,21 @@ public class ServerView {
             }
         });
 
+        JButton btnRemove = new JButton("Entfernen");
+        btnRemove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int i = tabLiveView.getRowCount();
+                if (i > 0) {
+                    if (tabLiveView.getSelectedRow() == -1) {
+                        tableModel.removeRow(i - 1);
+                    } else {
+                        tableModel.removeRow(tabLiveView.getSelectedRow());
+                    }
+                }
+            }
+        });
+
         String[] columns = new String[]{"Server Name", "IP", "Port"};
 
         tableModel = new DefaultTableModel(columns, 0);
@@ -68,7 +85,7 @@ public class ServerView {
             tableModel.addRow(serverToRow(server));
         }
 
-        JTable tabLiveView = new JTable(tableModel);
+        tabLiveView = new JTable(tableModel);
         TableColumn column = null;
         for (int i = 0; i < columns.length; i++) {
             column = tabLiveView.getColumnModel().getColumn(i);
@@ -98,6 +115,7 @@ public class ServerView {
 
         JPanel flowSouth = new JPanel(new FlowLayout());
         flowSouth.add(btnNew);
+        flowSouth.add(btnRemove);
         flowSouth.add(btnSave);
         contentPane.add(flowSouth, BorderLayout.SOUTH);
     }
