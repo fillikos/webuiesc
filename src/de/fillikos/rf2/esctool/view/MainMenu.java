@@ -96,7 +96,7 @@ public class MainMenu extends JMenuBar {
     }
 
     public void addLog(String log) {
-        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSS");
         logs.append("<p style=\"font-family:'Courier New'\"><font color='#818181'>");
         logs.append(df.format(new Date()));
         logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
@@ -105,7 +105,7 @@ public class MainMenu extends JMenuBar {
     }
 
     public void addWarning(String log) {
-        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSS");
         logs.append("<p style=\"font-family:'Courier New'\"><font color='#000000'>");
         logs.append(df.format(new Date()));
         logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");
@@ -114,7 +114,7 @@ public class MainMenu extends JMenuBar {
     }
 
     public void addError(String log) {
-        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSSS");
+        DateFormat df = new SimpleDateFormat("yy.MM.dd-HH:mm:ss.SSS");
         logs.append("<p style=\"color:#ED1515;\">");
         logs.append(df.format(new Date()));
         logs.append("&nbsp&nbsp&nbsp|&nbsp&nbsp&nbsp ");

@@ -29,6 +29,7 @@ public class SessionController {
     private SessionInfo sessionInfo = new SessionInfo();
     private SessionInfo sessionInfoOld = new SessionInfo();
     private PitVorgang pitVorgang;
+    private ArrayList<String> manuellChatGesendet = new ArrayList<>();
     private ESCTool escTool = new ESCTool();
     private List<Hotlap> hotlaps = new ArrayList<>();
     private ArrayList<String> doubleTeamsList = new ArrayList<>();
@@ -83,18 +84,36 @@ public class SessionController {
         // 3. Sessionwechsel
         if (!sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
             Controller.addWarning("SessionController -> Sessionwechsel: -> cleanData()");
+            manuellChatGesendet.clear();
             cleanData();
         }
 
         long endEventTime = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf(".")));
         long currentEventTime = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")));
 
+        System.out.println(sessionInfo.getCurrentEventTime());
         Controller.addLog("SessionController Session: " + sessionInfo.getSession());
         Controller.addLog(modConfig.toString());
         switch (sessionInfo.getSessionEnum()) {
             case TESTDAY:
+                for (String eintrag : modConfig.getManuelleNachrichten().get(0)) {
+                    String[] element = eintrag.split("==>");
+                    if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
+                            !manuellChatGesendet.contains(element[1])) {
+                        server.sendchat(element[2]);
+                        manuellChatGesendet.add(element[1]);
+                    }
+                }
                 break;
             case PRACTICE:
+                for (String eintrag : modConfig.getManuelleNachrichten().get(1)) {
+                    String[] element = eintrag.split("==>");
+                    if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
+                            !manuellChatGesendet.contains(element[1])) {
+                        server.sendchat(element[2]);
+                        manuellChatGesendet.add(element[1]);
+                    }
+                }
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);
                 }
@@ -106,8 +125,13 @@ public class SessionController {
                 }
                 break;
             case QUALIFY:
-                if (modConfig.getQualiNachrichten().containsKey(Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))))) {
-                    server.sendchat(modConfig.getQualiNachrichten().get(Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")))));
+                for (String eintrag : modConfig.getManuelleNachrichten().get(2)) {
+                    String[] element = eintrag.split("==>");
+                    if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
+                            !manuellChatGesendet.contains(element[1])) {
+                        server.sendchat(element[2]);
+                        manuellChatGesendet.add(element[1]);
+                    }
                 }
 
                 //TODO ESC-Regel Auswertung
@@ -158,6 +182,14 @@ public class SessionController {
                 }
                 break;
             case WARMUP:
+                for (String eintrag : modConfig.getManuelleNachrichten().get(3)) {
+                    String[] element = eintrag.split("==>");
+                    if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
+                            !manuellChatGesendet.contains(element[1])) {
+                        server.sendchat(element[2]);
+                        manuellChatGesendet.add(element[1]);
+                    }
+                }
                 /*
                  * sessionInfo.getEndEventTimt()  ==>  15 Minuten + 30 Sekunden  ==> 930.0
                  * sessionInfo.getCurrentEventTime()
@@ -183,6 +215,14 @@ public class SessionController {
                 }
                 break;
             case RACE:
+                for (String eintrag : modConfig.getManuelleNachrichten().get(4)) {
+                    String[] element = eintrag.split("==>");
+                    if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
+                            !manuellChatGesendet.contains(element[1])) {
+                        server.sendchat(element[2]);
+                        manuellChatGesendet.add(element[1]);
+                    }
+                }
                 if (modConfig.isRennfreigabeByChat()) {
                     Controller.addError("SessionController -> handleRace() wird ausgeührt");
                     raceController.handleRace(sessionInfo, users, modConfig);
@@ -324,8 +364,8 @@ public class SessionController {
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
-                server.sendchat("/batch grid.ini");
                 if (!isFromUI()) {
+                    server.sendchat("/batch grid.ini");
                     System.out.println("grid.ini wurde ausgeführt");
                     Controller.addWarning("gridINI(): grid.ini wurde ausgeführt");
                     setFromUI(true);

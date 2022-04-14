@@ -3,7 +3,6 @@ package de.fillikos.rf2.esctool.view.config;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class ModConfig {
@@ -21,7 +20,7 @@ public class ModConfig {
     private boolean rennfreigabeByChat = true;
     private boolean qualiVR = false;
     private PitVorgang pitVorgang = new PitVorgang();
-    private HashMap<Integer, String> qualiNachrichten = new HashMap<>();
+    private ArrayList<ArrayList<String>> manuelleNachrichten = new ArrayList<>();
 
     public ModConfig() {
         super();
@@ -131,12 +130,12 @@ public class ModConfig {
         this.timeToDoStrafen = timeToDoStrafen;
     }
 
-    public HashMap<Integer, String> getQualiNachrichten() {
-        return qualiNachrichten;
+    public ArrayList<ArrayList<String>> getManuelleNachrichten() {
+        return manuelleNachrichten;
     }
 
-    public void setQualiNachrichten(HashMap<Integer, String> qualiNachrichten) {
-        this.qualiNachrichten = qualiNachrichten;
+    public void setManuelleNachrichten(ArrayList<ArrayList<String>> qualiNachrichten) {
+        this.manuelleNachrichten = qualiNachrichten;
     }
 
     @Override
@@ -144,12 +143,12 @@ public class ModConfig {
         if (this == o) return true;
         if (!(o instanceof ModConfig)) return false;
         ModConfig modConfig = (ModConfig) o;
-        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getQualiNachrichten(), modConfig.getQualiNachrichten());
+        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getQualiNachrichten());
+        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
     }
 
     @Override
@@ -168,7 +167,7 @@ public class ModConfig {
                 ", rennfreigabeByChat=" + rennfreigabeByChat +
                 ", qualiVR=" + qualiVR +
                 ", pitVorgang=" + pitVorgang +
-                ", chatnachrichten=" + qualiNachrichten +
+                ", manuelleNachrichten=" + manuelleNachrichten +
                 '}';
     }
 

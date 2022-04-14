@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ModView {
 
@@ -22,8 +21,16 @@ public class ModView {
     private JComboBox boxMods;
     private DefaultTableModel dtm;
     private JTable tabSG;
-    private DefaultTableModel dtmChat;
-    private JTable tabSGChat;
+    private DefaultTableModel dtmTD;
+    private JTable tabChatTD;
+    private DefaultTableModel dtmPractise;
+    private JTable tabChatPractise;
+    private DefaultTableModel dtmWarmUp;
+    private JTable tabChatWarmUp;
+    private DefaultTableModel dtmQuali;
+    private JTable tabChatQuali;
+    private DefaultTableModel dtmRace;
+    private JTable tabChatRace;
 
     private JTextField txtModName;
     private JTextField txtTimeBtSg;
@@ -45,6 +52,7 @@ public class ModView {
     private JCheckBox cbPit7;
     private JCheckBox cbPit8;
     private JCheckBox cbQualiVR;
+    private JTabbedPane tpNachrichten;
 
     public ModView() {
         frame = new JFrame();
@@ -97,7 +105,23 @@ public class ModView {
         btnAddCN.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dtmChat.addRow(new String[]{"", ""});
+                switch (tpNachrichten.getSelectedIndex()) {
+                    case 0:
+                        dtmTD.addRow(new String[]{"", ""});
+                        break;
+                    case 1:
+                        dtmPractise.addRow(new String[]{"", ""});
+                        break;
+                    case 2:
+                        dtmQuali.addRow(new String[]{"", ""});
+                        break;
+                    case 3:
+                        dtmWarmUp.addRow(new String[]{"", ""});
+                        break;
+                    case 4:
+                        dtmRace.addRow(new String[]{"", ""});
+                        break;
+                }
             }
         });
 
@@ -105,9 +129,58 @@ public class ModView {
         btnRemCN.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int i = dtmChat.getRowCount();
-                if (i > 0) {
-                    dtmChat.removeRow(i - 1);
+                int i = 0;
+                switch (tpNachrichten.getSelectedIndex()) {
+                    case 0:
+                        i = dtmTD.getRowCount();
+                        if (i > 0) {
+                            if (tabChatTD.getSelectedRow() == -1) {
+                                dtmTD.removeRow(i - 1);
+                            } else {
+                                dtmTD.removeRow(tabChatTD.getSelectedRow());
+                            }
+                        }
+                        break;
+                    case 1:
+                        i = dtmPractise.getRowCount();
+                        if (i > 0) {
+                            if (tabChatPractise.getSelectedRow() == -1) {
+                                dtmPractise.removeRow(i - 1);
+                            } else {
+                                dtmPractise.removeRow(tabChatPractise.getSelectedRow());
+                            }
+                        }
+                        break;
+                    case 2:
+                        i = dtmQuali.getRowCount();
+                        if (i > 0) {
+                            if (tabChatQuali.getSelectedRow() == -1) {
+                                dtmQuali.removeRow(i - 1);
+                            } else {
+                                dtmQuali.removeRow(tabChatQuali.getSelectedRow());
+                            }
+                        }
+                        break;
+                    case 3:
+                        i = dtmWarmUp.getRowCount();
+                        if (i > 0) {
+                            if (tabChatWarmUp.getSelectedRow() == -1) {
+                                dtmWarmUp.removeRow(i - 1);
+                            } else {
+                                dtmWarmUp.removeRow(tabChatWarmUp.getSelectedRow());
+                            }
+                        }
+                        break;
+                    case 4:
+                        i = dtmRace.getRowCount();
+                        if (i > 0) {
+                            if (tabChatRace.getSelectedRow() == -1) {
+                                dtmRace.removeRow(i - 1);
+                            } else {
+                                dtmRace.removeRow(tabChatRace.getSelectedRow());
+                            }
+                        }
+                        break;
                 }
             }
         });
@@ -178,14 +251,14 @@ public class ModView {
         }
 
         String[] columnsChat = new String[]{"Nach sek", "Chatnachricht"};
-        dtmChat = new DefaultTableModel(columnsChat, 0);
-        tabSGChat = new JTable(dtmChat);
-        JScrollPane scrModTabChat = new JScrollPane(tabSGChat);
-        scrModTabChat.setPreferredSize(new Dimension(240, 100));
+        dtmTD = new DefaultTableModel(columnsChat, 0);
+        tabChatTD = new JTable(dtmTD);
+        JScrollPane scrModTabChatTD = new JScrollPane(tabChatTD);
+        scrModTabChatTD.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChat = null;
+        TableColumn columnChatTD = null;
         for (int i = 0; i < columnsChat.length; i++) {
-            columnChat = tabSGChat.getColumnModel().getColumn(i);
+            columnChatTD = tabChatTD.getColumnModel().getColumn(i);
             int width = 0;
             switch (i) {
                 case 0:
@@ -198,8 +271,111 @@ public class ModView {
                     width = 7;
                     break;
             }
-            columnChat.setPreferredWidth(width);
+            columnChatTD.setPreferredWidth(width);
         }
+
+        dtmPractise = new DefaultTableModel(columnsChat, 0);
+        tabChatPractise = new JTable(dtmPractise);
+        JScrollPane scrModTabChatPractise = new JScrollPane(tabChatPractise);
+        scrModTabChatPractise.setPreferredSize(new Dimension(240, 72));
+
+        TableColumn columnChatPractise = null;
+        for (int i = 0; i < columnsChat.length; i++) {
+            columnChatPractise = tabChatPractise.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            columnChatPractise.setPreferredWidth(width);
+        }
+
+        dtmQuali = new DefaultTableModel(columnsChat, 0);
+        tabChatQuali = new JTable(dtmQuali);
+        JScrollPane scrModTabChatQuali = new JScrollPane(tabChatQuali);
+        scrModTabChatQuali.setPreferredSize(new Dimension(240, 72));
+
+        TableColumn columnChatQuali = null;
+        for (int i = 0; i < columnsChat.length; i++) {
+            columnChatQuali = tabChatQuali.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            columnChatQuali.setPreferredWidth(width);
+        }
+
+        dtmWarmUp = new DefaultTableModel(columnsChat, 0);
+        tabChatWarmUp = new JTable(dtmWarmUp);
+        JScrollPane scrModTabChatWarmUp = new JScrollPane(tabChatWarmUp);
+        scrModTabChatWarmUp.setPreferredSize(new Dimension(240, 72));
+
+        TableColumn columnChatWarmUp = null;
+        for (int i = 0; i < columnsChat.length; i++) {
+            columnChatWarmUp = tabChatWarmUp.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            columnChatWarmUp.setPreferredWidth(width);
+        }
+
+        dtmRace = new DefaultTableModel(columnsChat, 0);
+        tabChatRace = new JTable(dtmRace);
+        JScrollPane scrModTabChatRace = new JScrollPane(tabChatRace);
+        scrModTabChatRace.setPreferredSize(new Dimension(240, 72));
+
+        TableColumn columnChatRace = null;
+        for (int i = 0; i < columnsChat.length; i++) {
+            columnChatRace = tabChatRace.getColumnModel().getColumn(i);
+            int width = 0;
+            switch (i) {
+                case 0:
+                    width = 20;
+                    break;
+                case 1:
+                    width = 170;
+                    break;
+                default:
+                    width = 7;
+                    break;
+            }
+            columnChatRace.setPreferredWidth(width);
+        }
+
+
+        tpNachrichten = new JTabbedPane
+                (JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+
+        // Hier werden die JPanels als Registerkarten hinzugefügt
+        tpNachrichten.addTab("TD", scrModTabChatTD);
+        tpNachrichten.addTab("Practise", scrModTabChatPractise);
+        tpNachrichten.addTab("Quali", scrModTabChatQuali);
+        tpNachrichten.addTab("WarmUp", scrModTabChatWarmUp);
+        tpNachrichten.addTab("Race", scrModTabChatRace);
 
 
         txtModName = new JTextField();
@@ -299,23 +475,25 @@ public class ModView {
         panCenter.add(cbQualiVR, g);
         g.gridx = 4;
         panCenter.add(cbPit8, g);
+        g.gridy = 10;
+        panCenter.add(new JLabel(" "), g);
         g.gridy = 11;
         g.gridx = 0;
         g.gridwidth = 3;
         g.gridheight = 2;
         panCenter.add(scrModTab, g);
         g.gridx = 4;
-        panCenter.add(scrModTabChat, g);
+        panCenter.add(tpNachrichten, g);
         g.gridwidth = 1;
         g.gridheight = 1;
-        g.gridy = 13;
-        g.gridx = 1;
+        g.gridy = 14;
+        g.gridx = 0;
         panCenter.add(btnAddSg, g);
-        g.gridx = 2;
+        g.gridx = 1;
         panCenter.add(btnRemSg, g);
-        g.gridx = 5;
+        g.gridx = 4;
         panCenter.add(btnAddCN, g);
-        g.gridx = 6;
+        g.gridx = 5;
         panCenter.add(btnRemCN, g);
 
         JPanel flowSouth = new JPanel(new FlowLayout());
@@ -373,11 +551,34 @@ public class ModView {
         }
         mod.setStartgruppeClass(startgruppenList);
 
-        HashMap<Integer, String> qualiNachrichten = new HashMap<>();
-        for (int i = 0; i < dtmChat.getRowCount(); i++) {
-            qualiNachrichten.put(Integer.parseInt((String) dtmChat.getValueAt(i, 0)), (String) dtmChat.getValueAt(i, 1));
+        ArrayList<ArrayList<String>> nachrichtenGesamt = new ArrayList<>();
+        ArrayList<String> nachrichtenTD = new ArrayList<>();
+        for (int i = 0; i < dtmTD.getRowCount(); i++) {
+            nachrichtenTD.add("TD==>" + dtmTD.getValueAt(i, 0) + "==>" + dtmTD.getValueAt(i, 1));
         }
-        mod.setQualiNachrichten(qualiNachrichten);
+        ArrayList<String> nachrichtenPractise = new ArrayList<>();
+        for (int i = 0; i < dtmPractise.getRowCount(); i++) {
+            nachrichtenPractise.add("Practise==>" + dtmPractise.getValueAt(i, 0) + "==>" + dtmPractise.getValueAt(i, 1));
+        }
+        ArrayList<String> nachrichtenQuali = new ArrayList<>();
+        for (int i = 0; i < dtmQuali.getRowCount(); i++) {
+            nachrichtenQuali.add("Quali==>" + dtmQuali.getValueAt(i, 0) + "==>" + dtmQuali.getValueAt(i, 1));
+        }
+        ArrayList<String> nachrichtenWarmUp = new ArrayList<>();
+        for (int i = 0; i < dtmWarmUp.getRowCount(); i++) {
+            nachrichtenWarmUp.add("WarmUp==>" + dtmWarmUp.getValueAt(i, 0) + "==>" + dtmWarmUp.getValueAt(i, 1));
+        }
+        ArrayList<String> nachrichtenRace = new ArrayList<>();
+        for (int i = 0; i < dtmRace.getRowCount(); i++) {
+            nachrichtenRace.add("Race==>" + dtmRace.getValueAt(i, 0) + "==>" + dtmRace.getValueAt(i, 1));
+        }
+        nachrichtenGesamt.add(nachrichtenTD);
+        nachrichtenGesamt.add(nachrichtenPractise);
+        nachrichtenGesamt.add(nachrichtenQuali);
+        nachrichtenGesamt.add(nachrichtenWarmUp);
+        nachrichtenGesamt.add(nachrichtenRace);
+        mod.setManuelleNachrichten(nachrichtenGesamt);
+        System.out.println(nachrichtenGesamt);
         modConfigList.add(mod);
     }
 
@@ -416,21 +617,50 @@ public class ModView {
             dtm.addRow(new String[]{String.valueOf(i++), klassenString.toString()});
         }
 
-        if (tabSGChat.getRowCount() > 0) {
-            for (i = tabSGChat.getRowCount(); i > 0; i--) {
-                dtm.removeRow(i - 1);
+        if (tabChatTD.getRowCount() > 0) {
+            for (i = tabChatTD.getRowCount(); i > 0; i--) {
+                dtmTD.removeRow(i - 1);
             }
         }
-        for (int j = 0; j < mod.getQualiNachrichten().size(); j++) {
-            dtmChat.addRow(new String[]{"", ""});
+        if (tabChatPractise.getRowCount() > 0) {
+            for (i = tabChatPractise.getRowCount(); i > 0; i--) {
+                dtmPractise.removeRow(i - 1);
+            }
         }
-        i = 0;
-        for (int time : mod.getQualiNachrichten().keySet()) {
-            tabSGChat.setValueAt(time, i++, 0);
+        if (tabChatQuali.getRowCount() > 0) {
+            for (i = tabChatQuali.getRowCount(); i > 0; i--) {
+                dtmQuali.removeRow(i - 1);
+            }
         }
-        i = 0;
-        for (String chat : mod.getQualiNachrichten().values()) {
-            tabSGChat.setValueAt(chat, i++, 1);
+        if (tabChatWarmUp.getRowCount() > 0) {
+            for (i = tabChatWarmUp.getRowCount(); i > 0; i--) {
+                dtmWarmUp.removeRow(i - 1);
+            }
+        }
+        if (tabChatRace.getRowCount() > 0) {
+            for (i = tabChatRace.getRowCount(); i > 0; i--) {
+                dtmRace.removeRow(i - 1);
+            }
+        }
+        for (ArrayList<String> eintraege : mod.getManuelleNachrichten()) {
+            for (String eintrag : eintraege) {
+                String[] elemente = eintrag.split("==>");
+                if (elemente[0].equals("TD")) {
+                    dtmTD.addRow(new String[]{elemente[1], elemente[2]});
+                }
+                if (elemente[0].equals("Practise")) {
+                    dtmPractise.addRow(new String[]{elemente[1], elemente[2]});
+                }
+                if (elemente[0].equals("Quali")) {
+                    dtmQuali.addRow(new String[]{elemente[1], elemente[2]});
+                }
+                if (elemente[0].equals("WarmUp")) {
+                    dtmWarmUp.addRow(new String[]{elemente[1], elemente[2]});
+                }
+                if (elemente[0].equals("Race")) {
+                    dtmRace.addRow(new String[]{elemente[1], elemente[2]});
+                }
+            }
         }
     }
 
