@@ -35,6 +35,8 @@ public class ModView {
     private JTextField txtModName;
     private JTextField txtTimeBtSg;
     private JLabel lblSekZwSg;
+    private JTextField txtTimeStrafe;
+    private JLabel lblTimeStrafe;
     private JCheckBox cbGridIniErstellen;
     private JCheckBox cbRecordHotlaps;
     private JCheckBox cbRennfreigabe;
@@ -381,7 +383,10 @@ public class ModView {
         txtModName.setColumns(15);
         txtTimeBtSg = new JTextField();
         txtTimeBtSg.setColumns(4);
+        txtTimeStrafe = new JTextField();
+        txtTimeStrafe.setColumns(4);
         lblSekZwSg = new JLabel("sek zwischen Startgruppen");
+        lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
 
 
         cbDoppelTeam = new JCheckBox("Prüfe auf doppelte Teamfahrzeuge");
@@ -469,6 +474,11 @@ public class ModView {
         g.gridx = 4;
         panCenter.add(cbPit7, g);
         g.gridy = 9;
+        g.gridx = 0;
+        panCenter.add(txtTimeStrafe, g);
+        g.gridx = 1;
+        g.gridwidth = 2;
+        panCenter.add(lblTimeStrafe, g);
         g.gridx = 4;
         panCenter.add(cbPit8, g);
         g.gridy = 10;
