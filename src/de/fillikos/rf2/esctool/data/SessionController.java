@@ -41,7 +41,6 @@ public class SessionController {
     private final ArrayList<String> garageSpotsAssigned = new ArrayList<>();
     private boolean fromUI = true;
     private ModConfig modConfig;
-    private boolean[] startQuali = {false, false, false, false, false, false};
     private HashMap<String, Integer> doppel = new HashMap<>();
 
     public SessionController() {
@@ -142,33 +141,6 @@ public class SessionController {
 //                32 Min Ende LMP3
 //                35 Min Start LMP2
 //                15 * 60 = 900 + 30 pre Session
-                if (modConfig.isQualiVR()) {
-                    Controller.addWarning("SessionController -> VRLSM Quali Mode aktiv");
-                    if (!startQuali[0] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 30) {
-                        server.sendchat("Start GT3");
-                        startQuali[0] = true;
-                    }
-                    if (!startQuali[1] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) >= 930) {
-                        server.sendchat("Ende GT3");
-                        startQuali[1] = true;
-                    }
-                    if (!startQuali[2] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1050) {
-                        server.sendchat("Start LMP3");
-                        startQuali[2] = true;
-                    }
-                    if (!startQuali[3] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 1950) {
-                        server.sendchat("Ende LMP3");
-                        startQuali[3] = true;
-                    }
-                    if (!startQuali[4] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2070) {
-                        server.sendchat("Start LMP2");
-                        startQuali[4] = true;
-                    }
-                    if (!startQuali[5] && Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) > 2970) {
-                        server.sendchat("Ende LMP2");
-                        startQuali[5] = true;
-                    }
-                }
 
                 //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
                 if (modConfig.isAssignPitByTeam()) {

@@ -51,7 +51,6 @@ public class ModView {
     private JCheckBox cbPit6;
     private JCheckBox cbPit7;
     private JCheckBox cbPit8;
-    private JCheckBox cbQualiVR;
     private JTabbedPane tpNachrichten;
 
     public ModView() {
@@ -393,7 +392,6 @@ public class ModView {
         cbByDriverName = new JCheckBox("Teamevents");
         // Zeit zwischen Startgruppen
         cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
-        cbQualiVR = new JCheckBox("Qualifreigabe nach VRLSM / VRES");
 
         cbPitByDriver.addActionListener(e -> {
             if (cbPitByDriver.isSelected()) {
@@ -471,8 +469,6 @@ public class ModView {
         g.gridx = 4;
         panCenter.add(cbPit7, g);
         g.gridy = 9;
-        g.gridx = 0;
-        panCenter.add(cbQualiVR, g);
         g.gridx = 4;
         panCenter.add(cbPit8, g);
         g.gridy = 10;
@@ -527,7 +523,6 @@ public class ModView {
         mod.setAssignPitByDriver(cbPitByDriver.isSelected());
         mod.setTeamEvent(cbByDriverName.isSelected());
         mod.setCheckDoppelTeam(cbDoppelTeam.isSelected());
-        mod.setQualiVR(cbQualiVR.isSelected());
         PitVorgang pitVorgang = new PitVorgang();
         pitVorgang.setAus_der_box_gefahren(cbPit1.isSelected());
         pitVorgang.setEsc_auf_strecke(cbPit2.isSelected());
@@ -592,7 +587,6 @@ public class ModView {
         cbPitByDriver.setSelected(mod.isAssignPitByDriver());
         cbByDriverName.setSelected(mod.isTeamEvent());
         cbDoppelTeam.setSelected(mod.isCheckDoppelTeam());
-        cbQualiVR.setSelected(mod.isQualiVR());
         cbPit1.setSelected(mod.getPitVorgang().isAus_der_box_gefahren());
         cbPit2.setSelected(mod.getPitVorgang().isEsc_auf_strecke());
         cbPit3.setSelected(mod.getPitVorgang().isBoxenstop_angefordert());
