@@ -8,7 +8,11 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 public class GridIniTool {
@@ -38,6 +42,9 @@ public class GridIniTool {
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
         Controller.addWarning("runGridIniTool(): strafen geladen");
+        // 4. automatisch erstellte Strafen.txt auslesen
+        loadStrafenTxtData(qualiXml);
+        Controller.addWarning("runGridIniTool(): strafen.txt geladen");
 
         /*
          * Verarbeitung der Informationen der einzelnen Startgruppen
@@ -106,6 +113,42 @@ public class GridIniTool {
         writeGridIni(qualiXml, startgruppen);
     }
 
+    private void loadStrafenTxtData(File qualiXml) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String timeString = df.format(new Date());
+        try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\" + timeString + "_strafen.txt"))) {
+            String zeile;
+            while ((zeile = in.readLine()) != null) {
+                Controller.addWarning("strafen.txt : " + zeile);
+                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
+                if (isTeamEvent()) {
+                    if (zeile.contains("==>")) {
+                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
+                        if (insgesamtFahrerNeu.containsKey(vehName)) {
+                            if (zeile.contains("==> +")) {
+                                insgesamtFahrerNeu.get(vehName).setStrafe(insgesamtFahrerNeu.get(vehName).getStrafe() + strafplaetze);
+                            }
+                        }
+                    }
+                } else {
+                    if (zeile.contains("==>")) {
+                        String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
+                        if (insgesamtFahrerNeu.containsKey(driverName)) {
+                            if (zeile.contains("==> +")) {
+                                insgesamtFahrerNeu.get(driverName).setStrafe(insgesamtFahrerNeu.get(driverName).getStrafe() + strafplaetze);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Controller.addError("loadStrafenTxtData: keine " + timeString + "strafen.txt-Datei vorhanden");
+            System.out.println("Keine strafen.txt-Datei vorhanden");
+        } catch (IOException e) {
+            Controller.addError(Arrays.toString(e.getStackTrace()));
+        }
+    }
+
     private void allotPenalty(ArrayList<ArrayList<String>> startgruppeClass, ArrayList<ArrayList<String>> startgruppen) {
         for (int j = 0; j < startgruppeClass.size(); j++) {
             int strafe;
@@ -143,7 +186,7 @@ public class GridIniTool {
             StringBuilder strafenIni = new StringBuilder();
 
             while ((zeile = in.readLine()) != null) {
-                Controller.addWarning(zeile);
+                Controller.addWarning("strafen : " + zeile);
                 int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                 if (isTeamEvent()) {
                     if (zeile.contains("==>")) {
@@ -194,7 +237,7 @@ public class GridIniTool {
             Controller.addError("loadStrafenData: keine Strafen-Datei vorhanden");
             System.out.println("Keine strafen-Datei vorhanden");
         } catch (IOException e) {
-            e.printStackTrace();
+            Controller.addError(Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -216,19 +259,20 @@ public class GridIniTool {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Controller.addError("Fehler beim Schreiben der Grid.ini:\n" + Arrays.toString(e.getStackTrace()));
         }
     }
 
     private void writeStrafenIni(File qualiXml, StringBuilder strafenIni) {
         System.out.println("DataController.writeStrafenIni()");
+        Controller.addWarning("runGridIniTool(): writeStracenIni() " + strafenIni.toString());
         File file = new File(qualiXml.getParent() + "\\strafen.ini");
 //        File file = new File("G:\\SteamLibrary\\steamapps\\common\\rFactor 2\\UserData\\Log\\Results\\grid");
-        System.out.println("strafenIni: " + strafenIni.toString());
+        System.out.println("strafenIni: " + strafenIni);
         try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             br.write(strafenIni.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            Controller.addError("Fehler beim Schreiben der Strafen.ini:\n" + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -262,6 +306,7 @@ public class GridIniTool {
 
     private void loadServerData(Connection server) {
         System.out.println("DataController.loadServerData()");
+        Controller.addLog("GridIniTool.loadServerData()");
         WebUI web = new WebUI(server);
         fahrer = web.getFahrer();
 
@@ -287,10 +332,13 @@ public class GridIniTool {
             }
         }
         System.out.println(insgesamtFahrerNeu);
+        Controller.addLog("fahrer: " + fahrer.toString());
+        Controller.addLog("insgesamtFahrerNeu: " + insgesamtFahrerNeu.toString());
     }
 
     public void loadQualiXml(Path path) {
         System.out.println("DataController.loadQualiXml()");
+        Controller.addLog("GridIniTool.loadQualiXml()");
         insgesamtFahrer = new HashMap<>();
         ResultsFactory rf = new ResultsFactory();
         RFactorXML xml = rf.getResult(path);
@@ -302,6 +350,7 @@ public class GridIniTool {
                 insgesamtFahrer.put(d.getName(), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getVehName(), d.getName(), d.getCarClass()));
             }
         }
+        Controller.addLog("insgesamtFahrer: " + insgesamtFahrer.toString());
         System.out.println("insgesamtFahrer.size(): " + insgesamtFahrer.size());
         System.out.println(insgesamtFahrer);
     }

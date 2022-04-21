@@ -132,15 +132,6 @@ public class SessionController {
                     }
                 }
 
-                //TODO ESC-Regel Auswertung
-                //TODO Qualistartsignale der VRES / VLSM einfügen
-//                00 Min Start GT3
-//                15 Min Ende GT3
-//                17 Min Start LMP3
-//                32 Min Ende LMP3
-//                35 Min Start LMP2
-//                15 * 60 = 900 + 30 pre Session
-
                 //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);

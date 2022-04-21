@@ -28,7 +28,7 @@ public class ESCTool {
 
 
     public ESCTool() {
-        strafen = new ArrayList<StrafenLog>();
+        strafen = new ArrayList<>();
     }
 
     public void handleESCRule(User[] users, SessionInfo sessionInfo, PitVorgang pitVorgang) {
@@ -71,7 +71,7 @@ public class ESCTool {
                             if (pitVorgang.isAus_der_box_gefahren()) {
                                 write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
                                 if (escOnTrack.contains(user.getDriverName())) {
-                                    backOnTrack.add(user.getVehicleName() + " ==> +30");
+                                    backOnTrack.add(user.getVehicleName() + " ==> +30 Startplätze");
                                     writeBackOnTrack();
                                 }
                             }
@@ -191,12 +191,7 @@ public class ESCTool {
             try {
                 om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
                         timeString +
-                        "_" +
-                        sessionInfo.getServerName() +
-                        "_" +
-                        sessionInfo.getSession().charAt(0) +
-                        sessionInfo.getSession().charAt(sessionInfo.getSession().length() - 1) +
-                        ".txt").toFile(), backOnTrack);
+                        "_strafen.txt").toFile(), backOnTrack);
             } catch (IOException e) {
                 Controller.addError(Arrays.toString(e.getStackTrace()));
                 e.printStackTrace();
