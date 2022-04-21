@@ -35,6 +35,7 @@ public class ModView {
 
     private final JTextField txtModName;
     private final JTextField txtTimeBtSg;
+    private final JTextField txtTimeToDoStrafe;
     private final JCheckBox cbGridIniErstellen;
     private final JCheckBox cbRecordHotlaps;
     private final JCheckBox cbRennfreigabe;
@@ -377,8 +378,8 @@ public class ModView {
         txtModName.setColumns(15);
         txtTimeBtSg = new JTextField();
         txtTimeBtSg.setColumns(4);
-        JTextField txtTimeStrafe = new JTextField();
-        txtTimeStrafe.setColumns(4);
+        txtTimeToDoStrafe = new JTextField();
+        txtTimeToDoStrafe.setColumns(4);
         JLabel lblSekZwSg = new JLabel("sek zwischen Startgruppen");
         JLabel lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
 
@@ -469,7 +470,7 @@ public class ModView {
         panCenter.add(cbPit7, g);
         g.gridy = 9;
         g.gridx = 0;
-        panCenter.add(txtTimeStrafe, g);
+        panCenter.add(txtTimeToDoStrafe, g);
         g.gridx = 1;
         g.gridwidth = 2;
         panCenter.add(lblTimeStrafe, g);
@@ -532,6 +533,7 @@ public class ModView {
         mod.setAssignPitByDriver(cbPitByDriver.isSelected());
         mod.setTeamEvent(cbByDriverName.isSelected());
         mod.setCheckDoppelTeam(cbDoppelTeam.isSelected());
+        mod.setTimeToDoStrafen(Long.parseLong(txtTimeToDoStrafe.getText()));
         PitVorgang pitVorgang = new PitVorgang();
         pitVorgang.setAus_der_box_gefahren(cbPit1.isSelected());
         pitVorgang.setEsc_auf_strecke(cbPit2.isSelected());
@@ -586,6 +588,7 @@ public class ModView {
     private void showCurrentMod(ModConfig mod) {
         txtModName.setText(mod.getModName());
         txtTimeBtSg.setText(String.valueOf(mod.getTimeBetweenSG()));
+        txtTimeToDoStrafe.setText(String.valueOf(mod.getTimeToDoStrafen()));
         cbGridIniErstellen.setSelected(mod.isGridIniErstellen());
         cbRecordHotlaps.setSelected(mod.isRecordHotlaps());
         cbRennfreigabe.setSelected(mod.isRennfreigabeByChat());
