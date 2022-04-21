@@ -13,47 +13,44 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ModView {
 
     private JFrame frame;
     private ArrayList<ModConfig> modConfigList;
     private JComboBox boxMods;
-    private DefaultTableModel dtm;
-    private JTable tabSG;
-    private DefaultTableModel dtmTD;
-    private JTable tabChatTD;
-    private DefaultTableModel dtmPractise;
-    private JTable tabChatPractise;
-    private DefaultTableModel dtmWarmUp;
-    private JTable tabChatWarmUp;
-    private DefaultTableModel dtmQuali;
-    private JTable tabChatQuali;
-    private DefaultTableModel dtmRace;
-    private JTable tabChatRace;
+    private final DefaultTableModel dtm;
+    private final JTable tabSG;
+    private final DefaultTableModel dtmTD;
+    private final JTable tabChatTD;
+    private final DefaultTableModel dtmPractise;
+    private final JTable tabChatPractise;
+    private final DefaultTableModel dtmWarmUp;
+    private final JTable tabChatWarmUp;
+    private final DefaultTableModel dtmQuali;
+    private final JTable tabChatQuali;
+    private final DefaultTableModel dtmRace;
+    private final JTable tabChatRace;
 
-    private JTextField txtModName;
-    private JTextField txtTimeBtSg;
-    private JLabel lblSekZwSg;
-    private JTextField txtTimeStrafe;
-    private JLabel lblTimeStrafe;
-    private JCheckBox cbGridIniErstellen;
-    private JCheckBox cbRecordHotlaps;
-    private JCheckBox cbRennfreigabe;
-    private JCheckBox cbPitByTeam;
-    private JCheckBox cbPitByDriver;
-    private JCheckBox cbByDriverName;
-    private JCheckBox cbDoppelTeam;
-    private JLabel lblPitVorgang;
-    private JCheckBox cbPit1;
-    private JCheckBox cbPit2;
-    private JCheckBox cbPit3;
-    private JCheckBox cbPit4;
-    private JCheckBox cbPit5;
-    private JCheckBox cbPit6;
-    private JCheckBox cbPit7;
-    private JCheckBox cbPit8;
-    private JTabbedPane tpNachrichten;
+    private final JTextField txtModName;
+    private final JTextField txtTimeBtSg;
+    private final JCheckBox cbGridIniErstellen;
+    private final JCheckBox cbRecordHotlaps;
+    private final JCheckBox cbRennfreigabe;
+    private final JCheckBox cbPitByTeam;
+    private final JCheckBox cbPitByDriver;
+    private final JCheckBox cbByDriverName;
+    private final JCheckBox cbDoppelTeam;
+    private final JCheckBox cbPit1;
+    private final JCheckBox cbPit2;
+    private final JCheckBox cbPit3;
+    private final JCheckBox cbPit4;
+    private final JCheckBox cbPit5;
+    private final JCheckBox cbPit6;
+    private final JCheckBox cbPit7;
+    private final JCheckBox cbPit8;
+    private final JTabbedPane tpNachrichten;
 
     public ModView() {
         frame = new JFrame();
@@ -130,7 +127,7 @@ public class ModView {
         btnRemCN.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int i = 0;
+                int i;
                 switch (tpNachrichten.getSelectedIndex()) {
                     case 0:
                         i = dtmTD.getRowCount();
@@ -187,13 +184,10 @@ public class ModView {
         });
 
         boxMods = new JComboBox();
-        boxMods.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (ModConfig mod : modConfigList) {
-                    if (mod.getModName().equals(boxMods.getSelectedItem())) {
-                        showCurrentMod(mod);
-                    }
+        boxMods.addActionListener(e -> {
+            for (ModConfig mod : modConfigList) {
+                if (mod.getModName().equals(boxMods.getSelectedItem())) {
+                    showCurrentMod(mod);
                 }
             }
         });
@@ -233,10 +227,10 @@ public class ModView {
         JScrollPane scrModTab = new JScrollPane(tabSG);
         scrModTab.setPreferredSize(new Dimension(240, 100));
 
-        TableColumn column = null;
+        TableColumn column;
         for (int i = 0; i < columns.length; i++) {
             column = tabSG.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -257,10 +251,10 @@ public class ModView {
         JScrollPane scrModTabChatTD = new JScrollPane(tabChatTD);
         scrModTabChatTD.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChatTD = null;
+        TableColumn columnChatTD;
         for (int i = 0; i < columnsChat.length; i++) {
             columnChatTD = tabChatTD.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -280,10 +274,10 @@ public class ModView {
         JScrollPane scrModTabChatPractise = new JScrollPane(tabChatPractise);
         scrModTabChatPractise.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChatPractise = null;
+        TableColumn columnChatPractise;
         for (int i = 0; i < columnsChat.length; i++) {
             columnChatPractise = tabChatPractise.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -303,10 +297,10 @@ public class ModView {
         JScrollPane scrModTabChatQuali = new JScrollPane(tabChatQuali);
         scrModTabChatQuali.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChatQuali = null;
+        TableColumn columnChatQuali;
         for (int i = 0; i < columnsChat.length; i++) {
             columnChatQuali = tabChatQuali.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -326,10 +320,10 @@ public class ModView {
         JScrollPane scrModTabChatWarmUp = new JScrollPane(tabChatWarmUp);
         scrModTabChatWarmUp.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChatWarmUp = null;
+        TableColumn columnChatWarmUp;
         for (int i = 0; i < columnsChat.length; i++) {
             columnChatWarmUp = tabChatWarmUp.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -349,10 +343,10 @@ public class ModView {
         JScrollPane scrModTabChatRace = new JScrollPane(tabChatRace);
         scrModTabChatRace.setPreferredSize(new Dimension(240, 72));
 
-        TableColumn columnChatRace = null;
+        TableColumn columnChatRace;
         for (int i = 0; i < columnsChat.length; i++) {
             columnChatRace = tabChatRace.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 20;
@@ -383,10 +377,10 @@ public class ModView {
         txtModName.setColumns(15);
         txtTimeBtSg = new JTextField();
         txtTimeBtSg.setColumns(4);
-        txtTimeStrafe = new JTextField();
+        JTextField txtTimeStrafe = new JTextField();
         txtTimeStrafe.setColumns(4);
-        lblSekZwSg = new JLabel("sek zwischen Startgruppen");
-        lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
+        JLabel lblSekZwSg = new JLabel("sek zwischen Startgruppen");
+        JLabel lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
 
 
         cbDoppelTeam = new JCheckBox("Prüfe auf doppelte Teamfahrzeuge");
@@ -409,7 +403,7 @@ public class ModView {
             }
         });
 
-        lblPitVorgang = new JLabel("Aufzeichnung von folgenden Vorgängen:");
+        JLabel lblPitVorgang = new JLabel("Aufzeichnung von folgenden Vorgängen:");
         cbPit1 = new JCheckBox("Aus der Box fahren");
         cbPit2 = new JCheckBox("ESC auf der Strecke");
         cbPit3 = new JCheckBox("Boxenstopp angefordert");
@@ -553,10 +547,7 @@ public class ModView {
         for (int i = 0; i < dtm.getRowCount(); i++) {
             String klassen = dtm.getValueAt(i, 1).toString();
             String[] klasse = klassen.split(",");
-            ArrayList<String> klassenListe = new ArrayList<>();
-            for (int j = 0; j < klasse.length; j++) {
-                klassenListe.add(klasse[j]);
-            }
+            ArrayList<String> klassenListe = new ArrayList<>(Arrays.asList(klasse));
             startgruppenList.add(klassenListe);
         }
         mod.setStartgruppeClass(startgruppenList);

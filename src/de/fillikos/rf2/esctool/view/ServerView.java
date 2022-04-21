@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -48,32 +46,26 @@ public class ServerView {
             Controller.saveServerConfig(serverConfigList);
         });
         JButton btnNew = new JButton("Neu ...");
-        btnNew.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (tableModel.getRowCount() > 0) {
-                    if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
-                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
-                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")) {
-                        tableModel.addRow(new String[]{"", "", ""});
-                    }
-                } else {
+        btnNew.addActionListener(e -> {
+            if (tableModel.getRowCount() > 0) {
+                if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
+                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
+                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")) {
                     tableModel.addRow(new String[]{"", "", ""});
                 }
+            } else {
+                tableModel.addRow(new String[]{"", "", ""});
             }
         });
 
         JButton btnRemove = new JButton("Entfernen");
-        btnRemove.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int i = tabLiveView.getRowCount();
-                if (i > 0) {
-                    if (tabLiveView.getSelectedRow() == -1) {
-                        tableModel.removeRow(i - 1);
-                    } else {
-                        tableModel.removeRow(tabLiveView.getSelectedRow());
-                    }
+        btnRemove.addActionListener(e -> {
+            int i = tabLiveView.getRowCount();
+            if (i > 0) {
+                if (tabLiveView.getSelectedRow() == -1) {
+                    tableModel.removeRow(i - 1);
+                } else {
+                    tableModel.removeRow(tabLiveView.getSelectedRow());
                 }
             }
         });
@@ -86,17 +78,15 @@ public class ServerView {
         }
 
         tabLiveView = new JTable(tableModel);
-        TableColumn column = null;
+        TableColumn column;
         for (int i = 0; i < columns.length; i++) {
             column = tabLiveView.getColumnModel().getColumn(i);
-            int width = 0;
+            int width;
             switch (i) {
                 case 0:
                     width = 100;
                     break;
                 case 1:
-                    width = 50;
-                    break;
                 case 2:
                     width = 50;
                     break;

@@ -25,7 +25,7 @@ public class GridIniTool {
     public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean teamEvent) {
         System.out.println("DataController.runGridIniTool()");
         Controller.addWarning("GridIniTool.runGridIniTool()");
-        this.teamEvent = teamEvent;
+        setTeamEvent(teamEvent);
         /*
          * Informationen Sammeln
          */
@@ -144,12 +144,13 @@ public class GridIniTool {
 
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning(zeile);
+                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                 if (isTeamEvent()) {
                     if (zeile.contains("==>")) {
                         String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(vehName)) {
                             if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(vehName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                                insgesamtFahrerNeu.get(vehName).setStrafe(strafplaetze);
                             } else if (zeile.contains("==> D")) {
                                 strafenIni.append("/addpenalty -1 ")
                                         .append(insgesamtFahrerNeu.get(vehName).getFahrer())
@@ -170,7 +171,7 @@ public class GridIniTool {
                         String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(driverName)) {
                             if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(driverName).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
+                                insgesamtFahrerNeu.get(driverName).setStrafe(strafplaetze);
                             } else if (zeile.contains("==> D")) {
                                 strafenIni.append("/addpenalty -1 ")
                                         .append(driverName)
