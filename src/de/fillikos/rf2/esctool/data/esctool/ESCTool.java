@@ -71,7 +71,7 @@ public class ESCTool {
                             if (pitVorgang.isAus_der_box_gefahren()) {
                                 write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
                                 if (escOnTrack.contains(user.getDriverName())) {
-                                    backOnTrack.add(user.getVehicleName() + " ==> +30 Startplätze");
+                                    backOnTrack.add(user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze");
                                     writeBackOnTrack();
                                 }
                             }

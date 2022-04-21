@@ -116,27 +116,23 @@ public class GridIniTool {
     private void loadStrafenTxtData(File qualiXml) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String timeString = df.format(new Date());
+        Controller.addWarning("loadStrafenTxtData() " + qualiXml.getParent() + "\\" + timeString + "_strafen.txt");
         try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\" + timeString + "_strafen.txt"))) {
             String zeile;
             while ((zeile = in.readLine()) != null) {
+                // user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze"
                 Controller.addWarning("strafen.txt : " + zeile);
                 int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
-                if (isTeamEvent()) {
-                    if (zeile.contains("==>")) {
-                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
+                if (zeile.contains(" ==> ")) {
+                    if (isTeamEvent()) {
+                        String vehName = zeile.substring(0, zeile.indexOf("==<"));
                         if (insgesamtFahrerNeu.containsKey(vehName)) {
-                            if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(vehName).setStrafe(insgesamtFahrerNeu.get(vehName).getStrafe() + strafplaetze);
-                            }
+                            insgesamtFahrerNeu.get(vehName).setStrafe(insgesamtFahrerNeu.get(vehName).getStrafe() + strafplaetze);
                         }
-                    }
-                } else {
-                    if (zeile.contains("==>")) {
-                        String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
+                    } else {
+                        String driverName = zeile.substring(zeile.indexOf("==<") + 3, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(driverName)) {
-                            if (zeile.contains("==> +")) {
-                                insgesamtFahrerNeu.get(driverName).setStrafe(insgesamtFahrerNeu.get(driverName).getStrafe() + strafplaetze);
-                            }
+                            insgesamtFahrerNeu.get(driverName).setStrafe(insgesamtFahrerNeu.get(driverName).getStrafe() + strafplaetze);
                         }
                     }
                 }
@@ -187,12 +183,12 @@ public class GridIniTool {
 
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning("strafen : " + zeile);
-                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                 if (isTeamEvent()) {
                     if (zeile.contains("==>")) {
                         String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(vehName)) {
                             if (zeile.contains("==> +")) {
+                                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                                 insgesamtFahrerNeu.get(vehName).setStrafe(strafplaetze);
                             } else if (zeile.contains("==> D")) {
                                 strafenIni.append("/addpenalty -1 ")
@@ -214,6 +210,7 @@ public class GridIniTool {
                         String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(driverName)) {
                             if (zeile.contains("==> +")) {
+                                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                                 insgesamtFahrerNeu.get(driverName).setStrafe(strafplaetze);
                             } else if (zeile.contains("==> D")) {
                                 strafenIni.append("/addpenalty -1 ")
