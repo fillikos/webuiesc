@@ -12,6 +12,7 @@ public class ModConfig {
     private long timeBetweenSG = 150;
     private long timeToDoStrafen = 210;
     private boolean assignPitByTeam = false;
+    private boolean vrQualiMode = false;
     private boolean assignPitByDriver = false;
     private boolean teamEvent = false;
     private boolean checkDoppelTeam = false;
@@ -138,17 +139,25 @@ public class ModConfig {
         this.manuelleNachrichten = qualiNachrichten;
     }
 
+    public boolean isVrQualiMode() {
+        return vrQualiMode;
+    }
+
+    public void setVrQualiMode(boolean vrQualiMode) {
+        this.vrQualiMode = vrQualiMode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ModConfig)) return false;
         ModConfig modConfig = (ModConfig) o;
-        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
+        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isVrQualiMode() == modConfig.isVrQualiMode() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
+        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isVrQualiMode(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
     }
 
     @Override
@@ -159,6 +168,7 @@ public class ModConfig {
                 ", timeBetweenSG=" + timeBetweenSG +
                 ", timeToDoStrafen=" + timeToDoStrafen +
                 ", assignPitByTeam=" + assignPitByTeam +
+                ", vrQualiMode=" + vrQualiMode +
                 ", assignPitByDriver=" + assignPitByDriver +
                 ", teamEvent=" + teamEvent +
                 ", checkDoppelTeam=" + checkDoppelTeam +

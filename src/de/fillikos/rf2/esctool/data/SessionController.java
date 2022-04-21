@@ -30,6 +30,7 @@ public class SessionController {
     private SessionInfo sessionInfoOld = new SessionInfo();
     private PitVorgang pitVorgang;
     private ArrayList<String> manuellChatGesendet = new ArrayList<>();
+    private ArrayList<String> qualiEnd = new ArrayList<>();
     private ESCTool escTool = new ESCTool();
     private List<Hotlap> hotlaps = new ArrayList<>();
     private ArrayList<String> doubleTeamsList = new ArrayList<>();
@@ -92,6 +93,7 @@ public class SessionController {
         System.out.println(sessionInfo.getCurrentEventTime());
         Controller.addLog("SessionController Session: " + sessionInfo.getSession());
         Controller.addLog(modConfig.toString());
+
         switch (sessionInfo.getSessionEnum()) {
             case TESTDAY:
                 for (String eintrag : modConfig.getManuelleNachrichten().get(0)) {
@@ -132,7 +134,29 @@ public class SessionController {
                     }
                 }
 
-                //TODO Aufzeichnung Schnelle Runde nach dem Ende der jeweiligen Qualizeit
+                if (modConfig.isVrQualiMode()) {
+                    for (User user : users) {
+                        if (user.getCarClass().equals("GTD") && !qualiEnd.contains(user.getDriverName()) &&
+                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 900 &&
+                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 1020)) {
+                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
+                            qualiEnd.add(user.getDriverName());
+                        }
+                        if (user.getCarClass().equals("LMP3") && !qualiEnd.contains(user.getDriverName()) &&
+                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 1920 &&
+                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 2040)) {
+                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
+                            qualiEnd.add(user.getDriverName());
+                        }
+                        if (user.getCarClass().equals("LMP2") && !qualiEnd.contains(user.getDriverName()) &&
+                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 2940 &&
+                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 3000)) {
+                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
+                            qualiEnd.add(user.getDriverName());
+                        }
+                    }
+                }
+
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);
                 }
