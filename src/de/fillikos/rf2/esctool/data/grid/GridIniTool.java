@@ -4,6 +4,7 @@ import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.data.grid.raceresult.RFactorXML;
 import de.fillikos.rf2.esctool.data.grid.raceresult.ResultsFactory;
 import de.fillikos.rf2.esctool.data.grid.raceresult.driver.Driver;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.*;
@@ -20,16 +21,16 @@ public class GridIniTool {
     private HashMap<String, Fahrzeug> insgesamtFahrer;
     private HashMap<String, Fahrzeug> insgesamtFahrerNeu;
     private ArrayList<String> fahrer;
-    private boolean teamEvent = false;
+    private ModConfig mod = new ModConfig();
 
     public GridIniTool() {
 
     }
 
-    public void runGridIniTool(File qualiXml, Connection server, ArrayList<ArrayList<String>> startgruppeClass, boolean teamEvent) {
+    public void runGridIniTool(File qualiXml, Connection server, ModConfig mod) {
         System.out.println("DataController.runGridIniTool()");
         Controller.addWarning("GridIniTool.runGridIniTool()");
-        setTeamEvent(teamEvent);
+        this.mod = mod;
         /*
          * Informationen Sammeln
          */
@@ -42,22 +43,24 @@ public class GridIniTool {
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
         Controller.addWarning("runGridIniTool(): strafen geladen");
-        // 4. automatisch erstellte Strafen.txt auslesen
-        loadStrafenTxtData(qualiXml);
-        Controller.addWarning("runGridIniTool(): strafen.txt geladen");
+        if (mod.isVrQualiMode()) {
+            // 4. automatisch erstellte Strafen.txt auslesen
+            loadStrafenTxtData(qualiXml);
+            Controller.addWarning("runGridIniTool(): strafen.txt geladen");
+        }
 
         /*
          * Verarbeitung der Informationen der einzelnen Startgruppen
          */
         // 1. Startgruppen anlegen
         ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
-        if (startgruppeClass.size() == 0) {
+        if (mod.getStartgruppeClass().size() == 0) {
             ArrayList<String> all = new ArrayList<>();
             String alleKlassen = "all";
             all.add(alleKlassen);
-            startgruppeClass.add(all);
+            mod.getStartgruppeClass().add(all);
         }
-        for (int i = 0; i < startgruppeClass.size(); i++) {
+        for (int i = 0; i < mod.getStartgruppeClass().size(); i++) {
             startgruppen.add(new ArrayList<>());
         }
         Controller.addWarning("runGridIniTool(): Startgruppen angelegt Anzahl: " + startgruppen.size());
@@ -74,18 +77,18 @@ public class GridIniTool {
             String driverName = element[2];
             String carClass = element[4];
 
-            for (int i = 0; i < startgruppeClass.size(); i++) {
-                if (startgruppeClass.get(0).get(0).equals("all")) {
+            for (int i = 0; i < mod.getStartgruppeClass().size(); i++) {
+                if (mod.getStartgruppeClass().get(0).get(0).equals("all")) {
                     // Keine Sortierung nach Klassen
-                    if (isTeamEvent()) {
+                    if (mod.isTeamEvent()) {
                         startgruppen.get(i).add(vehName);
                     } else {
                         startgruppen.get(i).add(driverName);
                     }
                 } else {
                     // isStartgruppe überprüft die CarClass
-                    if (isStartgruppe(carClass, startgruppeClass.get(i))) {
-                        if (isTeamEvent()) {
+                    if (isStartgruppe(carClass, mod.getStartgruppeClass().get(i))) {
+                        if (mod.isTeamEvent()) {
                             startgruppen.get(i).add(vehName);
                         } else {
                             startgruppen.get(i).add(driverName);
@@ -95,19 +98,19 @@ public class GridIniTool {
             }
         }
         // 3. erste Sortierung der Startgruppen
-        for (int i = 0; i < startgruppeClass.size(); i++) {
+        for (int i = 0; i < mod.getStartgruppeClass().size(); i++) {
             sortStartgruppe(startgruppen.get(i));
             Controller.addWarning("runGridIniTool(): Startgruppen Sortiert: " + startgruppen.get(i).toString());
         }
         // 4. Startgruppe neu Positionieren, damit die Startgruppen hintereinander starten und nicht durchmischt sind
         int pos = 1;
-        for (int i = 0; i < startgruppeClass.size(); i++) {
+        for (int i = 0; i < mod.getStartgruppeClass().size(); i++) {
             for (String s : startgruppen.get(i)) {
                 insgesamtFahrerNeu.get(s).setPosition(pos++);
             }
         }
         // 5. Strafen verteilen
-        allotPenalty(startgruppeClass, startgruppen);
+        allotPenalty(mod.getStartgruppeClass(), startgruppen);
 
         // 6. grid.ini schreiben
         writeGridIni(qualiXml, startgruppen);
@@ -124,7 +127,7 @@ public class GridIniTool {
                 Controller.addWarning("strafen.txt : " + zeile);
                 int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
                 if (zeile.contains(" ==> ")) {
-                    if (isTeamEvent()) {
+                    if (mod.isTeamEvent()) {
                         String vehName = zeile.substring(0, zeile.indexOf("==<"));
                         if (insgesamtFahrerNeu.containsKey(vehName)) {
                             insgesamtFahrerNeu.get(vehName).setStrafe(insgesamtFahrerNeu.get(vehName).getStrafe() + strafplaetze);
@@ -183,7 +186,7 @@ public class GridIniTool {
 
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning("strafen : " + zeile);
-                if (isTeamEvent()) {
+                if (mod.isTeamEvent()) {
                     if (zeile.contains("==>")) {
                         String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
                         if (insgesamtFahrerNeu.containsKey(vehName)) {
@@ -316,7 +319,7 @@ public class GridIniTool {
             String name = element[2];
             String carClass = element[4];
 
-            if (isTeamEvent()) {
+            if (mod.isTeamEvent()) {
                 if (insgesamtFahrer.containsKey(String.valueOf(vehName))) {
                     position = insgesamtFahrer.get(vehName).getPosition();
                 }
@@ -341,7 +344,7 @@ public class GridIniTool {
         RFactorXML xml = rf.getResult(path);
         System.out.println("xml...size(): " + xml.getRaceResult().getQualify().getDriver().size());
         for (Driver d : xml.getRaceResult().getQualify().getDriver()) {
-            if (isTeamEvent()) {
+            if (mod.isTeamEvent()) {
                 insgesamtFahrer.put(d.getVehName(), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getVehName(), d.getName(), d.getCarClass()));
             } else {
                 insgesamtFahrer.put(d.getName(), new Fahrzeug(d.getLapRankIncludingDiscos(), d.getVehName(), d.getName(), d.getCarClass()));
@@ -352,11 +355,4 @@ public class GridIniTool {
         System.out.println(insgesamtFahrer);
     }
 
-    public boolean isTeamEvent() {
-        return teamEvent;
-    }
-
-    public void setTeamEvent(boolean teamEvent) {
-        this.teamEvent = teamEvent;
-    }
 }

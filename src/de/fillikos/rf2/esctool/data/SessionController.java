@@ -346,7 +346,7 @@ public class SessionController {
             GridIniTool dc = new GridIniTool();
             if (!file.toString().equals("D:\\")) {
                 System.out.println(file);
-                dc.runGridIniTool(file, server, modConfig.getStartgruppeClass(), modConfig.isTeamEvent());
+                dc.runGridIniTool(file, server, modConfig);
                 System.out.println("grid.ini und strafen.ini wurden erstellt");
                 Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
