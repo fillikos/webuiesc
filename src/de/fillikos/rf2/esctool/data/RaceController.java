@@ -29,7 +29,8 @@ public class RaceController {
         }
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
-        if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
+        System.out.println(modConfig.isFreigabeEinfuehrungsrundeChat());
+        if (modConfig.isFreigabeEinfuehrungsrundeChat() && sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
             if (modConfig.getStartgruppeClass().size() > 1) {
                 System.out.println("Start des Rennens");
                 System.out.println("1. Startgruppe Los");
@@ -42,7 +43,7 @@ public class RaceController {
                         @Override
                         public void run() {
                             try {
-                                Thread.sleep(modConfig.getTimeBetweenSG() * 1000 * (startgruppe - 1));
+                                Thread.sleep(modConfig.getTimeBetweenSG() * 1_000 * (startgruppe - 1));
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -68,46 +69,50 @@ public class RaceController {
             }).start();
         }
 
-        for (int i = 0; i < startgruppeGo.length; i++) {
-            if (startgruppeGo[i]) {
-                int startPos = 100;
-                String gridLeader = "";
-                for (User user : users) {
-                    if (startgruppe(user, modConfig.getStartgruppeClass().get(i))) {
-                        // Test für variable Startfreigabe vor und nach Start / Ziel
-                        // negative LapDistance muss umgerechnet werden oä
-                        if (user.getLapDistance().charAt(0) == '-') {
-                            System.out.println(user.getLapDistance());
-                        }
-                        int position = Integer.parseInt(user.getPosition());
-                        if (startPos > position) {
-                            gridLeader = String.valueOf(position);
-                            startPos = position;
+        if (modConfig.isRennfreigabeByChat()) {
+            for (int i = 0; i < startgruppeGo.length; i++) {
+                if (startgruppeGo[i]) {
+                    int startPos = 100;
+                    String gridLeader = "";
+                    for (User user : users) {
+                        if (startgruppe(user, modConfig.getStartgruppeClass().get(i))) {
+                            // Test für variable Startfreigabe vor und nach Start / Ziel
+                            // negative LapDistance muss umgerechnet werden oä
+                            if (user.getLapDistance().charAt(0) == '-') {
+                                System.out.println(user.getLapDistance());
+                            }
+                            int position = Integer.parseInt(user.getPosition());
+                            if (startPos > position) {
+                                gridLeader = String.valueOf(position);
+                                startPos = position;
+                            }
                         }
                     }
-                }
-                System.out.println("startPos: " + startPos);
-                for (User user : users) {
-                    if (user.getPosition().equals(gridLeader) &&
-                            (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
-                        if (setBeginnStartprozedur) {
-                            if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
-                                Controller.setAktualisierungsrate(300);
-                            }
-                            if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] || user.getLapsCompleted().equals("1")) {
-                                System.out.println("Start " + (i + 1) + ". Startgruppe");
-                                server.sendchat((i + 1) + ". Startgruppe Go Go Go");
-                                startgruppeGo[i] = false;
-                                if (i < (startgruppeGo.length - 1)) {
-                                    startgruppeGo[i + 1] = true;
+                    System.out.println("startPos: " + startPos);
+                    for (User user : users) {
+                        if (user.getPosition().equals(gridLeader) &&
+                                (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
+                            System.out.println(user.getLapsCompleted() + " " + user.getLapDistance());
+                            if (setBeginnStartprozedur) {
+                                Controller.addError(user.getDriverName() + " " + user.getLapDistance() + " " + startLapPosition[i] + " " + user.getLapsCompleted() + " " + sessionInfo.getCurrentEventTime());
+                                if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
+                                    Controller.setAktualisierungsrate(300);
                                 }
-                                Controller.setAktualisierungsrate(500);
+                                if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] || user.getLapsCompleted().equals("1")) {
+                                    Controller.addError("Start " + (i + 1) + ". Startgruppe");
+                                    server.sendchat((i + 1) + ". Startgruppe Go Go Go");
+                                    startgruppeGo[i] = false;
+                                    if (i < (startgruppeGo.length - 1)) {
+                                        startgruppeGo[i + 1] = true;
+                                    }
+                                    Controller.setAktualisierungsrate(500);
+                                }
                             }
-                        }
-                        if (!setBeginnStartprozedur &&
-                                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5 &&
-                                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.7) {
-                            setBeginnStartprozedur = true;
+                            if (!setBeginnStartprozedur &&
+                                    Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5 &&
+                                    Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.7) {
+                                setBeginnStartprozedur = true;
+                            }
                         }
                     }
                 }

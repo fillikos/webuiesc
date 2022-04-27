@@ -39,6 +39,7 @@ public class ModView {
     private final JCheckBox cbGridIniErstellen;
     private final JCheckBox cbRecordHotlaps;
     private final JCheckBox cbRennfreigabe;
+    private final JCheckBox cbEinfuehrungsrunde;
     private final JCheckBox cbPitByTeam;
     private final JCheckBox cbPitByDriver;
     private final JCheckBox cbByDriverName;
@@ -393,6 +394,7 @@ public class ModView {
         cbByDriverName = new JCheckBox("Teamevents");
         // Zeit zwischen Startgruppen
         cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
+        cbEinfuehrungsrunde = new JCheckBox("Freigabe der Einführungsrunde Chat");
         cbVRQualiMode = new JCheckBox("Check VR Quali Hotlap Mode");
 
         cbPitByDriver.addActionListener(e -> {
@@ -472,16 +474,19 @@ public class ModView {
         panCenter.add(cbPit7, g);
         g.gridy = 9;
         g.gridx = 0;
-        panCenter.add(txtTimeToDoStrafe, g);
-        g.gridx = 1;
-        g.gridwidth = 2;
-        panCenter.add(lblTimeStrafe, g);
+        panCenter.add(cbEinfuehrungsrunde, g);
         g.gridx = 4;
         panCenter.add(cbPit8, g);
         g.gridy = 10;
         g.gridx = 0;
-        panCenter.add(cbVRQualiMode, g);
+        panCenter.add(txtTimeToDoStrafe, g);
+        g.gridx = 1;
+        g.gridwidth = 2;
+        panCenter.add(lblTimeStrafe, g);
         g.gridy = 11;
+        g.gridx = 0;
+        panCenter.add(cbVRQualiMode, g);
+        g.gridy = 12;
         g.gridx = 0;
         g.gridwidth = 3;
         g.gridheight = 2;
@@ -490,7 +495,7 @@ public class ModView {
         panCenter.add(tpNachrichten, g);
         g.gridwidth = 1;
         g.gridheight = 1;
-        g.gridy = 14;
+        g.gridy = 15;
         g.gridx = 0;
         panCenter.add(btnAddSg, g);
         g.gridx = 1;
@@ -532,6 +537,7 @@ public class ModView {
         mod.setGridIniErstellen(cbGridIniErstellen.isSelected());
         mod.setRecordHotlaps(cbRecordHotlaps.isSelected());
         mod.setRennfreigabeByChat(cbRennfreigabe.isSelected());
+        mod.setFreigabeEinfuehrungsrundeChat(cbEinfuehrungsrunde.isSelected());
         mod.setAssignPitByTeam(cbPitByTeam.isSelected());
         mod.setAssignPitByDriver(cbPitByDriver.isSelected());
         mod.setTeamEvent(cbByDriverName.isSelected());
@@ -596,6 +602,7 @@ public class ModView {
         cbGridIniErstellen.setSelected(mod.isGridIniErstellen());
         cbRecordHotlaps.setSelected(mod.isRecordHotlaps());
         cbRennfreigabe.setSelected(mod.isRennfreigabeByChat());
+        cbEinfuehrungsrunde.setSelected(mod.isFreigabeEinfuehrungsrundeChat());
         cbPitByTeam.setSelected(mod.isAssignPitByTeam());
         cbPitByDriver.setSelected(mod.isAssignPitByDriver());
         cbByDriverName.setSelected(mod.isTeamEvent());

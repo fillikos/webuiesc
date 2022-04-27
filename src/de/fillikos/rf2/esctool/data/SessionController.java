@@ -205,7 +205,7 @@ public class SessionController {
                         manuellChatGesendet.add(element[1]);
                     }
                 }
-                if (modConfig.isRennfreigabeByChat()) {
+                if (modConfig.isRennfreigabeByChat() || modConfig.isFreigabeEinfuehrungsrundeChat()) {
                     Controller.addError("SessionController -> handleRace() wird ausgeührt");
                     raceController.handleRace(sessionInfo, users, modConfig);
                 }

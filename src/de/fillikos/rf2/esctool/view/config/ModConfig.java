@@ -18,7 +18,8 @@ public class ModConfig {
     private boolean checkDoppelTeam = false;
     private boolean gridIniErstellen = false;
     private boolean recordHotlaps = false;
-    private boolean rennfreigabeByChat = true;
+    private boolean rennfreigabeByChat = false;
+    private boolean freigabeEinfuehrungsrundeChat = false;
     private boolean qualiVR = false;
     private PitVorgang pitVorgang = new PitVorgang();
     private ArrayList<ArrayList<String>> manuelleNachrichten = new ArrayList<>();
@@ -107,6 +108,14 @@ public class ModConfig {
         this.rennfreigabeByChat = rennfreigabeByChat;
     }
 
+    public boolean isFreigabeEinfuehrungsrundeChat() {
+        return freigabeEinfuehrungsrundeChat;
+    }
+
+    public void setFreigabeEinfuehrungsrundeChat(boolean freigabeEinfuehrungsrundeChat) {
+        this.freigabeEinfuehrungsrundeChat = freigabeEinfuehrungsrundeChat;
+    }
+
     public PitVorgang getPitVorgang() {
         return pitVorgang;
     }
@@ -152,12 +161,12 @@ public class ModConfig {
         if (this == o) return true;
         if (!(o instanceof ModConfig)) return false;
         ModConfig modConfig = (ModConfig) o;
-        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isVrQualiMode() == modConfig.isVrQualiMode() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
+        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isVrQualiMode() == modConfig.isVrQualiMode() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isFreigabeEinfuehrungsrundeChat() == modConfig.isFreigabeEinfuehrungsrundeChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isVrQualiMode(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
+        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), isAssignPitByTeam(), isVrQualiMode(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isFreigabeEinfuehrungsrundeChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
     }
 
     @Override
@@ -175,6 +184,7 @@ public class ModConfig {
                 ", gridIniErstellen=" + gridIniErstellen +
                 ", recordHotlaps=" + recordHotlaps +
                 ", rennfreigabeByChat=" + rennfreigabeByChat +
+                ", freigabeEinfuehrungsrundeChat=" + freigabeEinfuehrungsrundeChat +
                 ", qualiVR=" + qualiVR +
                 ", pitVorgang=" + pitVorgang +
                 ", manuelleNachrichten=" + manuelleNachrichten +
