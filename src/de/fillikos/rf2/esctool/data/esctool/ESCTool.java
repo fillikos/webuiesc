@@ -2,6 +2,7 @@ package de.fillikos.rf2.esctool.data.esctool;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.Session;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.PitState;
@@ -15,28 +16,28 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Objects;
 
 public class ESCTool {
 
-    private ArrayList<StrafenLog> strafen;
+    private final ArrayList<StrafenLog> strafen;
+    private final ArrayList<String> escOnTrack = new ArrayList<>();
+    private final ArrayList<String> backOnTrack = new ArrayList<>();
+    private final ArrayList<String> endedInBox = new ArrayList<>();
     private SessionInfo sessionInfo = new SessionInfo();
     private User[] usersOld = new User[0];
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
-    private ArrayList<String> escOnTrack = new ArrayList<>();
-    private ArrayList<String> backOnTrack = new ArrayList<>();
 
 
     public ESCTool() {
         strafen = new ArrayList<>();
     }
 
-    public void handleESCRule(User[] users, SessionInfo sessionInfo, PitVorgang pitVorgang) {
+    public void handleESCRule(User[] users, SessionInfo sessionInfo, ModConfig modConfig) {
         this.sessionInfo = sessionInfo;
         for (User user : users) {
             for (User userOld : usersOld) {
                 if (userOld.getDriverName().equals(user.getDriverName())) {
-                    pitRule(user, userOld, pitVorgang);
+                    pitRule(user, userOld, modConfig);
                     break;
                 }
             }
@@ -44,7 +45,7 @@ public class ESCTool {
         usersOld = users;
     }
 
-    private void pitRule(User user, User userOld, PitVorgang pitVorgang) {
+    private void pitRule(User user, User userOld, ModConfig modConfig) {
         PitState pitNew, pitOld;
         pitNew = user.getPitStateEnum();
         pitOld = userOld.getPitStateEnum();
@@ -68,16 +69,16 @@ public class ESCTool {
                         case STOPPED:
                             break;
                         case EXITING:
-                            if (pitVorgang.isAus_der_box_gefahren()) {
+                            if (modConfig.getPitVorgang().isAus_der_box_gefahren()) {
                                 write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
-                                if (escOnTrack.contains(user.getDriverName())) {
-                                    backOnTrack.add(user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze");
-                                    writeBackOnTrack();
-                                }
+                            }
+                            if (modConfig.isVrQualiMode() && escOnTrack.contains(user.getDriverName())) {
+                                backOnTrack.add(user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze");
+                                writeBackOnTrack();
                             }
                             break;
                         case REQUEST:
-                            if (pitVorgang.isBoxenstop_anforderung_abgebrochen()) {
+                            if (modConfig.getPitVorgang().isBoxenstop_anforderung_abgebrochen()) {
                                 write(new StrafenLog(sessionInfo, user, "Boxenstopanforderung abgebrochen"));
                             }
                             break;
@@ -86,7 +87,7 @@ public class ESCTool {
                 case REQUEST:
                     switch (pitOld) {
                         case NONE:
-                            if (pitVorgang.isBoxenstop_angefordert()) {
+                            if (modConfig.getPitVorgang().isBoxenstop_angefordert()) {
                                 write(new StrafenLog(sessionInfo, user, "Boxenstop angefordert"));
                             }
                             break;
@@ -129,8 +130,10 @@ public class ESCTool {
                         case NONE:
                         case REQUEST:
                             //Wichtig auch für die Auswertung nach dem Rennen
-                            if (pitVorgang.isEsc_auf_strecke()) {
+                            if (modConfig.getPitVorgang().isEsc_auf_strecke()) {
                                 write(new StrafenLog(sessionInfo, user, "ESC auf der strecke"));
+                            }
+                            if (modConfig.isVrQualiMode()) {
                                 escOnTrack.add(user.getDriverName());
                             }
                             break;
@@ -138,12 +141,16 @@ public class ESCTool {
                         case PITTING:
                             break;
                         case ENTERING:
-                            if (pitVorgang.isEsc_in_der_box()) {
+                            if (modConfig.getPitVorgang().isEsc_in_der_box()) {
                                 write(new StrafenLog(sessionInfo, user, "ESC in der box"));
+                            }
+                            if (sessionInfo.getGamePhase().equals("8") && endedInBox.contains(user.getDriverName())) {
+                                endedInBox.add(user.getDriverName());
+                                writeEndedInBox();
                             }
                             break;
                         case STOPPED:
-                            if (pitVorgang.isBoxenstop_ende()) {
+                            if (modConfig.getPitVorgang().isBoxenstop_ende()) {
                                 write(new StrafenLog(sessionInfo, user, "boxenstop ende"));
                             }
                             break;
@@ -152,7 +159,7 @@ public class ESCTool {
                     switch (pitOld) {
                         case NONE:
                         case REQUEST:
-                            if (pitVorgang.isIn_die_box()) {
+                            if (modConfig.getPitVorgang().isIn_die_box()) {
                                 write(new StrafenLog(sessionInfo, user, "in die Box"));
                             }
                             break;
@@ -173,13 +180,27 @@ public class ESCTool {
                         case REQUEST:
                             break;
                         case ENTERING:
-                            if (pitVorgang.isBoxenstop_beginn()) {
+                            if (modConfig.getPitVorgang().isBoxenstop_beginn()) {
                                 write(new StrafenLog(sessionInfo, user, "Boxenstop beginn"));
                             }
                             break;
                     }
                     break;
             }
+        }
+    }
+
+    private void writeEndedInBox() {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String timeString = df.format(new Date());
+        ObjectMapper om = new ObjectMapper();
+        try {
+            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
+                    timeString +
+                    "_ESCinBox.txt").toFile(), endedInBox);
+        } catch (IOException e) {
+            Controller.addError(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }
     }
 
@@ -219,67 +240,8 @@ public class ESCTool {
         }
     }
 
-    public ArrayList<StrafenLog> getStrafen() {
-        return strafen;
-    }
-
-    public void setStrafen(ArrayList<StrafenLog> strafen) {
-        this.strafen = strafen;
-    }
-
-    public SessionInfo getSessionInfo() {
-        return sessionInfo;
-    }
-
-    public void setSessionInfo(SessionInfo sessionInfo) {
-        this.sessionInfo = sessionInfo;
-    }
-
-    public User[] getUsersOld() {
-        return usersOld;
-    }
-
-    public void setUsersOld(User[] usersOld) {
-        this.usersOld = usersOld;
-    }
-
-    public File getRfDir() {
-        return rfDir;
-    }
-
     public void setRfDir(File rfDir) {
         this.rfDir = rfDir;
-    }
-
-    public ArrayList<String> getEscOnTrack() {
-        return escOnTrack;
-    }
-
-    public void setEscOnTrack(ArrayList<String> escOnTrack) {
-        this.escOnTrack = escOnTrack;
-    }
-
-    public ArrayList<String> getBackOnTrack() {
-        return backOnTrack;
-    }
-
-    public void setBackOnTrack(ArrayList<String> backOnTrack) {
-        this.backOnTrack = backOnTrack;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ESCTool)) return false;
-        ESCTool escTool = (ESCTool) o;
-        return Objects.equals(getStrafen(), escTool.getStrafen()) && Objects.equals(getSessionInfo(), escTool.getSessionInfo()) && Arrays.equals(getUsersOld(), escTool.getUsersOld()) && Objects.equals(getRfDir(), escTool.getRfDir()) && Objects.equals(getEscOnTrack(), escTool.getEscOnTrack()) && Objects.equals(getBackOnTrack(), escTool.getBackOnTrack());
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(getStrafen(), getSessionInfo(), getRfDir(), getEscOnTrack(), getBackOnTrack());
-        result = 31 * result + Arrays.hashCode(getUsersOld());
-        return result;
     }
 
     @Override

@@ -3,7 +3,6 @@ package de.fillikos.rf2.esctool.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.data.esctool.ESCTool;
-import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.data.grid.GridIniTool;
 import de.fillikos.rf2.esctool.data.hotlap.Hotlap;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
@@ -28,12 +27,10 @@ public class SessionController {
     private User[] users, usersOld;
     private SessionInfo sessionInfo = new SessionInfo();
     private SessionInfo sessionInfoOld = new SessionInfo();
-    private PitVorgang pitVorgang;
-    private ArrayList<String> manuellChatGesendet = new ArrayList<>();
-    private ArrayList<String> qualiEnd = new ArrayList<>();
+    private final ArrayList<String> manuellChatGesendet = new ArrayList<>();
+    private final ArrayList<String> qualiEnd = new ArrayList<>();
     private ESCTool escTool = new ESCTool();
     private List<Hotlap> hotlaps = new ArrayList<>();
-    private ArrayList<String> doubleTeamsList = new ArrayList<>();
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private boolean recordHotlaps = true;
     private boolean gridIniErstellt = false;
@@ -67,12 +64,11 @@ public class SessionController {
             this.usersOld = new User[0];
         }
         this.users = users;
-        this.pitVorgang = modConfig.getPitVorgang();
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
         new Thread(() -> {
             Controller.addLog("SessionController -> handleESCRule()");
-            escTool.handleESCRule(users, sessionInfo, pitVorgang);
+            escTool.handleESCRule(users, sessionInfo, modConfig);
         }).start();
 
         // 2. Runden Aufzeichnung
@@ -428,14 +424,6 @@ public class SessionController {
 
     public void setSessionInfo(SessionInfo sessionInfo) {
         this.sessionInfo = sessionInfo;
-    }
-
-    public PitVorgang getPitVorgang() {
-        return pitVorgang;
-    }
-
-    public void setPitVorgang(PitVorgang pitVorgang) {
-        this.pitVorgang = pitVorgang;
     }
 
     public List<Hotlap> getHotlaps() {
