@@ -36,6 +36,7 @@ public class ModView {
     private final JTextField txtModName;
     private final JTextField txtTimeBtSg;
     private final JTextField txtTimeToDoStrafe;
+    private final JTextField txtMinStartPos;
     private final JCheckBox cbGridIniErstellen;
     private final JCheckBox cbRecordHotlaps;
     private final JCheckBox cbRennfreigabe;
@@ -380,10 +381,13 @@ public class ModView {
         txtModName.setColumns(15);
         txtTimeBtSg = new JTextField();
         txtTimeBtSg.setColumns(4);
+        JLabel lblSekZwSg = new JLabel("sek zwischen Startgruppen");
         txtTimeToDoStrafe = new JTextField();
         txtTimeToDoStrafe.setColumns(4);
-        JLabel lblSekZwSg = new JLabel("sek zwischen Startgruppen");
         JLabel lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
+        txtMinStartPos = new JTextField();
+        txtMinStartPos.setColumns(4);
+        JLabel lblMinStartPos = new JLabel("Startfreigabe vor Startlinie (m)");
 
 
         cbDoppelTeam = new JCheckBox("Prüfe auf doppelte Teamfahrzeuge");
@@ -426,31 +430,37 @@ public class ModView {
         g.gridy = 0;
         g.gridwidth = 3;
         panCenter.add(txtModName, g);
+
         g.gridx = 0;
         g.gridy = 1;
         panCenter.add(cbDoppelTeam, g);
         g.gridx = 4;
         panCenter.add(lblPitVorgang, g);
+
         g.gridx = 0;
         g.gridy = 2;
         panCenter.add(cbPitByTeam, g);
         g.gridx = 4;
         panCenter.add(cbPit1, g);
+
         g.gridx = 0;
         g.gridy = 3;
         panCenter.add(cbPitByDriver, g);
         g.gridx = 4;
         panCenter.add(cbPit2, g);
+
         g.gridx = 0;
         g.gridy = 4;
         panCenter.add(cbGridIniErstellen, g);
         g.gridx = 4;
         panCenter.add(cbPit3, g);
+
         g.gridx = 0;
         g.gridy = 5;
         panCenter.add(cbRecordHotlaps, g);
         g.gridx = 4;
         panCenter.add(cbPit4, g);
+
         g.gridx = 0;
         g.gridy = 6;
         panCenter.add(cbByDriverName, g);
@@ -467,26 +477,38 @@ public class ModView {
         g.gridwidth = 3;
         g.gridx = 4;
         panCenter.add(cbPit6, g);
-        g.gridx = 0;
+
         g.gridy = 8;
-        panCenter.add(cbRennfreigabe, g);
+        g.gridx = 0;
+        panCenter.add(txtMinStartPos, g);
+        g.gridx = 1;
+        g.gridwidth = 2;
+        panCenter.add(lblMinStartPos, g);
         g.gridx = 4;
         panCenter.add(cbPit7, g);
+
         g.gridy = 9;
         g.gridx = 0;
-        panCenter.add(cbEinfuehrungsrunde, g);
+        panCenter.add(cbRennfreigabe, g);
         g.gridx = 4;
         panCenter.add(cbPit8, g);
+
         g.gridy = 10;
+        g.gridx = 0;
+        panCenter.add(cbEinfuehrungsrunde, g);
+
+        g.gridy = 11;
         g.gridx = 0;
         panCenter.add(txtTimeToDoStrafe, g);
         g.gridx = 1;
         g.gridwidth = 2;
         panCenter.add(lblTimeStrafe, g);
-        g.gridy = 11;
+
+        g.gridy = 12;
         g.gridx = 0;
         panCenter.add(cbVRQualiMode, g);
-        g.gridy = 12;
+
+        g.gridy = 13;
         g.gridx = 0;
         g.gridwidth = 3;
         g.gridheight = 2;
@@ -495,7 +517,8 @@ public class ModView {
         panCenter.add(tpNachrichten, g);
         g.gridwidth = 1;
         g.gridheight = 1;
-        g.gridy = 15;
+
+        g.gridy = 16;
         g.gridx = 0;
         panCenter.add(btnAddSg, g);
         g.gridx = 1;
@@ -534,6 +557,7 @@ public class ModView {
         ModConfig mod = new ModConfig();
         mod.setModName(txtModName.getText());
         mod.setTimeBetweenSG(Long.parseLong(txtTimeBtSg.getText()));
+        mod.setMinStartPos(Integer.parseInt(txtMinStartPos.getText()));
         mod.setGridIniErstellen(cbGridIniErstellen.isSelected());
         mod.setRecordHotlaps(cbRecordHotlaps.isSelected());
         mod.setRennfreigabeByChat(cbRennfreigabe.isSelected());
@@ -599,6 +623,7 @@ public class ModView {
         txtModName.setText(mod.getModName());
         txtTimeBtSg.setText(String.valueOf(mod.getTimeBetweenSG()));
         txtTimeToDoStrafe.setText(String.valueOf(mod.getTimeToDoStrafen()));
+        txtMinStartPos.setText(String.valueOf(mod.getMinStartPos()));
         cbGridIniErstellen.setSelected(mod.isGridIniErstellen());
         cbRecordHotlaps.setSelected(mod.isRecordHotlaps());
         cbRennfreigabe.setSelected(mod.isRennfreigabeByChat());

@@ -25,7 +25,13 @@ public class RaceController {
     public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig) {
         if (!startgruppenInitialized) {
             startgruppenInitialized = true;
-            settingUpStartgruppen(modConfig.getStartgruppeClass().size());
+            settingUpStartgruppen(modConfig.getStartgruppeClass().size(), modConfig.getMinStartPos());
+            for (int i = 0; i < startLapPosition.length; i++) {
+                if (startLapPosition[i] < (Float.parseFloat(sessionInfo.getLapDistance()) - modConfig.getMinStartPos()) ||
+                        startLapPosition[i] < 0) {
+                    startgruppenInitialized = false;
+                }
+            }
         }
         SessionInfo sessionInfoOld = this.sessionInfo;
         this.sessionInfo = sessionInfo;
@@ -92,7 +98,7 @@ public class RaceController {
                     for (User user : users) {
                         if (user.getPosition().equals(gridLeader) &&
                                 (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
-                            System.out.println(user.getLapsCompleted() + " " + user.getLapDistance());
+                            System.out.println(user.getLapsCompleted() + " " + user.getLapDistance() + " " + startLapPosition[i]);
                             if (setBeginnStartprozedur) {
                                 Controller.addError(user.getDriverName() + " " + user.getLapDistance() + " " + startLapPosition[i] + " " + user.getLapsCompleted() + " " + sessionInfo.getCurrentEventTime());
                                 if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
@@ -144,17 +150,17 @@ public class RaceController {
         return false;
     }
 
-    private float generateRandomStartPos() {
+    private float generateRandomStartPos(int minStartPos) {
         float startPos = 0;
         try {
-            for (int i = 0; i < 1; i++) {
-                do {
-                    startPos = ((int) (Float.parseFloat(sessionInfo.getLapDistance()) - 214 + (Math.random() * 1_000)));
-                } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
-            }
+            do {
+                startPos = (float) (Float.parseFloat(sessionInfo.getLapDistance()) - minStartPos + (Math.random() * 1_000));
+            } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
         } catch (NumberFormatException e) {
+            Controller.addError("Fehler beim erstellen der RandomStartPos");
             startgruppenInitialized = false;
         }
+        System.out.println("StartPos: " + startPos);
         return startPos;
     }
 
@@ -162,12 +168,12 @@ public class RaceController {
         this.server = connection;
     }
 
-    public void settingUpStartgruppen(int anzahlStartgruppen) {
+    public void settingUpStartgruppen(int anzahlStartgruppen, int minStartPos) {
         startgruppeGo = new boolean[anzahlStartgruppen];
         startLapPosition = new float[anzahlStartgruppen];
         for (int i = 0; i < anzahlStartgruppen; i++) {
             startgruppeGo[i] = false;
-            startLapPosition[i] = generateRandomStartPos();
+            startLapPosition[i] = generateRandomStartPos(minStartPos);
         }
         startgruppeGo[0] = true;
     }
