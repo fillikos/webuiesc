@@ -1,6 +1,9 @@
 package de.fillikos.rf2.esctool.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.data.rf2data.MultiplayerJson;
+import de.fillikos.rf2.esctool.data.rf2data.PlayerJson;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 
 import javax.swing.*;
@@ -9,6 +12,9 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ServerView {
@@ -21,7 +27,7 @@ public class ServerView {
     public ServerView() {
         frame = new JFrame();
         frame.setTitle("Server Management");
-        frame.setSize(390, 240);
+        frame.setSize(500, 240);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
@@ -39,7 +45,8 @@ public class ServerView {
                 serverConfigList.add(new ServerConfig(
                         (String) tableModel.getValueAt(i, 0),
                         (String) tableModel.getValueAt(i, 1),
-                        (String) tableModel.getValueAt(i, 2)
+                        (String) tableModel.getValueAt(i, 2),
+                        (String) tableModel.getValueAt(i, 3)
                 ));
             }
             Controller.setServerManagement();
@@ -50,11 +57,44 @@ public class ServerView {
             if (tableModel.getRowCount() > 0) {
                 if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
                         !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")) {
-                    tableModel.addRow(new String[]{"", "", ""});
+                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("") &&
+                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 3).equals("")) {
+
+                    FileFilter ff = File::isDirectory;
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+                        @Override
+                        public boolean accept(File f) {
+                            return f.isDirectory();
+                        }
+
+                        @Override
+                        public String getDescription() {
+                            return null;
+                        }
+                    });
+                    int rc = chooser.showDialog(frame, "rFactor 2 User Verzeichnis wählen");
+                    if (rc == JFileChooser.APPROVE_OPTION) {
+                        ObjectMapper om = new ObjectMapper();
+                        try {
+                            System.out.println(chooser.getSelectedFile().toString());
+                            PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().toString().length()) + ".json"), PlayerJson.class);
+                            MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
+                            System.out.println(pJson.getMiscellaneous().getWebUI_port());
+                            System.out.println(mpJson.getMultiplayer_Server_Options().getDefault_Game_Name());
+                            System.out.println(mpJson.getMultiplayer_General_Options().getBind_IP());
+                            tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
+                                    mpJson.getMultiplayer_General_Options().getBind_IP(),
+                                    String.valueOf(pJson.getMiscellaneous().getWebUI_port()),
+                                    chooser.getSelectedFile().toString()});
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
                 }
             } else {
-                tableModel.addRow(new String[]{"", "", ""});
+                tableModel.addRow(new String[]{"", "", "", ""});
             }
         });
 
@@ -70,7 +110,7 @@ public class ServerView {
             }
         });
 
-        String[] columns = new String[]{"Server Name", "IP", "Port"};
+        String[] columns = new String[]{"Server Name", "IP", "Port", "rF2 User Verzeichnis"};
 
         tableModel = new DefaultTableModel(columns, 0);
         for (ServerConfig server : serverConfigList) {
@@ -84,11 +124,16 @@ public class ServerView {
             int width;
             switch (i) {
                 case 0:
-                    width = 100;
+                    width = 75;
                     break;
                 case 1:
-                case 2:
                     width = 50;
+                    break;
+                case 2:
+                    width = 25;
+                    break;
+                case 3:
+                    width = 125;
                     break;
                 default:
                     width = 7;
@@ -114,7 +159,8 @@ public class ServerView {
         return new String[]{
                 server.getServerName(),
                 server.getIp(),
-                server.getPort()
+                server.getPort(),
+                ""
         };
     }
 
