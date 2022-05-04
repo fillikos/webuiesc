@@ -2,7 +2,6 @@ package de.fillikos.rf2.esctool.view.config;
 
 import com.sun.istack.internal.Nullable;
 
-import java.io.File;
 import java.util.Objects;
 
 public class ServerConfig {
@@ -11,7 +10,7 @@ public class ServerConfig {
     private String ip;
     private String port;
     @Nullable
-    private File rf2UserDir = null;
+    private String rf2UserDir;
 
     public ServerConfig() {
 
@@ -27,7 +26,7 @@ public class ServerConfig {
         this.serverName = serverName;
         this.ip = ip;
         this.port = port;
-        this.rf2UserDir = new File(rf2UserDir);
+        this.rf2UserDir = rf2UserDir;
     }
 
     public String getServerName() {
@@ -54,11 +53,11 @@ public class ServerConfig {
         this.port = port;
     }
 
-    public File getRf2UserDir() {
+    public String getRf2UserDir() {
         return rf2UserDir;
     }
 
-    public void setRf2UserDir(File rf2UserDir) {
+    public void setRf2UserDir(String rf2UserDir) {
         this.rf2UserDir = rf2UserDir;
     }
 

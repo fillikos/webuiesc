@@ -53,46 +53,39 @@ public class ServerView {
         });
         JButton btnNew = new JButton("Neu ...");
         btnNew.addActionListener(e -> {
-            if (tableModel.getRowCount() > 0) {
-                if (!tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("") &&
-                        !tableModel.getValueAt(tableModel.getRowCount() - 1, 3).equals("")) {
+            if (tableModel.getRowCount() == 0 ||
+                    !tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")
+            ) {
 
-                    JFileChooser chooser = new JFileChooser();
-                    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-                        @Override
-                        public boolean accept(File f) {
-                            return f.isDirectory();
-                        }
+                JFileChooser chooser = new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.isDirectory();
+                    }
 
-                        @Override
-                        public String getDescription() {
-                            return null;
-                        }
-                    });
-                    int rc = chooser.showDialog(frame, "rFactor 2 User Verzeichnis wählen");
-                    if (rc == JFileChooser.APPROVE_OPTION) {
-                        ObjectMapper om = new ObjectMapper();
-                        try {
-                            System.out.println(chooser.getSelectedFile().toString());
-                            PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().length()) + ".json"), PlayerJson.class);
-                            MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
-                            System.out.println(pJson.getMiscellaneous().getWebUI_port());
-                            System.out.println(mpJson.getMultiplayer_Server_Options().getDefault_Game_Name());
-                            System.out.println(mpJson.getMultiplayer_General_Options().getBind_IP());
-                            tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
-                                    mpJson.getMultiplayer_General_Options().getBind_IP().equals("0.0.0.0") ? "localhost" : mpJson.getMultiplayer_General_Options().getBind_IP(),
-                                    String.valueOf(pJson.getMiscellaneous().getWebUI_port()),
-                                    chooser.getSelectedFile().toString()});
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                    @Override
+                    public String getDescription() {
+                        return null;
+                    }
+                });
+                int rc = chooser.showDialog(frame, "rFactor 2 User Verzeichnis wählen");
+                if (rc == JFileChooser.APPROVE_OPTION) {
+                    ObjectMapper om = new ObjectMapper();
+                    try {
+                        PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().length()) + ".json"), PlayerJson.class);
+                        MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
+                        tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
+                                mpJson.getMultiplayer_General_Options().getBind_IP().equals("0.0.0.0") ? "localhost" : mpJson.getMultiplayer_General_Options().getBind_IP(),
+                                String.valueOf(pJson.getMiscellaneous().getWebUI_port()),
+                                chooser.getSelectedFile().toString()});
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
-            } else {
-                tableModel.addRow(new String[]{"", "", "", ""});
             }
         });
 
@@ -158,7 +151,7 @@ public class ServerView {
                 server.getServerName(),
                 server.getIp(),
                 server.getPort(),
-                ""
+                server.getRf2UserDir().toString()
         };
     }
 
