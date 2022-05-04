@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -60,7 +59,6 @@ public class ServerView {
                         !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("") &&
                         !tableModel.getValueAt(tableModel.getRowCount() - 1, 3).equals("")) {
 
-                    FileFilter ff = File::isDirectory;
                     JFileChooser chooser = new JFileChooser();
                     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
@@ -79,13 +77,13 @@ public class ServerView {
                         ObjectMapper om = new ObjectMapper();
                         try {
                             System.out.println(chooser.getSelectedFile().toString());
-                            PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().toString().length()) + ".json"), PlayerJson.class);
+                            PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().length()) + ".json"), PlayerJson.class);
                             MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
                             System.out.println(pJson.getMiscellaneous().getWebUI_port());
                             System.out.println(mpJson.getMultiplayer_Server_Options().getDefault_Game_Name());
                             System.out.println(mpJson.getMultiplayer_General_Options().getBind_IP());
                             tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
-                                    mpJson.getMultiplayer_General_Options().getBind_IP(),
+                                    mpJson.getMultiplayer_General_Options().getBind_IP().equals("0.0.0.0") ? "localhost" : mpJson.getMultiplayer_General_Options().getBind_IP(),
                                     String.valueOf(pJson.getMiscellaneous().getWebUI_port()),
                                     chooser.getSelectedFile().toString()});
                         } catch (IOException ex) {

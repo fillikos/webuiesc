@@ -6,7 +6,6 @@ import de.fillikos.rf2.esctool.view.config.ViewConfig;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +23,6 @@ public class MainMenu extends JMenuBar {
         JMenuItem itemClose = new JMenuItem("Schließen");
 
         itemOpen.addActionListener(e -> {
-            FileFilter ff = File::isDirectory;
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setSelectedFile(viewConfig.getRf2Dir());
@@ -52,13 +50,9 @@ public class MainMenu extends JMenuBar {
 
         JMenu menuServer = new JMenu("Server");
         JMenuItem itemModKonfigurieren = new JMenuItem("Mod konfigurieren");
-        itemModKonfigurieren.addActionListener(e -> {
-            Controller.showModView();
-        });
+        itemModKonfigurieren.addActionListener(e -> Controller.showModView());
         JMenuItem itemServerAuswahl = new JMenuItem("Server verwalten");
-        itemServerAuswahl.addActionListener(e -> {
-            Controller.showServerView();
-        });
+        itemServerAuswahl.addActionListener(e -> Controller.showServerView());
 
         menuServer.add(itemModKonfigurieren);
         menuServer.add(itemServerAuswahl);
