@@ -7,6 +7,7 @@ import de.fillikos.rf2.esctool.data.grid.GridIniTool;
 import de.fillikos.rf2.esctool.data.hotlap.Hotlap;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
+import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.Session;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
@@ -79,6 +80,9 @@ public class SessionController {
 
         // 3. Sessionwechsel
         if (!sessionInfo.getSession().equals(sessionInfoOld.getSession())) {
+            if (sessionInfo.getSessionEnum().equals(Session.RACE)) {
+                raceController = new RaceController();
+            }
             Controller.addWarning("SessionController -> Sessionwechsel: -> cleanData()");
             cleanData();
         }
