@@ -259,8 +259,8 @@ public class SessionController {
     private void assignPitByTeam(User[] users) {
         new Thread(() -> {
             for (User user : users) {
-                if (!garageSpotsAssigned.contains(user.getFullTeamName())) {
-                    garageSpotsAssigned.add(user.getFullTeamName());
+                if (!garageSpotsAssigned.contains(user.getVehicleName())) {
+                    garageSpotsAssigned.add(user.getVehicleName());
                     server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
                     break;
                 }
@@ -286,28 +286,28 @@ public class SessionController {
             ArrayList<String> vehicles = new ArrayList<>();
             ArrayList<String> doubleTeams = new ArrayList<>();
             for (User user : users) {
-                if (vehicles.contains(user.getFullTeamName())) {
-                    if (doppel.containsKey(user.getFullTeamName())) {
-                        if (doppel.get(user.getFullTeamName()) > 0) {
-                            int i = doppel.get(user.getFullTeamName());
-                            doppel.replace(user.getFullTeamName(), (i - 1));
+                if (vehicles.contains(user.getVehicleName())) {
+                    if (doppel.containsKey(user.getVehicleName())) {
+                        if (doppel.get(user.getVehicleName()) > 0) {
+                            int i = doppel.get(user.getVehicleName());
+                            doppel.replace(user.getVehicleName(), (i - 1));
                         } else {
-                            doppel.remove(user.getFullTeamName());
+                            doppel.remove(user.getVehicleName());
                         }
                     } else {
-                        doubleTeams.add(user.getFullTeamName());
-                        doppel.put(user.getFullTeamName(), 10);
+                        doubleTeams.add(user.getVehicleName());
+                        doppel.put(user.getVehicleName(), 10);
                     }
                 } else {
-                    vehicles.add(user.getFullTeamName());
+                    vehicles.add(user.getVehicleName());
                 }
             }
             for (User user : users) {
-                if (doubleTeams.contains(user.getFullTeamName())) {
+                if (doubleTeams.contains(user.getVehicleName())) {
                     server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
-                    server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getFullTeamName());
+                    server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getVehicleName());
                     server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
-                    Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getFullTeamName() + ")");
+                    Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getVehicleName() + ")");
                 }
             }
         }).start();
