@@ -151,6 +151,9 @@ public class RaceController {
     }
 
     private float generateRandomStartPos(int minStartPos) {
+        if (minStartPos == 0) {
+            return Float.parseFloat(sessionInfo.getLapDistance());
+        }
         float startPos = 0;
         try {
             do {
