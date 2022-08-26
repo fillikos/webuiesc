@@ -586,6 +586,11 @@ public class ModView {
             ArrayList<String> klassenListe = new ArrayList<>(Arrays.asList(klasse));
             startgruppenList.add(klassenListe);
         }
+        if (dtm.getRowCount() == 0) {
+            ArrayList<String> klassenListe = new ArrayList<>();
+            klassenListe.add("ALL");
+            startgruppenList.add(klassenListe);
+        }
         mod.setStartgruppeClass(startgruppenList);
 
         ArrayList<ArrayList<String>> nachrichtenGesamt = new ArrayList<>();

@@ -26,9 +26,9 @@ public class RaceController {
         if (!startgruppenInitialized) {
             startgruppenInitialized = true;
             settingUpStartgruppen(modConfig.getStartgruppeClass().size(), modConfig.getMinStartPos());
-            for (int i = 0; i < startLapPosition.length; i++) {
-                if (startLapPosition[i] < (Float.parseFloat(sessionInfo.getLapDistance()) - modConfig.getMinStartPos()) ||
-                        startLapPosition[i] < 0) {
+            for (float v : startLapPosition) {
+                if (v < (Float.parseFloat(sessionInfo.getLapDistance()) - modConfig.getMinStartPos()) ||
+                        v < 0) {
                     startgruppenInitialized = false;
                 }
             }
@@ -106,7 +106,11 @@ public class RaceController {
                                 }
                                 if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] || user.getLapsCompleted().equals("1")) {
                                     Controller.addError("Start " + (i + 1) + ". Startgruppe");
-                                    server.sendchat((i + 1) + ". Startgruppe Go Go Go");
+                                    if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
+                                        server.sendchat("Go Go Go");
+                                    } else {
+                                        server.sendchat((i + 1) + ". Startgruppe Go Go Go");
+                                    }
                                     startgruppeGo[i] = false;
                                     if (i < (startgruppeGo.length - 1)) {
                                         startgruppeGo[i + 1] = true;
@@ -142,8 +146,9 @@ public class RaceController {
     }
 
     private boolean startgruppe(User user, ArrayList<String> startgruppeClass) {
-        for (int i = 0; i < startgruppeClass.size(); i++) {
-            if (user.getCarClass().equals(startgruppeClass.get(i))) {
+        if (startgruppeClass.get(0).equals("ALL")) return true;
+        for (String carClass : startgruppeClass) {
+            if (user.getCarClass().equals(carClass)) {
                 return true;
             }
         }
