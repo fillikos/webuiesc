@@ -180,6 +180,11 @@ public class GridIniTool {
     }
 
     private void loadStrafenData(File qualiXml) {
+        HashMap<String, Fahrzeug> insgesamtVehNummer = new HashMap<>();
+        for (Fahrzeug f: insgesamtFahrerNeu.values()) {
+            String vehNummer = f.getVehName().substring(f.getVehName().indexOf("#"));
+            insgesamtVehNummer.put(vehNummer, f);
+        }
         try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\strafen"))) {
             String zeile;
             StringBuilder strafenIni = new StringBuilder();
@@ -188,26 +193,34 @@ public class GridIniTool {
                 Controller.addWarning("strafen : " + zeile);
                 if (mod.isTeamEvent()) {
                     if (zeile.contains("==>")) {
-                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
-                        if (insgesamtFahrerNeu.containsKey(vehName)) {
+//                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
+                        String vehNummer = zeile.substring(zeile.indexOf("#"), zeile.indexOf(","));
+                        if (insgesamtVehNummer.containsKey(vehNummer)) {
+//                        if (insgesamtFahrerNeu.containsKey(vehName)) {
                             if (zeile.contains("==> +")) {
                                 int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
+                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
                                 insgesamtFahrerNeu.get(vehName).setStrafe(strafplaetze);
+                                System.out.println("Strafe zugewiesen: " + vehName);
                             } else if (zeile.contains("==> D")) {
+                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
                                 strafenIni.append("/addpenalty -1 ")
                                         .append(insgesamtFahrerNeu.get(vehName).getFahrer())
                                         .append("\n");
+                                System.out.println("Strafe zugewiesen: " + vehName);
                             } else {
+                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
                                 strafenIni.append("/addpenalty ")
                                         .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
                                         .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
                                         .append("\n");
+                                System.out.println("Strafe zugewiesen: " + vehName);
                             }
+                        } else {
+                            System.out.println("Strafe nicht zugewiesen: " + vehNummer);
+                            System.out.println(zeile);
                         }
-                        System.out.println(vehName);
-                        System.out.println(zeile.indexOf("#"));
                     }
-                    System.out.println(zeile);
                 } else {
                     if (zeile.contains("==>")) {
                         String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
