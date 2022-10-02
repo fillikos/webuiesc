@@ -210,8 +210,16 @@ public class GridIniTool {
                                 System.out.println("Strafe zugewiesen: " + vehName);
                             } else {
                                 String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
+                                int sekunden = Integer.parseInt(zeile.substring(zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden")));
+                                while(sekunden > 60) {
+                                    strafenIni.append("/addpenalty ")
+                                            .append("60")
+                                            .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
+                                            .append("\n");
+                                    sekunden = sekunden - 60;
+                                }
                                 strafenIni.append("/addpenalty ")
-                                        .append(zeile, zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden"))
+                                        .append(sekunden)
                                         .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
                                         .append("\n");
                                 System.out.println("Strafe zugewiesen: " + vehName);
