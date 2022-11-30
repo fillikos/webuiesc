@@ -166,7 +166,8 @@ public class MainView {
 
     public void setRf2Dir(File rf2Dir) {
         this.rf2Dir = rf2Dir;
-        frame.setTitle("rF2 Admin Tool - " + rf2Dir);
+        frame.setTitle("rF2 Admin Tool");
+//        frame.setTitle("rF2 Admin Tool - " + rf2Dir);
         frame.repaint();
     }
 }

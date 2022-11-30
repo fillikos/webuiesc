@@ -44,7 +44,7 @@ public class MainMenu extends JMenuBar {
         });
         itemClose.addActionListener(e -> Controller.shutdown());
 
-        menuDatei.add(itemOpen);
+//        menuDatei.add(itemOpen);
         menuDatei.add(itemClose);
         this.add(menuDatei);
 

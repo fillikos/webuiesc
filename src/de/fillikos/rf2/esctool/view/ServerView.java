@@ -76,7 +76,7 @@ public class ServerView {
                 if (rc == JFileChooser.APPROVE_OPTION) {
                     ObjectMapper om = new ObjectMapper();
                     try {
-                        PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().getParent().length()) + ".json"), PlayerJson.class);
+                        PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + "\\player.json"), PlayerJson.class);
                         MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
                         tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
                                 mpJson.getMultiplayer_General_Options().getBind_IP().equals("0.0.0.0") ? "localhost" : mpJson.getMultiplayer_General_Options().getBind_IP(),
