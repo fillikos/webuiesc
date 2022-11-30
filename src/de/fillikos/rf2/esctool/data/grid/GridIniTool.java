@@ -37,15 +37,19 @@ public class GridIniTool {
         // 1. Qualiergebniss aus der Quali.xml vom Server laden
         loadQualiXml(qualiXml.toPath());
         Controller.addWarning("runGridIniTool(): quali.xml geladen: " + insgesamtFahrer);
+        System.out.println("runGridIniTool(): quali.xml geladen: " + insgesamtFahrer);
         // 2. Aktuelle User vom Server laden
         loadServerData(server);
         Controller.addWarning("runGridIniTool(): server geladen: " + insgesamtFahrerNeu);
+        System.out.println("runGridIniTool(): server geladen: " + insgesamtFahrerNeu);
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
         Controller.addWarning("runGridIniTool(): strafen geladen");
+        System.out.println("runGridIniTool(): strafen geladen");
         if (mod.isVrQualiMode()) {
             // 4. automatisch erstellte Strafen.txt auslesen
             loadStrafenTxtData(qualiXml);
+            System.out.println("runGridIniTool(): strafen.txt geladen");
             Controller.addWarning("runGridIniTool(): strafen.txt geladen");
         }
 
@@ -78,7 +82,7 @@ public class GridIniTool {
             String carClass = element[4];
 
             for (int i = 0; i < mod.getStartgruppeClass().size(); i++) {
-                if (mod.getStartgruppeClass().get(0).get(0).equals("all")) {
+                if (mod.getStartgruppeClass().get(0).get(0).equals("ALL")) {
                     // Keine Sortierung nach Klassen
                     if (mod.isTeamEvent()) {
                         startgruppen.get(i).add(vehName);
@@ -152,8 +156,10 @@ public class GridIniTool {
         for (int j = 0; j < startgruppeClass.size(); j++) {
             int strafe;
 
+            int anzahl = 0;
             do {
                 strafe = 0;
+                boolean setStrafe = true;
                 for (int i = (startgruppen.get(j).size() - 1); i >= 0; i--) {
                     /*
                      * Wenn eine Strafe vorliegt
@@ -163,16 +169,30 @@ public class GridIniTool {
                         if (strafe < insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe()) {
                             strafe = insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe();
                         }
+                        if (i == startgruppen.get(j).size()-1) {
+                            setStrafe = false;
+                        }
                         /*
                          * werden die Positionen getauscht
                          */
-                        try {
-                            String temp = startgruppen.get(j).get(i);
-                            startgruppen.get(j).set(i, startgruppen.get(j).get(i + 1));
-                            startgruppen.get(j).set(i + 1, temp);
-                        } catch (IndexOutOfBoundsException e) {
-//                        System.out.println("letzter");
+                        if (setStrafe) {
+                            try {
+                                String temp = startgruppen.get(j).get(i);
+                                startgruppen.get(j).set(i, startgruppen.get(j).get(i + 1));
+                                startgruppen.get(j).set(i + 1, temp);
+                            } catch (IndexOutOfBoundsException e) {
+                                /*
+                                Wird eine IndexOutOfBounce geworfen, wird auf den letzten Platz der Startgruppe zugegriffen
+                                 */
+    //                        System.out.println("letzter");
+                            }
+                            anzahl++;
+                            System.out.println(anzahl + ". Sortierdurchgang *************************************************");
+                        } else {
+                            System.out.println("Das ist der letzte Platz, hier wird nicht versetzt");
                         }
+                    } else {
+                        setStrafe = true;
                     }
                 }
             } while (strafe > 0);
@@ -188,6 +208,7 @@ public class GridIniTool {
         try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\strafen"))) {
             String zeile;
             StringBuilder strafenIni = new StringBuilder();
+            StringBuilder strafenVergebenIni = new StringBuilder();
 
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning("strafen : " + zeile);
@@ -224,9 +245,11 @@ public class GridIniTool {
                                         .append("\n");
                                 System.out.println("Strafe zugewiesen: " + vehName);
                             }
+                            strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
                         } else {
                             System.out.println("Strafe nicht zugewiesen: " + vehNummer);
                             System.out.println(zeile);
+                            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
                         }
                     }
                 } else {
@@ -254,6 +277,11 @@ public class GridIniTool {
                                         .append(" ").append(driverName)
                                         .append("\n");
                             }
+                            strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
+                        } else {
+                            System.out.println("Strafe nicht zugewiesen: " + driverName);
+                            System.out.println(zeile);
+                            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
                         }
                         System.out.println(driverName);
                         System.out.println(zeile.indexOf("#"));
@@ -262,6 +290,7 @@ public class GridIniTool {
                 }
             }
             writeStrafenIni(qualiXml, strafenIni);
+            writeStrafenVergebenIni(qualiXml, strafenVergebenIni);
         } catch (FileNotFoundException e) {
             Controller.addError("loadStrafenData: keine Strafen-Datei vorhanden");
             System.out.println("Keine strafen-Datei vorhanden");
@@ -302,6 +331,19 @@ public class GridIniTool {
             br.write(strafenIni.toString());
         } catch (IOException e) {
             Controller.addError("Fehler beim Schreiben der Strafen.ini:\n" + Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+    private void writeStrafenVergebenIni(File qualiXml, StringBuilder strafenVergebenIni) {
+        System.out.println("DataController.writeStrafenVergebenIni()");
+        Controller.addWarning("runGridIniTool(): writeStrafenVergebenIni() " + strafenVergebenIni.toString());
+        File file = new File(qualiXml.getParent() + "\\strafenVergeben.txt");
+//        File file = new File("G:\\SteamLibrary\\steamapps\\common\\rFactor 2\\UserData\\Log\\Results\\grid");
+        System.out.println("strafenIni: " + strafenVergebenIni);
+        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
+            br.write(strafenVergebenIni.toString());
+        } catch (IOException e) {
+            Controller.addError("Fehler beim Schreiben der strafenVergeben.txt:\n" + Arrays.toString(e.getStackTrace()));
         }
     }
 
