@@ -123,12 +123,13 @@ public class ViewController {
         df.setTimeZone(TimeZone.getTimeZone("GMT0"));
 
         textinsert.append("<html><body>");
-        textinsert.append(sessionInfo.getServerName() + "<br>" +
-                df.format(new Date(time)) + "<br>" +
-                sessionInfo.getSession() + "<br>" +
-                sessionInfo.getNumberOfVehicles() + " / " +
-                sessionInfo.getMaxPlayers() + "<br>"
-        );
+        textinsert.append(sessionInfo.getServerName())
+                .append("<br>")
+                .append(df.format(new Date(time)))
+                .append("<br>")
+                .append(sessionInfo.getSession())
+                .append("<br>")
+                .append(sessionInfo.getNumberOfVehicles()).append(" / ").append(sessionInfo.getMaxPlayers());
         textinsert.append("</body></html>");
 
         mainView.getText().setText(textinsert.toString());

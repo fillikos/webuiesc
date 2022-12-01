@@ -91,9 +91,9 @@ public class MainView {
 
         text = new JLabel();
         text.setText("<html><body>Hallo<br>" +
-                "1. rF2 Hauptverzeichnis auswählen (Titel),<br>" +
-                "2. Mod anlegen und auswählen,<br>" +
-                "3. Server anlegen und auswählen,<br>" +
+                "1. UserData Ordner des Servers auswählen (Server verwalten),<br>" +
+                "2. Mod anlegen und auswählen (Mod konfigurieren),<br>" +
+                "3. wenn noch nicht in auswahl enthalten, Tool neu starten,<br>" +
                 "4. Start drücken und alles läuft automatisch<br><t>&nbsp&nbsp&nbsp&nbsp(Serverdaten werden gezeigt),<br>" +
                 "5. grid.ini <u>kann</u> manuell erstellt werden, muss aber nicht<br>" +
                 "</body></html>");
