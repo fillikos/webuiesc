@@ -6,7 +6,12 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RaceController {
 
@@ -17,12 +22,14 @@ public class RaceController {
     private Connection server;
     private SessionInfo sessionInfo = new SessionInfo();
     private boolean startgruppenInitialized = false;
+    private File rfDir;
 
     public RaceController() {
 
     }
 
-    public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig) {
+    public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig, File rfDir) {
+        this.rfDir = rfDir;
         if (!startgruppenInitialized) {
             startgruppenInitialized = true;
             settingUpStartgruppen(modConfig.getStartgruppeClass().size(), modConfig.getMinStartPos());
@@ -110,6 +117,7 @@ public class RaceController {
                                         server.sendchat("Go Go Go");
                                     } else {
                                         server.sendchat((i + 1) + ". Startgruppe Go Go Go");
+                                        writeUsers(users);
                                     }
                                     startgruppeGo[i] = false;
                                     if (i < (startgruppeGo.length - 1)) {
@@ -143,6 +151,18 @@ public class RaceController {
             }
         }
 
+    }
+
+    private void writeUsers(User[] users) {
+        System.out.println("RaceController.writeUsers()");
+        Controller.addWarning("RaceController: writeUsers() " + Arrays.toString(users));
+        File file = new File(rfDir.getParent() + "\\Users_Startfreigabe.txt");
+        System.out.println("users: " + Arrays.toString(users));
+        try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
+            br.write(Arrays.toString(users));
+        } catch (IOException e) {
+            Controller.addError("Fehler beim Schreiben der Users_Startfreigabe.txt:\n" + Arrays.toString(e.getStackTrace()));
+        }
     }
 
     private boolean startgruppe(User user, ArrayList<String> startgruppeClass) {

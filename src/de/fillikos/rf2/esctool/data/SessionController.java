@@ -217,7 +217,7 @@ public class SessionController {
                 }
                 if (modConfig.isRennfreigabeByChat() || modConfig.isFreigabeEinfuehrungsrundeChat()) {
                     Controller.addError("SessionController -> handleRace() wird ausgeührt");
-                    raceController.handleRace(sessionInfo, users, modConfig);
+                    raceController.handleRace(sessionInfo, users, modConfig, rfDir);
                 }
                 if (sessionInfo.getGamePhase().equals("8")) {
                     if (!rennende) {
