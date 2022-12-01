@@ -115,6 +115,7 @@ public class RaceController {
                                     Controller.addError("Start " + (i + 1) + ". Startgruppe");
                                     if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
                                         server.sendchat("Go Go Go");
+                                        writeUsers(users);
                                     } else {
                                         server.sendchat((i + 1) + ". Startgruppe Go Go Go");
                                         writeUsers(users);
@@ -183,7 +184,7 @@ public class RaceController {
         try {
             do {
                 startPos = (float) (Float.parseFloat(sessionInfo.getLapDistance()) - minStartPos + (Math.random() * 1_000));
-            } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) - 15.0);
+            } while (startPos > Float.parseFloat(sessionInfo.getLapDistance()) );
         } catch (NumberFormatException e) {
             Controller.addError("Fehler beim erstellen der RandomStartPos");
             startgruppenInitialized = false;
