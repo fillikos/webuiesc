@@ -50,9 +50,21 @@ public class ServerView {
             }
             Controller.setServerManagement();
             Controller.saveServerConfig(serverConfigList);
+            JOptionPane.showMessageDialog(frame,
+                    "Die Server wurden erfolgreich gespeichert.");
         });
-        JButton btnNew = new JButton("Neu ...");
+        JButton btnNew = new JButton("Leerer Server");
         btnNew.addActionListener(e -> {
+            if (tableModel.getRowCount() == 0 ||
+                    !tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
+                            !tableModel.getValueAt(tableModel.getRowCount() - 1, 2).equals("")
+            ) {
+                tableModel.addRow(new String[]{"","","",""});
+            }
+        });
+        JButton btnNewUser = new JButton("Neuer User");
+        btnNewUser.addActionListener(e -> {
             if (tableModel.getRowCount() == 0 ||
                     !tableModel.getValueAt(tableModel.getRowCount() - 1, 0).equals("") &&
                             !tableModel.getValueAt(tableModel.getRowCount() - 1, 1).equals("") &&
@@ -141,6 +153,7 @@ public class ServerView {
 
         JPanel flowSouth = new JPanel(new FlowLayout());
         flowSouth.add(btnNew);
+        flowSouth.add(btnNewUser);
         flowSouth.add(btnRemove);
         flowSouth.add(btnSave);
         contentPane.add(flowSouth, BorderLayout.SOUTH);

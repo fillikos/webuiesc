@@ -200,6 +200,8 @@ public class ModView {
         btnSave.addActionListener(e -> {
             saveModToList();
             Controller.saveModConfig(modConfigList);
+            JOptionPane.showMessageDialog(frame,
+                    "Die Mods wurden erfolgreich gespeichert.");
         });
 
         JButton btnNew = new JButton("Neu ...");
