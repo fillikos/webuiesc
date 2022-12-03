@@ -11,6 +11,8 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class WebUI {
 
@@ -57,19 +59,19 @@ public class WebUI {
         System.out.println(users.length);
     }
 
-    public ArrayList<String> getFahrer() {
+    public List<String> getFahrer() {
         System.out.println("WebUI.getFahrer()");
         loadServer();
-        ArrayList fahrer = new ArrayList();
-        System.out.println(users);
+        List<String> fahrer = new ArrayList<>();
+        System.out.println(Arrays.toString(users));
         System.out.println("test");
 
-        for (int i = 0; i < users.length; i++) {
+        for (User user : users) {
             fahrer.add(String.format("##%s##%s##%s##%s",
-                    users[i].getVehicleName(),
-                    users[i].getDriverName(),
-                    users[i].getPosition(),
-                    users[i].getCarClass()));
+                    user.getVehicleName(),
+                    user.getDriverName(),
+                    user.getPosition(),
+                    user.getCarClass()));
         }
         return fahrer;
     }

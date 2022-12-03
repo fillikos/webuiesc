@@ -11,16 +11,13 @@ import java.io.*;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class GridIniTool {
 
     private HashMap<String, Fahrzeug> insgesamtFahrer;
     private HashMap<String, Fahrzeug> insgesamtFahrerNeu;
-    private ArrayList<String> fahrer;
+    private List<String> fahrer;
     private ModConfig mod = new ModConfig();
 
     public GridIniTool() {
