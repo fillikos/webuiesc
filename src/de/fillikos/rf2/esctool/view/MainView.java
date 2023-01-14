@@ -18,19 +18,20 @@ public class MainView {
     private boolean startload = false;
     private JLabel text;
     private MainMenu mainMenu;
-    private final ArrayList<String> startgruppe = new ArrayList<>();
-    private final ArrayList<ArrayList<String>> startgruppen = new ArrayList<>();
     private ArrayList<ServerConfig> serverConfigList = new ArrayList<>();
     private ArrayList<ModConfig> modConfigList = new ArrayList<>();
-    private JComboBox boxServer;
-    private JComboBox boxMod;
+    private ArrayList<String> tempUserList = new ArrayList<>();
+    private final JComboBox<String> boxServer;
+    private final JComboBox<String> boxMod;
+    private final JComboBox<String> boxUser;
+    private final JCheckBox checkAdditionalInfo = new JCheckBox();
     private JButton btnCreateGrid;
     private File rf2Dir = new File("C:");
 
     public MainView() {
         frame = new JFrame();
         frame.setTitle("rF2 Admin Tool - " + rf2Dir);
-        frame.setSize(450, 240);
+        frame.setSize(800, 240);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -44,11 +45,9 @@ public class MainView {
         panSouth.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         mainMenu = new MainMenu();
-        boxServer = new JComboBox();
-        boxMod = new JComboBox();
-
-        String[] modAuswahl = {"VRrF2LN", "VES", "VRLSM"};
-
+        boxServer = new JComboBox<>();
+        boxMod = new JComboBox<>();
+        boxUser = new JComboBox<>();
 
         JButton btnStart = new JButton("start");
         btnStart.addActionListener(e -> {
@@ -63,6 +62,8 @@ public class MainView {
                 btnStart.setText("Stopp");
                 for (ServerConfig server : serverConfigList) {
                     if (server.getServerName().equals(boxServer.getSelectedItem())) {
+                        File file = new File(server.getRf2UserDir());
+                        Controller.setDir(file.getParentFile().getParentFile());
                         Controller.setServer(new Connection("http://" + server.getIp() + ":", server.getPort()));
                         for (ModConfig mod : modConfigList) {
                             if (mod.getModName().equals(boxMod.getSelectedItem())) {
@@ -85,17 +86,21 @@ public class MainView {
         });
 
         panSouth.add(btnCreateGrid);
+        panSouth.add(boxUser);
+        checkAdditionalInfo.setText("Zusatzinfos");
+        checkAdditionalInfo.setSelected(false);
+        panSouth.add(checkAdditionalInfo);
 
         JPanel panNorth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panNorth.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
         text = new JLabel();
-        text.setText("<html><body>Hallo<br>" +
+        text.setText("<html><body><div style=\"font-family:consolas;\">Hallo<br>" +
                 "1. UserData Ordner des Servers auswählen (Server verwalten),<br>" +
                 "2. Mod anlegen und auswählen (Mod konfigurieren),<br>" +
                 "3. wenn noch nicht in auswahl enthalten, Tool neu starten,<br>" +
                 "4. Start drücken und alles läuft automatisch<br><t>&nbsp&nbsp&nbsp&nbsp(Serverdaten werden gezeigt),<br>" +
-                "5. grid.ini <u>kann</u> manuell erstellt werden, muss aber nicht<br>" +
+                "5. grid.ini <u>kann</u> manuell erstellt werden, muss aber nicht<br></div>" +
                 "</body></html>");
         panNorth.add(text);
 
@@ -156,6 +161,25 @@ public class MainView {
         }
     }
 
+    public void setUserList(ArrayList<String> userList) {
+        if (!tempUserList.equals(userList)) {
+            String temp = "";
+            if (boxUser.getSelectedItem() != null) {
+                temp = boxUser.getSelectedItem().toString();
+            }
+            boxUser.removeAllItems();
+            for (String user: userList) {
+                boxUser.addItem(user);
+            }
+            if (!temp.equals("")) {
+                boxUser.setSelectedItem(temp);
+            } else {
+                boxUser.setSelectedIndex(0);
+            }
+            tempUserList = userList;
+        }
+    }
+
     public MainMenu getMainMenu() {
         return mainMenu;
     }
@@ -169,5 +193,17 @@ public class MainView {
         frame.setTitle("rF2 Admin Tool");
 //        frame.setTitle("rF2 Admin Tool - " + rf2Dir);
         frame.repaint();
+    }
+
+    public String getSelectedUser() {
+        if (boxUser.getSelectedItem() != null) {
+            System.out.println(boxUser.getSelectedItem().toString());
+            return boxUser.getSelectedItem().toString();
+        }
+        return "";
+    }
+
+    public boolean getCheckAdditionalInfo() {
+        return checkAdditionalInfo.isSelected();
     }
 }

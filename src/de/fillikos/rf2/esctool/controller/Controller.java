@@ -48,7 +48,7 @@ public class Controller {
 
     public static void setViewData() {
         addLog("Controller.setViewData()");
-        vc.setViewData(dc.getServerData().getSessionInfo());
+        vc.setViewData(dc.getServerData().getSessionInfo(), dc.getServerData().getUsers());
         addLog("Controller.setViewData() geladen");
     }
 
