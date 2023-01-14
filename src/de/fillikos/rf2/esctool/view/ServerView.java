@@ -87,13 +87,15 @@ public class ServerView {
                 int rc = chooser.showDialog(frame, "rFactor 2 User Verzeichnis wählen");
                 if (rc == JFileChooser.APPROVE_OPTION) {
                     ObjectMapper om = new ObjectMapper();
+                    String player = chooser.getSelectedFile().toString().substring(chooser.getSelectedFile().toString().lastIndexOf("\\"));
                     try {
-                        PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + "\\player.json"), PlayerJson.class);
+                        PlayerJson pJson = om.readValue(new File(chooser.getSelectedFile().toString() + player + ".json"), PlayerJson.class);
                         MultiplayerJson mpJson = om.readValue(new File(chooser.getSelectedFile() + "\\Multiplayer.json"), MultiplayerJson.class);
-                        tableModel.addRow(new String[]{mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
+                        tableModel.addRow(new String[]{
+                                mpJson.getMultiplayer_Server_Options().getDefault_Game_Name(),
                                 mpJson.getMultiplayer_General_Options().getBind_IP().equals("0.0.0.0") ? "localhost" : mpJson.getMultiplayer_General_Options().getBind_IP(),
                                 String.valueOf(pJson.getMiscellaneous().getWebUI_port()),
-                                chooser.getSelectedFile().toString()});
+                                chooser.getSelectedFile().toString() });
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
