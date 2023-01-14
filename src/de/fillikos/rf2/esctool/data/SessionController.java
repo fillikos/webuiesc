@@ -226,37 +226,6 @@ public class SessionController {
                     }
                 }
                 break;
-
-//            case PRACTICE1:
-//                break;
-//            case PRACTICE2:
-//                break;
-//            case PRACTICE3:
-//                break;
-//            case PRACTICE4:
-//                break;
-//            case PRACTICE5:
-//                break;
-//            case QUALIFY1:
-//                break;
-//            case QUALIFY2:
-//                break;
-//            case QUALIFY3:
-//                break;
-//            case QUALIFY4:
-//                break;
-//            case QUALIFY5:
-//                break;
-//            case RACE1:
-//                break;
-//            case RACE2:
-//                break;
-//            case RACE3:
-//                break;
-//            case RACE4:
-//                break;
-//            case RACE5:
-//                break;
         }
 
 

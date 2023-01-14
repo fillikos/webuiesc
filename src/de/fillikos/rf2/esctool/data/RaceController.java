@@ -114,11 +114,11 @@ public class RaceController {
                                 if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] || user.getLapsCompleted().equals("1")) {
                                     Controller.addError("Start " + (i + 1) + ". Startgruppe");
                                     if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
+                                        writeUsers(users, i + 1);
                                         server.sendchat("Go Go Go");
-                                        writeUsers(users);
                                     } else {
+                                        writeUsers(users, i+1);
                                         server.sendchat((i + 1) + ". Startgruppe Go Go Go");
-                                        writeUsers(users);
                                     }
                                     startgruppeGo[i] = false;
                                     if (i < (startgruppeGo.length - 1)) {
@@ -154,12 +154,16 @@ public class RaceController {
 
     }
 
-    private void writeUsers(User[] users) {
+    private void writeUsers(User[] users, int i) {
+        StartAuswertung auswertung = new StartAuswertung(users);
+        auswertung.getGaps();
         System.out.println("RaceController.writeUsers()");
         Controller.addWarning("RaceController: writeUsers() " + Arrays.toString(users));
-        File file = new File(rfDir.getParent() + "\\Users_Startfreigabe.txt");
+        File file = new File(rfDir + "\\UserData\\Log\\Results\\Users_Startfreigabe_" + i + "_Startgruppe.txt");
         System.out.println("users: " + Arrays.toString(users));
         try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
+            br.write(auswertung.getErgebnis().toString());
+            br.write("\n\n");
             br.write(Arrays.toString(users));
         } catch (IOException e) {
             Controller.addError("Fehler beim Schreiben der Users_Startfreigabe.txt:\n" + Arrays.toString(e.getStackTrace()));
