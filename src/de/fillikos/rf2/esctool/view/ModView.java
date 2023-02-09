@@ -1,6 +1,7 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
+import de.fillikos.rf2.esctool.controller.ViewController;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 
@@ -14,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ModView {
 
@@ -33,7 +35,7 @@ public class ModView {
     private final DefaultTableModel dtmRace;
     private final JTable tabChatRace;
 
-    private final JTextField txtModName;
+    private JTextField txtModName;
     private final JTextField txtTimeBtSg;
     private final JTextField txtTimeToDoStrafe;
     private final JTextField txtMinStartPos;
@@ -71,6 +73,7 @@ public class ModView {
                         refreshModConfigList();
                         saveModToList();
                         Controller.saveModConfig(modConfigList);
+                        break;
                     }
                 }
                 Controller.setModManagement();
@@ -198,10 +201,20 @@ public class ModView {
 
         JButton btnSave = new JButton("Speichern");
         btnSave.addActionListener(e -> {
+            String tempMod = txtModName.getText();
+            for (ModConfig mod: modConfigList) {
+                if (mod.getModName().equals("Unbenannt") && !txtModName.getText().equals("Unbenannt")) {
+                    modConfigList.remove(mod);
+                    break;
+                }
+            }
             saveModToList();
             Controller.saveModConfig(modConfigList);
             JOptionPane.showMessageDialog(frame,
                     "Die Mods wurden erfolgreich gespeichert.");
+            System.out.println(modConfigList);
+            setModConfigList(modConfigList);
+            boxMods.setSelectedItem(tempMod);
         });
 
         JButton btnNew = new JButton("Neu ...");
@@ -214,12 +227,12 @@ public class ModView {
                 }
             }
             if (!vorhanden) {
-                boxMods.setSelectedItem("Unbenannt");
                 ModConfig mod = new ModConfig();
                 mod.setModName("Unbenannt");
                 modConfigList.add(mod);
                 refreshModConfigList();
                 showCurrentMod(mod);
+                boxMods.setSelectedItem("Unbenannt");
             }
         });
 
