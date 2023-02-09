@@ -2,8 +2,7 @@ package de.fillikos.rf2.esctool.data;
 
 import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class StartAuswertung {
 
@@ -15,49 +14,47 @@ public class StartAuswertung {
     }
 
     public void getGaps() {
-        // Die letzten beiden müssen nicht überprüft werden Todo
-        for (int i = 0; i < users.length; i++) {
-            if ( (i+2) >= users.length ) {
-                break;
-            }
-            User user = getUserFromPosition( i + 1 );
-            assert user != null;
-            User userBehind = getUserBehindPosition( user );
+        HashMap<Integer, User> leftSide = new HashMap<>();
+        HashMap<Integer, User> rightSide = new HashMap<>();
 
-            if ( userBehind != null ) {
-                ergebnis.add(user.getPosition() + ". " + user.getVehicleName() +
-                        " Abstand zu " + userBehind.getPosition() + ". " + userBehind.getVehicleName() +
-                        " beträgt: " + (Float.parseFloat(user.getLapDistance()) - Float.parseFloat(userBehind.getLapDistance())) + " Meter (" +
-                        user.getLapDistance() + "-" + userBehind.getLapDistance() + ") " +
-                        user.getPathLateral() + " " + userBehind.getPathLateral());
+        for (User u: users) {
+            if (u.getPathLateral().contains("-")) {
+                leftSide.put(Integer.parseInt(u.getPosition()), u);
+            } else {
+                rightSide.put(Integer.parseInt(u.getPosition()), u);
             }
+        }
+
+        List<Integer> sortedLeftSide = new ArrayList<>(leftSide.keySet());
+        List<Integer> sortedRightSide = new ArrayList<>(rightSide.keySet());
+
+        System.out.println("Left Side: " + sortedLeftSide);
+        System.out.println("Right Side: " + sortedRightSide);
+
+        for (int i = 0; i<sortedLeftSide.size() -1; i++) {
+            ergebnis.add(getString(sortedLeftSide, i));
+        }
+
+        for (int i = 0; i<sortedRightSide.size() -1; i++) {
+            ergebnis.add(getString(sortedLeftSide, i));
         }
     }
 
-    private User getUserBehindPosition(User user) {
-        int positionInFront = Integer.parseInt(user.getPosition());
-        int positionBehind = 9999;
-        int position;
+    private String getString(List<Integer> sortedList, int i) {
+        User vehicleFront = users[sortedList.get(i)];
+        User vehicleBehind = users[sortedList.get(i+1)];
 
-        for (User u: users) {
-            position = Integer.parseInt(u.getPosition());
-            if ( position > positionInFront &&
-                    position < positionBehind &&
-                            u.getPathLateral().contains("-") == user.getPathLateral().contains("-")) {
-                positionBehind = position;
-            }
-        }
-        System.out.println(positionBehind);
-        return getUserFromPosition(positionBehind);
-    }
-
-    private User getUserFromPosition(int position) {
-        for (User u: users) {
-            if ( u.getPosition().equals(String.valueOf(position))) {
-                return u;
-            }
-        }
-        return null;
+        return vehicleFront.getDriverName() +
+                " (" +
+                vehicleFront.getPosition() +
+                ")" +
+                " ist vor " +
+                vehicleBehind.getDriverName() +
+                " (" +
+                vehicleFront.getPosition() +
+                ")" +
+                " mit einem Abstand von " +
+                (Float.parseFloat(vehicleFront.getLapDistance()) - Float.parseFloat(vehicleBehind.getLapDistance()));
     }
 
     public List<String> getErgebnis() {
