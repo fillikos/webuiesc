@@ -39,6 +39,7 @@ public class ModView {
     private final JTextField txtTimeBtSg;
     private final JTextField txtTimeToDoStrafe;
     private final JTextField txtMinStartPos;
+    private final JTextField txtMaxStartPos;
     private final JCheckBox cbGridIniErstellen;
     private final JCheckBox cbRecordHotlaps;
     private final JCheckBox cbRennfreigabe;
@@ -402,7 +403,9 @@ public class ModView {
         JLabel lblTimeStrafe = new JLabel("sek wann strafen.ini laden");
         txtMinStartPos = new JTextField();
         txtMinStartPos.setColumns(4);
-        JLabel lblMinStartPos = new JLabel("Startfreigabe vor Startlinie (m)");
+        txtMaxStartPos = new JTextField();
+        txtMaxStartPos.setColumns(4);
+        JLabel lblMinStartPos = new JLabel("- vor + nach SZL");
 
 
         cbDoppelTeam = new JCheckBox("Prüfe auf doppelte Teamfahrzeuge");
@@ -497,7 +500,10 @@ public class ModView {
         g.gridx = 0;
         panCenter.add(txtMinStartPos, g);
         g.gridx = 1;
-        g.gridwidth = 2;
+        g.gridwidth = 0;
+        panCenter.add(txtMaxStartPos, g);
+        g.gridx = 2;
+        g.gridwidth = 0;
         panCenter.add(lblMinStartPos, g);
         g.gridx = 4;
         panCenter.add(cbPit7, g);
@@ -573,6 +579,7 @@ public class ModView {
         mod.setModName(txtModName.getText());
         mod.setTimeBetweenSG(Long.parseLong(txtTimeBtSg.getText()));
         mod.setMinStartPos(Integer.parseInt(txtMinStartPos.getText()));
+        mod.setMaxStartPos(Integer.parseInt(txtMaxStartPos.getText()));
         mod.setGridIniErstellen(cbGridIniErstellen.isSelected());
         mod.setRecordHotlaps(cbRecordHotlaps.isSelected());
         mod.setRennfreigabeByChat(cbRennfreigabe.isSelected());
@@ -644,6 +651,7 @@ public class ModView {
         txtTimeBtSg.setText(String.valueOf(mod.getTimeBetweenSG()));
         txtTimeToDoStrafe.setText(String.valueOf(mod.getTimeToDoStrafen()));
         txtMinStartPos.setText(String.valueOf(mod.getMinStartPos()));
+        txtMaxStartPos.setText(String.valueOf(mod.getMaxStartPos()));
         cbGridIniErstellen.setSelected(mod.isGridIniErstellen());
         cbRecordHotlaps.setSelected(mod.isRecordHotlaps());
         cbRennfreigabe.setSelected(mod.isRennfreigabeByChat());
