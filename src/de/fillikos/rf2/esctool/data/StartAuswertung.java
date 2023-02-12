@@ -28,9 +28,6 @@ public class StartAuswertung {
         List<Integer> sortedLeftSide = new ArrayList<>(leftSide.keySet());
         List<Integer> sortedRightSide = new ArrayList<>(rightSide.keySet());
 
-        System.out.println("Left Side: " + sortedLeftSide);
-        System.out.println("Right Side: " + sortedRightSide);
-
         for (int i = 0; i<sortedLeftSide.size() -1; i++) {
             ergebnis.add(getString(sortedLeftSide, i));
         }

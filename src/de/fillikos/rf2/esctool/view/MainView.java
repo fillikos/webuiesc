@@ -197,7 +197,6 @@ public class MainView {
 
     public String getSelectedUser() {
         if (boxUser.getSelectedItem() != null) {
-            System.out.println(boxUser.getSelectedItem().toString());
             return boxUser.getSelectedItem().toString();
         }
         return "";

@@ -30,9 +30,6 @@ public class Strafen {
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             String zeile;
             while ((zeile = in.readLine()) != null) {
-//                    System.out.println(zeile);
-//                    System.out.println(zeile.substring(1, 4));
-//                    System.out.println(zeile.substring(zeile.indexOf(" +") + 2 , zeile.indexOf(" St")));
                 if (insgesamt.containsKey(Integer.parseInt(zeile.substring(1, 4)))) {
                     if (zeile.contains("==> +")) {
                         insgesamt.get(Integer.parseInt(zeile.substring(1, 4))).setStrafe(Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St"))));
@@ -68,10 +65,8 @@ public class Strafen {
                     br.write(String.format("/addpenalty %s %s",
                             strafe,
                             fahrerName));
-                    System.out.println("Strafe für " + fahrerName + " " + strafe);
                     br.newLine();
                 } else {
-                    System.out.println("Strafe für Fahrer der nicht auf dem Server ist." + strafe);
                 }
             }
         } catch (IOException e) {

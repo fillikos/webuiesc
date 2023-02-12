@@ -270,7 +270,6 @@ public class ViewController {
         } else {
             dayTime = Long.parseLong(sessionInfo.getStartEventTime().substring(0, sessionInfo.getStartEventTime().indexOf("."))) * 1_000;
         }
-        System.out.println(dayTime);
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -290,7 +289,6 @@ public class ViewController {
                         Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1_000;
                 break;
         }
-        System.out.println(time);
         DateFormat df = new SimpleDateFormat("HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT0"));
 
@@ -409,7 +407,7 @@ public class ViewController {
                 System.out.println(tmpDir + " Ordner erstellt");
             } else {
                 // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
-                System.out.println("Fehler");
+//                System.out.println("Fehler");
             }
         }
         // 2. TempDateien laden
@@ -443,10 +441,9 @@ public class ViewController {
         // Ordner nicht vorhanden -> erstellen
         if (!tmpDir.exists() || tmpDir.exists() && !tmpDir.isDirectory()) {
             if (tmpDir.mkdirs()) {
-                System.out.println(tmpDir + " Ordner erstellt");
+//                System.out.println(tmpDir + " Ordner erstellt");
             } else {
                 // Wenn Datei mit gleichem Namen, kann kein Ordner erstellt werden => TODO Fehlermeldung
-                System.out.println("Fehler");
             }
         }
         // 2. TempDateien laden

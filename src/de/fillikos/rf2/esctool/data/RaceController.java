@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class RaceController {
 
@@ -31,31 +32,22 @@ public class RaceController {
 
     }
 
-    public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig, File rfDir) {
+    public void handleRace(SessionInfo sessionInfo, User[] users, ModConfig modConfig, File rfDir, Connection server) {
+        this.server = server;
         this.users = users;
         this.modConfig = modConfig;
         this.rfDir = rfDir;
+        SessionInfo sessionInfoOld = this.sessionInfo;
+        this.sessionInfo = sessionInfo;
         if (!startgruppenInitialized) {
             startgruppenInitialized = true;
             settingUpStartgruppen(modConfig.getStartgruppeClass().size(), modConfig.getMinStartPos(), modConfig.getMaxStartPos());
-            for (float v : startLapPosition) {
-                if (v < (Float.parseFloat(sessionInfo.getLapDistance()) - modConfig.getMinStartPos()) ||
-                        v < 0) {
-                    startgruppenInitialized = false;
-                }
-            }
         }
-        SessionInfo sessionInfoOld = this.sessionInfo;
-        this.sessionInfo = sessionInfo;
-        System.out.println(modConfig.isFreigabeEinfuehrungsrundeChat());
         if (modConfig.isFreigabeEinfuehrungsrundeChat() && sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
             if (modConfig.getStartgruppeClass().size() > 1) {
-                System.out.println("Start des Rennens");
                 if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
-                    System.out.println("Los");
                     server.sendchat("Start der Einfuehrungsrunde");
                 } else {
-                    System.out.println("1. Startgruppe Los");
                     server.sendchat("1. Startgruppe Los");
                 }
 
@@ -70,7 +62,6 @@ public class RaceController {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println(startgruppe + ". Startgruppe Los");
                             server.sendchat(startgruppe + ". Startgruppe Los");
                         }
                     }).start();
@@ -86,7 +77,6 @@ public class RaceController {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("Strafen.ini wurde ausgeführt");
                     server.sendchat("/batch strafen.ini");
                 }
             }).start();
@@ -100,13 +90,11 @@ public class RaceController {
                     for (User user : users) {
                         if (user.getPosition().equals(gridLeader) &&
                                 (user.getLapsCompleted().equals("0") || user.getLapsCompleted().equals("1"))) {
-                            System.out.println(user.getLapsCompleted() + " " + user.getLapDistance() + " " + startLapPosition[i]);
                             if (setBeginnStartprozedur) {
                                 Controller.addError(user.getDriverName() + " " + user.getLapDistance() + " " + startLapPosition[i] + " " + user.getLapsCompleted() + " " + sessionInfo.getCurrentEventTime());
                                 if (Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.8) {
                                     Controller.setAktualisierungsrate(300);
                                 }
-                                // TODO StartRunde mit einfügen, ob vor oder nach der Ziellinie die Startfreigabe erfolgen soll
                                 if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] && user.getLapsCompleted().equals(startLap[i])) {
                                     Controller.addError("Start " + (i + 1) + ". Startgruppe");
                                     if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
@@ -144,7 +132,6 @@ public class RaceController {
             }
             if (alleDrin && !serververlassen) {
                 serververlassen = true;
-                System.out.println("Der Server kann jetzt verlassen werden.");
                 server.sendchat("Der Server kann jetzt verlassen werden.");
             }
         }
@@ -159,7 +146,7 @@ public class RaceController {
                 // Test für variable Startfreigabe vor und nach Start / Ziel
                 // negative LapDistance muss umgerechnet werden oä
                 if (user.getLapDistance().charAt(0) == '-') {
-                    System.out.println(user.getLapDistance());
+//                    System.out.println(user.getLapDistance());
                 }
                 int position = Integer.parseInt(user.getPosition());
                 if (startPos > position) {
@@ -168,17 +155,14 @@ public class RaceController {
                 }
             }
         }
-        System.out.println("startPos: " + startPos);
         return gridLeader;
     }
 
     private void writeUsers(User[] users, int i) {
         StartAuswertung auswertung = new StartAuswertung(users);
         auswertung.getGaps();
-        System.out.println("RaceController.writeUsers()");
         Controller.addWarning("RaceController: writeUsers() " + Arrays.toString(users));
         File file = new File(rfDir + "\\UserData\\Log\\Results\\Users_Startfreigabe_" + i + "_Startgruppe.txt");
-        System.out.println("users: " + Arrays.toString(users));
         try (BufferedWriter br = new BufferedWriter(new FileWriter(file))) {
             br.write(auswertung.getErgebnis().toString());
             br.write("\n\n");
@@ -200,37 +184,12 @@ public class RaceController {
 
     private float generateRandomStartPos(int minStartPos, int maxStartPos) {
         if (minStartPos == 0 && maxStartPos == 0) {
-            return Float.parseFloat(sessionInfo.getLapDistance());
+            return 0.00f;
         }
-        float startPos = 0;
-        if (minStartPos < 0) {
-            try {
-                do {
-                    startPos = (float) (
-                            (Float.parseFloat(sessionInfo.getLapDistance()) + maxStartPos) -
-                                    (Float.parseFloat(sessionInfo.getLapDistance()) + minStartPos) +
-                                    (Math.random() * 1_000)
-                    );
-                } while (startPos < (Float.parseFloat(sessionInfo.getLapDistance() + maxStartPos) ) &&
-                        startPos > (Float.parseFloat(sessionInfo.getLapDistance() + minStartPos) ));
-            } catch (NumberFormatException e) {
-                Controller.addError("Fehler beim erstellen der RandomStartPos");
-                startgruppenInitialized = false;
-            }
-            if (startPos > Float.parseFloat(sessionInfo.getLapDistance())) {
-                startPos = startPos - Float.parseFloat(sessionInfo.getLapDistance());
-            }
-        } else {
-            try {
-                do {
-                    startPos = (float) (maxStartPos - minStartPos + (Math.random() * 1_000) );
-                } while (startPos < maxStartPos  && startPos > minStartPos );
-            } catch (NumberFormatException e) {
-                Controller.addError("Fehler beim erstellen der RandomStartPos");
-                startgruppenInitialized = false;
-            }
+        float startPos = new Random().nextInt(maxStartPos - minStartPos + 1) + Float.parseFloat(sessionInfo.getLapDistance()) + minStartPos;
+        if (startPos > Float.parseFloat(sessionInfo.getLapDistance())) {
+            startPos = startPos - Float.parseFloat(sessionInfo.getLapDistance());
         }
-        System.out.println("StartPos: " + startPos);
         return startPos;
     }
 
@@ -245,7 +204,7 @@ public class RaceController {
         for (int i = 0; i < anzahlStartgruppen; i++) {
             startgruppeGo[i] = false;
             startLapPosition[i] = generateRandomStartPos(minStartPos, maxStartPos);
-            if (startLapPosition[i] < maxStartPos) {
+            if (startLapPosition[i] < maxStartPos || startLapPosition[i] == 0.00f) {
                 startLap[i] = "1";
             } else {
                 startLap[i] = "0";

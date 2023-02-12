@@ -213,7 +213,6 @@ public class ModView {
             Controller.saveModConfig(modConfigList);
             JOptionPane.showMessageDialog(frame,
                     "Die Mods wurden erfolgreich gespeichert.");
-            System.out.println(modConfigList);
             setModConfigList(modConfigList);
             boxMods.setSelectedItem(tempMod);
         });
@@ -642,7 +641,6 @@ public class ModView {
         nachrichtenGesamt.add(nachrichtenWarmUp);
         nachrichtenGesamt.add(nachrichtenRace);
         mod.setManuelleNachrichten(nachrichtenGesamt);
-        System.out.println(nachrichtenGesamt);
         modConfigList.add(mod);
     }
 

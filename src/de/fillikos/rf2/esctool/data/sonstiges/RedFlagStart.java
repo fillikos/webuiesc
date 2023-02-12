@@ -37,11 +37,6 @@ public class RedFlagStart {
                 br.write(String.format("/editgrid %d V:%s",
                         position++,
                         user.getVehicleName()));
-                System.out.println(user.getCarNumber() + " " +
-                        user.getVehicleName() + " " +
-                        user.getDriverName() + " " +
-                        user.getPosition() + " " +
-                        user.getLapDistance());
                 br.newLine();
 
             }
@@ -84,7 +79,6 @@ public class RedFlagStart {
     public void runStartprozedur() {
         for (User user : startaufstellung) {
             server.sendchat("/w " + user.getDriverName() + " Go Go Go " + user.getDriverName());
-            System.out.println(new Date().toString());
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -176,7 +170,6 @@ public class RedFlagStart {
         HashMap<String, String> lapsDone = new HashMap<>();
         for (int i = 1; i < teams.length; i++) {
             String[] lastLap = teams[i].split("\\{");
-            System.out.println(lastLap[lastLap.length - 1]);
             int laps = 0;
             String fahrer = teams[i].substring(
                     teams[i].indexOf("\"driverName\":\"") + 15,
@@ -194,9 +187,6 @@ public class RedFlagStart {
             if (lapAddieren.contains(vehicleName)) {
                 laps = laps + 1;
             }
-
-//            System.out.println(fahrer + " " + nummer + " " + laps);
-
             if (is24h) {
                 lapsDone.put(nummer, String.valueOf(laps));
             } else {
@@ -273,36 +263,29 @@ public class RedFlagStart {
 
     public void getFahrerListe() {
         String history = readHistory();
-//        System.out.println(history);
         String[] teams = history.split("\\[");
-        System.out.println(teams.length);
-
         ArrayList<String> fahrerList = new ArrayList<>();
         for (int i = 1; i < teams.length; i++) {
-//            System.out.println(teams[i]);
             String[] teamsList = teams[i].split("\\{");
-            System.out.println(teams[i].substring(
-                    teams[i].indexOf("vehicleName") + 14,
-                    teams[i].indexOf("\"", teams[i].indexOf("vehicleName") + 15)
-            ));
+//            System.out.println(teams[i].substring(
+//                    teams[i].indexOf("vehicleName") + 14,
+//                    teams[i].indexOf("\"", teams[i].indexOf("vehicleName") + 15)
+//            ));
             for (int j = 1; j < teamsList.length; j++) {
                 String fahrer = teamsList[j].substring(
                         teamsList[j].indexOf("\"driverName\":\"") + 14,
                         teamsList[j].indexOf("\"", teams[i].indexOf(",\"driverName\":\"") + 15));
                 if (!fahrerList.contains(fahrer)) {
                     fahrerList.add(fahrer);
-                    System.out.println(fahrer);
                 }
                 if (j == teamsList.length - 1) {
-                    System.out.println(teamsList[j].substring(
-                            teamsList[j].indexOf("position") + 10,
-                            teamsList[j].indexOf(",", teams[i].indexOf("position") + 10)
-                    ));
+//                    System.out.println(teamsList[j].substring(
+//                            teamsList[j].indexOf("position") + 10,
+//                            teamsList[j].indexOf(",", teams[i].indexOf("position") + 10)
+//                    ));
                 }
             }
 
         }
-        System.out.println(fahrerList);
-        System.out.println(fahrerList.size());
     }
 }

@@ -33,7 +33,6 @@ public class WebUI {
     }
 
     public void loadServer() {
-        System.out.println("WebUI.loadServer()");
         users = new User[0];
         ObjectMapper om = new ObjectMapper();
         try {
@@ -56,15 +55,11 @@ public class WebUI {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(users.length);
     }
 
     public List<String> getFahrer() {
-        System.out.println("WebUI.getFahrer()");
         loadServer();
         List<String> fahrer = new ArrayList<>();
-        System.out.println(Arrays.toString(users));
-        System.out.println("test");
 
         for (User user : users) {
             fahrer.add(String.format("##%s##%s##%s##%s",

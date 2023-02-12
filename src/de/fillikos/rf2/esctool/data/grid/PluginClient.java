@@ -190,10 +190,9 @@ public class PluginClient {
 //                    System.out.println(vehicleData[i].toString());
                     String[] nummer = vehicleName.split("##");
                     if (nummer.length > 1) {
-                        System.out.println(String.format("##%s##%s##%s##%s", nummer[1].substring(0, 3), driverName, place, vehicleClass));
                         fahrer.add(String.format("##%s##%s##%s##%s", nummer[1].substring(0, 3), driverName, place, vehicleClass));
                     } else {
-                        System.out.println(vehicleName);
+
                     }
 
                 }

@@ -90,7 +90,6 @@ public class SessionController {
         long endEventTime = Long.parseLong(sessionInfo.getEndEventTime().substring(0, sessionInfo.getEndEventTime().indexOf(".")));
         long currentEventTime = Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf(".")));
 
-        System.out.println(sessionInfo.getCurrentEventTime());
         Controller.addLog("SessionController Session: " + sessionInfo.getSession());
         Controller.addLog(modConfig.toString());
 
@@ -189,7 +188,6 @@ public class SessionController {
                 //60 Sekunden vor Ende des WarmUps wird die Automatische Startaufstellung durchlaufen
                 if (!gridIniErstellt && ((endEventTime - 1) < currentEventTime)) {
                     gridIniErstellt = true;
-                    System.out.println("WarmUp");
                     setFromUI(false);
                     if (modConfig.isGridIniErstellen()) {
                         Controller.addError("SessionController.GridINI() wird ausgeführt");
@@ -217,7 +215,7 @@ public class SessionController {
                 }
                 if (modConfig.isRennfreigabeByChat() || modConfig.isFreigabeEinfuehrungsrundeChat()) {
                     Controller.addError("SessionController -> handleRace() wird ausgeührt");
-                    raceController.handleRace(sessionInfo, users, modConfig, rfDir);
+                    raceController.handleRace(sessionInfo, users, modConfig, rfDir, server);
                 }
                 if (sessionInfo.getGamePhase().equals("8")) {
                     if (!rennende) {
@@ -279,7 +277,7 @@ public class SessionController {
             }
             for (User user : users) {
                 if (doubleTeams.contains(user.getVehicleName())) {
-                    server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt");
+                    server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt.");
                     server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getVehicleName());
                     server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
                     Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getVehicleName() + ")");
@@ -320,14 +318,11 @@ public class SessionController {
             //3. Ist eine QualiXML vorhanden und ausgewählt wird die Grid.ini und die Strafen.ini erstellt
             GridIniTool dc = new GridIniTool();
             if (!file.toString().equals("D:\\")) {
-                System.out.println(file);
                 dc.runGridIniTool(file, server, modConfig);
-                System.out.println("grid.ini und strafen.ini wurden erstellt");
                 Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
                 //4. Nach dem erstellen wird die grid.ini ausgeführt
                 if (!isFromUI()) {
                     server.sendchat("/batch grid.ini");
-                    System.out.println("grid.ini wurde ausgeführt");
                     Controller.addWarning("gridINI(): grid.ini wurde ausgeführt");
                     setFromUI(true);
                 }
