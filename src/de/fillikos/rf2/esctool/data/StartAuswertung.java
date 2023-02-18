@@ -33,7 +33,7 @@ public class StartAuswertung {
         }
 
         for (int i = 0; i<sortedRightSide.size() -1; i++) {
-            ergebnis.add(getString(sortedLeftSide, i));
+            ergebnis.add(getString(sortedRightSide, i));
         }
     }
 
@@ -48,7 +48,7 @@ public class StartAuswertung {
                 " ist vor " +
                 vehicleBehind.getDriverName() +
                 " (" +
-                vehicleFront.getPosition() +
+                vehicleBehind.getPosition() +
                 ")" +
                 " mit einem Abstand von " +
                 (Float.parseFloat(vehicleFront.getLapDistance()) - Float.parseFloat(vehicleBehind.getLapDistance()));

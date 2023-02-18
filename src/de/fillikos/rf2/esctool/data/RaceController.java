@@ -101,7 +101,7 @@ public class RaceController {
                                         writeUsers(users, i + 1);
                                         server.sendchat("Go Go Go");
                                     } else {
-                                        writeUsers(users, i+1);
+                                        writeUsers(users, i + 1);
                                         server.sendchat((i + 1) + ". Startgruppe Go Go Go");
                                     }
                                     startgruppeGo[i] = false;
