@@ -128,6 +128,7 @@ public class SessionController {
                     String[] element = eintrag.split("==>");
                     if (element[1].equals(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) &&
                             !manuellChatGesendet.contains(element[1])) {
+                        Controller.addLog(element[2]);
                         server.sendchat(element[2]);
                         manuellChatGesendet.add(element[1]);
                     }
