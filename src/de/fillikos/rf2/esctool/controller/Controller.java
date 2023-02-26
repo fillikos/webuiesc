@@ -5,6 +5,7 @@ import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -98,6 +99,18 @@ public class Controller {
         vc.getModView().getFrame().setVisible(true);
         vc.getModView().getFrame().setLocation(vc.getMainView().getFrame().getLocation());
         addLog("Controller.showModView() geladen");
+    }
+
+    public static void showUserInformation(String selectedValue) {
+        vc.showUserInformationView(selectedValue, vc.getMainView().getFrame().getLocation());
+    }
+
+    public static void showPenalizeView(String driverName, Point location) {
+        addLog("Controller.showPenalizeView()");
+        vc.getPenalizeView().setDriverName(driverName);
+        vc.getPenalizeView().getFrame().setVisible(true);
+        vc.getPenalizeView().getFrame().setLocation(location);
+        addLog("Controller.showPenalizeView() geladen");
     }
 
     public static void shutdown() {

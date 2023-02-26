@@ -6,32 +6,39 @@ import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainView {
 
+    private JList<String> vehicleList = new JList<>();
+    private final Font consolas = new Font("Consolas", Font.PLAIN, 11);
+    private JPanel panVehicle;
     private JFrame frame;
     private boolean startload = false;
     private JLabel text;
     private MainMenu mainMenu;
-    private ArrayList<ServerConfig> serverConfigList = new ArrayList<>();
-    private ArrayList<ModConfig> modConfigList = new ArrayList<>();
-    private ArrayList<String> tempUserList = new ArrayList<>();
+    private List<ServerConfig> serverConfigList = new ArrayList<ServerConfig>();
+    private List<ModConfig> modConfigList = new ArrayList<>();
+    private List<String> tempUserList = new ArrayList<>();
     private final JComboBox<String> boxServer;
     private final JComboBox<String> boxMod;
-    private final JComboBox<String> boxUser;
     private final JCheckBox checkAdditionalInfo = new JCheckBox();
     private JButton btnCreateGrid;
     private File rf2Dir = new File("C:");
 
+    private JPanel panSessionInfo = new JPanel();
+
     public MainView() {
         frame = new JFrame();
         frame.setTitle("rF2 Admin Tool - " + rf2Dir);
-        frame.setSize(800, 240);
+        frame.setSize(850, 600);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -47,7 +54,6 @@ public class MainView {
         mainMenu = new MainMenu();
         boxServer = new JComboBox<>();
         boxMod = new JComboBox<>();
-        boxUser = new JComboBox<>();
 
         JButton btnStart = new JButton("start");
         btnStart.addActionListener(e -> {
@@ -86,23 +92,14 @@ public class MainView {
         });
 
         panSouth.add(btnCreateGrid);
-        panSouth.add(boxUser);
-        checkAdditionalInfo.setText("Zusatzinfos");
-        checkAdditionalInfo.setSelected(false);
-        panSouth.add(checkAdditionalInfo);
 
         JPanel panNorth = new JPanel(new FlowLayout(FlowLayout.LEADING));
         panNorth.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
-        text = new JLabel();
-        text.setText("<html><body><div style=\"font-family:consolas;\">Hallo<br>" +
-                "1. UserData Ordner des Servers auswählen (Server verwalten),<br>" +
-                "2. Mod anlegen und auswählen (Mod konfigurieren),<br>" +
-                "3. wenn noch nicht in auswahl enthalten, Tool neu starten,<br>" +
-                "4. Start drücken und alles läuft automatisch<br><t>&nbsp&nbsp&nbsp&nbsp(Serverdaten werden gezeigt),<br>" +
-                "5. grid.ini <u>kann</u> manuell erstellt werden, muss aber nicht<br></div>" +
-                "</body></html>");
-        panNorth.add(text);
+        createServerInfo();
+        panNorth.add(panSessionInfo);
+        createVehicles();
+        panNorth.add(panVehicle);
 
         Container contentPane = frame.getContentPane();
         contentPane.add(mainMenu, BorderLayout.NORTH);
@@ -111,6 +108,159 @@ public class MainView {
 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+    }
+
+    private void createVehicles() {
+        panVehicle = new JPanel();
+        panVehicle.setPreferredSize(new Dimension(400,250));
+        panVehicle.setBorder(BorderFactory.createTitledBorder(new TitledBorder(""), "Vehicle Information",1, 0, consolas));
+
+        Font consolas = new Font("Consolas", Font.PLAIN, 11);
+
+        String[] test = {};
+        vehicleList = new JList<>(test);
+        vehicleList.setPreferredSize(new Dimension(360,170));
+        vehicleList.setMinimumSize(new Dimension(360,170));
+        vehicleList.setFont(consolas);
+
+        JScrollPane scrollPane = new JScrollPane(vehicleList);
+        scrollPane.setPreferredSize(new Dimension(378,190));
+
+        panVehicle.add(scrollPane);
+
+        // Button für den Aufruf den Penalize Fensters
+        JButton btnPenalty = new JButton("penalize");
+        btnPenalty.addActionListener(e -> {
+            if (!vehicleList.isSelectionEmpty()) {
+                Controller.showPenalizeView(vehicleList.getSelectedValue(), MouseInfo.getPointerInfo().getLocation());
+            }
+        });
+        panVehicle.add(btnPenalty);
+
+        // Button für DQ und UNDQ
+        JButton btnDQ = new JButton("dq/undq");
+        btnDQ.addActionListener(e -> {
+            if (!vehicleList.isSelectionEmpty()) {
+                if (vehicleList.getSelectedValue().contains(" (DQ)")) {
+                    Controller.sendChat("/undq " + vehicleList.getSelectedValue().substring(0, vehicleList.getSelectedValue().indexOf(" (DQ)")));
+                } else {
+                    Controller.sendChat("/dq " + vehicleList.getSelectedValue());
+                }
+            }
+        });
+        panVehicle.add(btnDQ);
+
+        // Button für ZusatzInfos
+        JButton btnUserInfo = new JButton("User");
+        btnUserInfo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!vehicleList.isSelectionEmpty()) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Controller.showUserInformation(vehicleList.getSelectedValue());
+                        }
+                    }).start();
+                }
+            }
+        });
+        panVehicle.add(btnUserInfo);
+    }
+
+    private void createServerInfo() {
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        gridBagLayout.columnWidths = new int[]{80,160,160};
+        panSessionInfo = new JPanel(gridBagLayout);
+        panSessionInfo.setPreferredSize(new Dimension(400,250));
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0,0,0,5);
+        c.gridy = 0;
+        c.gridx = 0;
+        c.weightx = 0.1;
+        panSessionInfo.add(newLabel("Game Name:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("1", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Flags:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("3", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("???::", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("5", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Clients:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("7", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Track:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("9", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Session Info:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("11", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Profilename:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("13", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Rain:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("15", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Temperature:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("17", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Time:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("19", JLabel.LEFT), c);
+        c.gridy++;
+        c.gridx = 0;
+        c.gridwidth = 1;
+        panSessionInfo.add(newLabel("Clouds:", JLabel.RIGHT), c);
+        c.gridx = 1;
+        c.gridwidth = 2;
+        panSessionInfo.add(newLabel("21", JLabel.LEFT), c);
+        panSessionInfo.setBorder(BorderFactory.createTitledBorder(new TitledBorder(""), "Session Information",1, 0, consolas));
+    }
+
+    private JLabel newLabel(String text, int allignement) {
+        JLabel label = new JLabel(text, allignement);
+        label.setFont(consolas);
+        return label;
     }
 
     public void showView() {
@@ -141,7 +291,7 @@ public class MainView {
         this.text = text;
     }
 
-    public ArrayList<ServerConfig> getServerConfigList() {
+    public java.util.List<ServerConfig> getServerConfigList() {
         return serverConfigList;
     }
 
@@ -161,25 +311,6 @@ public class MainView {
         }
     }
 
-    public void setUserList(ArrayList<String> userList) {
-        if (!tempUserList.equals(userList)) {
-            String temp = "";
-            if (boxUser.getSelectedItem() != null) {
-                temp = boxUser.getSelectedItem().toString();
-            }
-            boxUser.removeAllItems();
-            for (String user: userList) {
-                boxUser.addItem(user);
-            }
-            if (!temp.equals("")) {
-                boxUser.setSelectedItem(temp);
-            } else {
-                boxUser.setSelectedIndex(0);
-            }
-            tempUserList = userList;
-        }
-    }
-
     public MainMenu getMainMenu() {
         return mainMenu;
     }
@@ -195,14 +326,27 @@ public class MainView {
         frame.repaint();
     }
 
-    public String getSelectedUser() {
-        if (boxUser.getSelectedItem() != null) {
-            return boxUser.getSelectedItem().toString();
-        }
-        return "";
-    }
-
     public boolean getCheckAdditionalInfo() {
         return checkAdditionalInfo.isSelected();
+    }
+
+    public JPanel getPanSessionInfo() {
+        return panSessionInfo;
+    }
+
+    public void setPanSessionInfo(JPanel panSessionInfo) {
+        this.panSessionInfo = panSessionInfo;
+    }
+
+    public JPanel getPanVehicle() {
+        return panVehicle;
+    }
+
+    public JList<String> getVehicleList() {
+        return vehicleList;
+    }
+
+    public void setVehicleList(JList<String> vehicleList) {
+        this.vehicleList = vehicleList;
     }
 }
