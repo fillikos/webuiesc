@@ -17,7 +17,7 @@ public class Controller {
     private static final ArrayList<String> warnings = new ArrayList<>();
     private static final DataController dc = new DataController();
     private static final ViewController vc = new ViewController();
-    private static final String version = "1.2.2";
+    private static final String version = "2.0.0";
 
     public static void showView() {
         addLog("Controller.showView()");
