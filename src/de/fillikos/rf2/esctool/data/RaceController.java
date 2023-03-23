@@ -94,11 +94,10 @@ public class RaceController {
                                     Controller.addError("Start " + (i + 1) + ". Startgruppe");
                                     if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
                                         server.sendchat("Go Go Go");
-//                                        writeUsers(users, i + 1);
                                         doStartAuswertung(i);
                                     } else {
                                         server.sendchat((i + 1) + ". Startgruppe Go Go Go");
-//                                        writeUsers(users, i + 1);
+                                        doStartAuswertung(i);
                                     }
                                     startgruppeGo[i] = false;
                                     if (i < (startgruppeGo.length - 1)) {
@@ -134,8 +133,8 @@ public class RaceController {
 
     }
 
-    private void doStartAuswertung(int startgrp) {
-        Controller.addWarning("RaceController.doStartAuswertung() Abstandsauswertung wird ausgeführt");
+    public void doStartAuswertung(int startgrp) {
+        Controller.addWarning("RaceController.doStartAuswertung() Abstandsauswertung für die " + startgrp + ". Startgruppe wird ausgeführt");
         new Thread(new Runnable() {
             @Override
             public void run() {
