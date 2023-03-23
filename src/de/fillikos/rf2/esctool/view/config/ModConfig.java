@@ -23,6 +23,10 @@ public class ModConfig {
     private boolean rennfreigabeByChat = false;
     private boolean freigabeEinfuehrungsrundeChat = false;
     private boolean qualiVR = false;
+    private boolean startAuswertung = false;
+    private boolean serverVerlassenMessage = false;
+    private boolean strafenLaden = false;
+    private boolean serverVerlassen = false;
     private PitVorgang pitVorgang = new PitVorgang();
     private ArrayList<ArrayList<String>> manuelleNachrichten = new ArrayList<>();
 
@@ -174,17 +178,49 @@ public class ModConfig {
         this.maxStartPos = maxStartPos;
     }
 
+    public boolean isStartAuswertung() {
+        return startAuswertung;
+    }
+
+    public void setStartAuswertung(boolean startAuswertung) {
+        this.startAuswertung = startAuswertung;
+    }
+
+    public boolean isServerVerlassenMessage() {
+        return serverVerlassenMessage;
+    }
+
+    public void setServerVerlassenMessage(boolean serverVerlassenMessage) {
+        this.serverVerlassenMessage = serverVerlassenMessage;
+    }
+
+    public boolean isStrafenLaden() {
+        return strafenLaden;
+    }
+
+    public void setStrafenLaden(boolean strafenLaden) {
+        this.strafenLaden = strafenLaden;
+    }
+
+    public boolean checkServerVerlassen() {
+        return serverVerlassen;
+    }
+
+    public void setServerVerlassen(boolean serverVerlassen) {
+        this.serverVerlassen = serverVerlassen;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ModConfig)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         ModConfig modConfig = (ModConfig) o;
-        return getTimeBetweenSG() == modConfig.getTimeBetweenSG() && getTimeToDoStrafen() == modConfig.getTimeToDoStrafen() && getMinStartPos() == modConfig.getMinStartPos() && getMaxStartPos() == modConfig.getMaxStartPos() && isAssignPitByTeam() == modConfig.isAssignPitByTeam() && isVrQualiMode() == modConfig.isVrQualiMode() && isAssignPitByDriver() == modConfig.isAssignPitByDriver() && isTeamEvent() == modConfig.isTeamEvent() && isCheckDoppelTeam() == modConfig.isCheckDoppelTeam() && isGridIniErstellen() == modConfig.isGridIniErstellen() && isRecordHotlaps() == modConfig.isRecordHotlaps() && isRennfreigabeByChat() == modConfig.isRennfreigabeByChat() && isFreigabeEinfuehrungsrundeChat() == modConfig.isFreigabeEinfuehrungsrundeChat() && isQualiVR() == modConfig.isQualiVR() && Objects.equals(getStartgruppeClass(), modConfig.getStartgruppeClass()) && Objects.equals(getModName(), modConfig.getModName()) && Objects.equals(getPitVorgang(), modConfig.getPitVorgang()) && Objects.equals(getManuelleNachrichten(), modConfig.getManuelleNachrichten());
+        return timeBetweenSG == modConfig.timeBetweenSG && timeToDoStrafen == modConfig.timeToDoStrafen && minStartPos == modConfig.minStartPos && maxStartPos == modConfig.maxStartPos && assignPitByTeam == modConfig.assignPitByTeam && vrQualiMode == modConfig.vrQualiMode && assignPitByDriver == modConfig.assignPitByDriver && teamEvent == modConfig.teamEvent && checkDoppelTeam == modConfig.checkDoppelTeam && gridIniErstellen == modConfig.gridIniErstellen && recordHotlaps == modConfig.recordHotlaps && rennfreigabeByChat == modConfig.rennfreigabeByChat && freigabeEinfuehrungsrundeChat == modConfig.freigabeEinfuehrungsrundeChat && qualiVR == modConfig.qualiVR && startAuswertung == modConfig.startAuswertung && Objects.equals(startgruppeClass, modConfig.startgruppeClass) && Objects.equals(modName, modConfig.modName) && Objects.equals(pitVorgang, modConfig.pitVorgang) && Objects.equals(manuelleNachrichten, modConfig.manuelleNachrichten);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStartgruppeClass(), getModName(), getTimeBetweenSG(), getTimeToDoStrafen(), getMinStartPos(), getMaxStartPos(), isAssignPitByTeam(), isVrQualiMode(), isAssignPitByDriver(), isTeamEvent(), isCheckDoppelTeam(), isGridIniErstellen(), isRecordHotlaps(), isRennfreigabeByChat(), isFreigabeEinfuehrungsrundeChat(), isQualiVR(), getPitVorgang(), getManuelleNachrichten());
+        return Objects.hash(startgruppeClass, modName, timeBetweenSG, timeToDoStrafen, minStartPos, maxStartPos, assignPitByTeam, vrQualiMode, assignPitByDriver, teamEvent, checkDoppelTeam, gridIniErstellen, recordHotlaps, rennfreigabeByChat, freigabeEinfuehrungsrundeChat, qualiVR, startAuswertung, pitVorgang, manuelleNachrichten);
     }
 
     @Override
@@ -206,6 +242,7 @@ public class ModConfig {
                 ", rennfreigabeByChat=" + rennfreigabeByChat +
                 ", freigabeEinfuehrungsrundeChat=" + freigabeEinfuehrungsrundeChat +
                 ", qualiVR=" + qualiVR +
+                ", startAuswertung=" + startAuswertung +
                 ", pitVorgang=" + pitVorgang +
                 ", manuelleNachrichten=" + manuelleNachrichten +
                 '}';
