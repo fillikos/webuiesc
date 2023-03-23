@@ -7,10 +7,11 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,8 @@ public class MainView {
     public MainView() {
         frame = new JFrame();
         frame.setTitle("rF2 Admin Tool - " + rf2Dir);
-        frame.setSize(850, 600);
+        frame.setSize(830, 360);
+        frame.setResizable(false);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -117,15 +119,12 @@ public class MainView {
 
         Font consolas = new Font("Consolas", Font.PLAIN, 11);
 
-        String[] test = {};
-        vehicleList = new JList<>(test);
-        vehicleList.setPreferredSize(new Dimension(360,170));
+        String[] start = {};
+        vehicleList = new JList<>(start);
         vehicleList.setMinimumSize(new Dimension(360,170));
         vehicleList.setFont(consolas);
-
         JScrollPane scrollPane = new JScrollPane(vehicleList);
         scrollPane.setPreferredSize(new Dimension(378,190));
-
         panVehicle.add(scrollPane);
 
         // Button für den Aufruf den Penalize Fensters
@@ -170,7 +169,7 @@ public class MainView {
 
     private void createServerInfo() {
         GridBagLayout gridBagLayout = new GridBagLayout();
-        gridBagLayout.columnWidths = new int[]{80,160,160};
+        gridBagLayout.columnWidths = new int[]{100,150,140};
         panSessionInfo = new JPanel(gridBagLayout);
         panSessionInfo.setPreferredSize(new Dimension(400,250));
 
@@ -183,77 +182,77 @@ public class MainView {
         panSessionInfo.add(newLabel("Game Name:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("1", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Flags:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("3", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
-        panSessionInfo.add(newLabel("???::", JLabel.RIGHT), c);
+        panSessionInfo.add(newLabel("LapDistance:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("5", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Clients:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("7", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Track:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("9", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Session Info:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("11", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Profilename:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("13", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Rain:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("15", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Temperature:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("17", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Time:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("19", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         c.gridy++;
         c.gridx = 0;
         c.gridwidth = 1;
         panSessionInfo.add(newLabel("Clouds:", JLabel.RIGHT), c);
         c.gridx = 1;
         c.gridwidth = 2;
-        panSessionInfo.add(newLabel("21", JLabel.LEFT), c);
+        panSessionInfo.add(newLabel("", JLabel.LEFT), c);
         panSessionInfo.setBorder(BorderFactory.createTitledBorder(new TitledBorder(""), "Session Information",1, 0, consolas));
     }
 
