@@ -2,7 +2,6 @@ package de.fillikos.rf2.esctool.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.esctool.data.esctool.StrafenLog;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 import de.fillikos.rf2.service.webui.httpss.model.sessioninfo.SessionInfo;
@@ -11,9 +10,10 @@ import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class RaceController {
 
@@ -31,7 +31,7 @@ public class RaceController {
     private User[] users;
     private User[] usersOld;
     private ModConfig modConfig;
-    private List<String> userServerVerlassen = new ArrayList<>();
+    private final List<String> userServerVerlassen = new ArrayList<>();
 
     public RaceController() {
 
@@ -199,11 +199,6 @@ public class RaceController {
         String gridLeader = "";
         for (User user : users) {
             if (startgruppe(user, modConfig.getStartgruppeClass().get(i))) {
-                // Test für variable Startfreigabe vor und nach Start / Ziel
-                // negative LapDistance muss umgerechnet werden oä
-                if (user.getLapDistance().charAt(0) == '-') {
-//                    System.out.println(user.getLapDistance());
-                }
                 int position = Integer.parseInt(user.getPosition());
                 if (startPos > position) {
                     gridLeader = String.valueOf(position);
@@ -222,10 +217,6 @@ public class RaceController {
             }
         }
         return false;
-    }
-
-    public void setServer(Connection connection) {
-        this.server = connection;
     }
 
     public void settingUpStartgruppen() {
@@ -258,18 +249,6 @@ public class RaceController {
         return startPos;
     }
 
-    public Connection getServer() {
-        return server;
-    }
-
-    public SessionInfo getSessionInfo() {
-        return sessionInfo;
-    }
-
-    public void setSessionInfo(SessionInfo sessionInfo) {
-        this.sessionInfo = sessionInfo;
-    }
-
     private void write() {
         ObjectMapper om = new ObjectMapper();
         try {
@@ -278,5 +257,21 @@ public class RaceController {
             Controller.addError(Arrays.toString(e.getStackTrace()));
             e.printStackTrace();
         }
+    }
+
+    public Connection getServer() {
+        return server;
+    }
+
+    public void setServer(Connection connection) {
+        this.server = connection;
+    }
+
+    public SessionInfo getSessionInfo() {
+        return sessionInfo;
+    }
+
+    public void setSessionInfo(SessionInfo sessionInfo) {
+        this.sessionInfo = sessionInfo;
     }
 }
