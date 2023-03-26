@@ -103,6 +103,9 @@ public class SessionController {
                         manuellChatGesendet.add(element[1]);
                     }
                 }
+                if (modConfig.isCheckDoppelTeam()) {
+                    checkDoppelTeam(users);
+                }
                 break;
             case PRACTICE:
                 for (String eintrag : modConfig.getManuelleNachrichten().get(1)) {
@@ -270,8 +273,8 @@ public class SessionController {
                         }
                     } else {
                         doubleTeams.add(user.getVehicleName());
-                        // Refreshrate liegt bei 500 ms  10 ==> 5-Sekunden-Intervall
-                        doppel.put(user.getVehicleName(), 10);
+                        // Refreshrate liegt bei 500 ms  30 ==> 15-Sekunden-Intervall
+                        doppel.put(user.getVehicleName(), 30);
                     }
                 } else {
                     vehicles.add(user.getVehicleName());
