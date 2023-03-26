@@ -78,10 +78,10 @@ public class RaceController {
                 if (checkAllVehiclesInBox()) serverKannVerlassenWerden = true;
             }
             // Server verlassen zwischen Rennende und alle Fahrzeugen haben das Rennen beendet
-            if (modConfig.checkServerVerlassen() && !serverKannVerlassenWerden) {
+            if (modConfig.isServerVerlassen() && !serverKannVerlassenWerden) {
                 checkServerVorErlaubnisVerlassen();
             }
-            if (modConfig.checkServerVerlassen() && serverKannVerlassenWerden && !isGespeichertSKVW) {
+            if (modConfig.isServerVerlassen() && serverKannVerlassenWerden && !isGespeichertSKVW) {
                 userServerVerlassen.add("zulässig ab TC X:XX:XX.X / " + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
                 write();
                 isGespeichertSKVW = true;

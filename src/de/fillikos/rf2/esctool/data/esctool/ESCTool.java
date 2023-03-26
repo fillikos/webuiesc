@@ -258,6 +258,9 @@ public class ESCTool {
 
     public void cleanData() {
         strafen.clear();
+        endedInBox.clear();
+        escOnTrack.clear();
+        backOnTrack.clear();
         usersOld = new User[0];
     }
 }

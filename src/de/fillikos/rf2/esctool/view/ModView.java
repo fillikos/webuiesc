@@ -1,7 +1,6 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.esctool.controller.ViewController;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 
@@ -15,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ModView {
 
@@ -61,6 +59,7 @@ public class ModView {
     private final JCheckBox cbPit10;
     private final JCheckBox cbStrafenLaden;
     private final JTabbedPane tpNachrichten;
+    private final JPanel panCenter;
 
     public ModView() {
         frame = new JFrame();
@@ -239,7 +238,7 @@ public class ModView {
             }
         });
 
-        JPanel panCenter = new JPanel(new BorderLayout());
+        panCenter = new JPanel(new BorderLayout());
         GridBagConstraints g = new GridBagConstraints();
         panCenter.setLayout(new GridBagLayout());
 
@@ -674,7 +673,7 @@ public class ModView {
         cbDoppelTeam.setSelected(mod.isCheckDoppelTeam());
         cbVRQualiMode.setSelected(mod.isVrQualiMode());
         cbStrafenLaden.setSelected(mod.isStrafenLaden());
-        cbPit9.setSelected(mod.checkServerVerlassen());
+        cbPit9.setSelected(mod.isServerVerlassen());
         cbPit10.setSelected(mod.isServerVerlassenMessage());
         cbPit1.setSelected(mod.getPitVorgang().isAus_der_box_gefahren());
         cbPit2.setSelected(mod.getPitVorgang().isEsc_auf_strecke());
