@@ -52,7 +52,7 @@ public class RaceController {
             startgruppenInitialized = true;
         }
 
-        // Bei Startfreigabe
+        // Bei Startfreigabe (rF2 intern = Rennfreigabe)
         if (sessionInfoOld.getGamePhase().equals("4") && sessionInfo.getGamePhase().equals("5")) {
             // Startfreigabe per chat
             if (modConfig.isFreigabeEinfuehrungsrundeChat()) {
@@ -71,10 +71,11 @@ public class RaceController {
             }
         }
 
+        // Wenn Führender das Rennen beendet
         if (sessionInfo.getGamePhase().equals("8")) {
             // Wenn alle Fahrzeuge in der Box sind, kann der Server verlassen werden
             if (!serverKannVerlassenWerden) {
-                checkAlleInBox();
+                if (checkAllVehiclesInBox()) serverKannVerlassenWerden = true;
             }
             // Server verlassen zwischen Rennende und alle Fahrzeugen haben das Rennen beendet
             if (modConfig.checkServerVerlassen() && !serverKannVerlassenWerden) {
@@ -85,7 +86,6 @@ public class RaceController {
                 write();
                 isGespeichertSKVW = true;
             }
-
             // Wenn alle Fahrzeuge das Rennen beendet haben, Nachricht zum Verlassen des Servers senden
             if (modConfig.isServerVerlassenMessage() && serverKannVerlassenWerden && !isGesendet) {
                 server.sendchat("Der Server kann jetzt verlassen werden.");
@@ -94,16 +94,13 @@ public class RaceController {
         }
     }
 
-    private void checkAlleInBox() {
-        boolean alleInBox = true;
+    private boolean checkAllVehiclesInBox() {
         for (User u : users) {
             if (u.getFinishStatus().equals("FSTAT_NONE")) {
-                alleInBox = false;
+                return false;
             }
         }
-        if (alleInBox) {
-            serverKannVerlassenWerden = true;
-        }
+        return true;
     }
 
     private void checkServerVorErlaubnisVerlassen() {
