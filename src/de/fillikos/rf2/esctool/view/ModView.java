@@ -1,7 +1,6 @@
 package de.fillikos.rf2.esctool.view;
 
 import de.fillikos.rf2.esctool.controller.Controller;
-import de.fillikos.rf2.esctool.controller.ViewController;
 import de.fillikos.rf2.esctool.data.esctool.PitVorgang;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 
@@ -15,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ModView {
 
@@ -57,7 +55,11 @@ public class ModView {
     private final JCheckBox cbPit6;
     private final JCheckBox cbPit7;
     private final JCheckBox cbPit8;
+    private final JCheckBox cbPit9;
+    private final JCheckBox cbPit10;
+    private final JCheckBox cbStrafenLaden;
     private final JTabbedPane tpNachrichten;
+    private final JPanel panCenter;
 
     public ModView() {
         frame = new JFrame();
@@ -236,7 +238,7 @@ public class ModView {
             }
         });
 
-        JPanel panCenter = new JPanel(new BorderLayout());
+        panCenter = new JPanel(new BorderLayout());
         GridBagConstraints g = new GridBagConstraints();
         panCenter.setLayout(new GridBagLayout());
 
@@ -438,6 +440,9 @@ public class ModView {
         cbPit6 = new JCheckBox("Boxenstopp beginnt");
         cbPit7 = new JCheckBox("Boxenstopp beendet");
         cbPit8 = new JCheckBox("In die Box gefahren");
+        cbPit9 = new JCheckBox("Server Verlassen überwachen");
+        cbPit10 = new JCheckBox("Server Verlassen Nachricht");
+        cbStrafenLaden = new JCheckBox("strafen.ini laden nach X sek");
 
 
         g.fill = GridBagConstraints.NONE;
@@ -516,13 +521,18 @@ public class ModView {
         g.gridy = 10;
         g.gridx = 0;
         panCenter.add(cbEinfuehrungsrunde, g);
+        g.gridx = 4;
+        panCenter.add(cbPit9, g);
 
         g.gridy = 11;
         g.gridx = 0;
         panCenter.add(txtTimeToDoStrafe, g);
+
         g.gridx = 1;
         g.gridwidth = 2;
-        panCenter.add(lblTimeStrafe, g);
+        panCenter.add(cbStrafenLaden, g);
+        g.gridx = 4;
+        panCenter.add(cbPit10, g);
 
         g.gridy = 12;
         g.gridx = 0;
@@ -589,6 +599,9 @@ public class ModView {
         mod.setCheckDoppelTeam(cbDoppelTeam.isSelected());
         mod.setTimeToDoStrafen(Long.parseLong(txtTimeToDoStrafe.getText()));
         mod.setVrQualiMode(cbVRQualiMode.isSelected());
+        mod.setStrafenLaden(cbStrafenLaden.isSelected());
+        mod.setServerVerlassen(cbPit9.isSelected());
+        mod.setServerVerlassenMessage(cbPit10.isSelected());
         PitVorgang pitVorgang = new PitVorgang();
         pitVorgang.setAus_der_box_gefahren(cbPit1.isSelected());
         pitVorgang.setEsc_auf_strecke(cbPit2.isSelected());
@@ -659,6 +672,9 @@ public class ModView {
         cbByDriverName.setSelected(mod.isTeamEvent());
         cbDoppelTeam.setSelected(mod.isCheckDoppelTeam());
         cbVRQualiMode.setSelected(mod.isVrQualiMode());
+        cbStrafenLaden.setSelected(mod.isStrafenLaden());
+        cbPit9.setSelected(mod.isServerVerlassen());
+        cbPit10.setSelected(mod.isServerVerlassenMessage());
         cbPit1.setSelected(mod.getPitVorgang().isAus_der_box_gefahren());
         cbPit2.setSelected(mod.getPitVorgang().isEsc_auf_strecke());
         cbPit3.setSelected(mod.getPitVorgang().isBoxenstop_angefordert());

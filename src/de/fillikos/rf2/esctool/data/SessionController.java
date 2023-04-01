@@ -103,6 +103,9 @@ public class SessionController {
                         manuellChatGesendet.add(element[1]);
                     }
                 }
+                if (modConfig.isCheckDoppelTeam()) {
+                    checkDoppelTeam(users);
+                }
                 break;
             case PRACTICE:
                 for (String eintrag : modConfig.getManuelleNachrichten().get(1)) {
@@ -270,7 +273,8 @@ public class SessionController {
                         }
                     } else {
                         doubleTeams.add(user.getVehicleName());
-                        doppel.put(user.getVehicleName(), 10);
+                        // Refreshrate liegt bei 500 ms  30 ==> 15-Sekunden-Intervall
+                        doppel.put(user.getVehicleName(), 30);
                     }
                 } else {
                     vehicles.add(user.getVehicleName());
@@ -321,7 +325,7 @@ public class SessionController {
             if (!file.toString().equals("D:\\")) {
                 dc.runGridIniTool(file, server, modConfig);
                 Controller.addWarning("gridINI(): grid.ini und strafen.ini wurden erstellt");
-                //4. Nach dem erstellen wird die grid.ini ausgeführt
+                //4. Nach dem Erstellen wird die grid.ini ausgeführt
                 if (!isFromUI()) {
                     server.sendchat("/batch grid.ini");
                     Controller.addWarning("gridINI(): grid.ini wurde ausgeführt");
