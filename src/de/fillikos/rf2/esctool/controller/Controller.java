@@ -5,6 +5,7 @@ import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -201,5 +202,9 @@ public class Controller {
         } catch (NullPointerException e) {
             errors.add(string);
         }
+    }
+
+    public static void showWarning(String warning) {
+        new Thread(() -> JOptionPane.showMessageDialog(vc.getMainView().getFrame(), warning)).start();
     }
 }

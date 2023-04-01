@@ -39,11 +39,6 @@ public class GridIniTool {
         // 3. Vorbereitete strafen Datei aus dem /log/results Ordner laden
         loadStrafenData(qualiXml);
         Controller.addWarning("runGridIniTool(): strafen geladen");
-        if (mod.isVrQualiMode()) {
-            // 4. automatisch erstellte Strafen.txt auslesen
-            loadStrafenTxtData(qualiXml);
-            Controller.addWarning("runGridIniTool(): strafen.txt geladen");
-        }
 
         /*
          * Verarbeitung der Informationen der einzelnen Startgruppen
@@ -112,49 +107,15 @@ public class GridIniTool {
         writeGridIni(qualiXml, startgruppen);
     }
 
-    private void loadStrafenTxtData(File qualiXml) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String timeString = df.format(new Date());
-        Controller.addWarning("loadStrafenTxtData() " + qualiXml.getParent() + "\\" + timeString + "_strafen.txt");
-        try (BufferedReader in = new BufferedReader(new FileReader(qualiXml.getParent() + "\\" + timeString + "_strafen.txt"))) {
-            String zeile;
-            while ((zeile = in.readLine()) != null) {
-                // user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze"
-                Controller.addWarning("strafen.txt : " + zeile);
-                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
-                if (zeile.contains(" ==> ")) {
-                    if (mod.isTeamEvent()) {
-                        String vehName = zeile.substring(0, zeile.indexOf("==<"));
-                        if (insgesamtFahrerNeu.containsKey(vehName)) {
-                            insgesamtFahrerNeu.get(vehName).setStrafe(insgesamtFahrerNeu.get(vehName).getStrafe() + strafplaetze);
-                        }
-                    } else {
-                        String driverName = zeile.substring(zeile.indexOf("==<") + 3, zeile.indexOf(" ==> "));
-                        if (insgesamtFahrerNeu.containsKey(driverName)) {
-                            insgesamtFahrerNeu.get(driverName).setStrafe(insgesamtFahrerNeu.get(driverName).getStrafe() + strafplaetze);
-                        }
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            Controller.addError("loadStrafenTxtData: keine " + timeString + "strafen.txt-Datei vorhanden");
-        } catch (IOException e) {
-            Controller.addError(Arrays.toString(e.getStackTrace()));
-        }
-    }
-
     private void allotPenalty(ArrayList<ArrayList<String>> startgruppeClass, ArrayList<ArrayList<String>> startgruppen) {
         for (int j = 0; j < startgruppeClass.size(); j++) {
             int strafe;
 
-            int anzahl = 0;
             do {
                 strafe = 0;
                 boolean setStrafe = true;
                 for (int i = (startgruppen.get(j).size() - 1); i >= 0; i--) {
-                    /*
-                     * Wenn eine Strafe vorliegt
-                     */
+                    // Wenn eine Strafe vorliegt
                     if (insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).besitztStrafe()) {
                         insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).setStrafe(insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe() - 1);
                         if (strafe < insgesamtFahrerNeu.get(startgruppen.get(j).get(i)).getStrafe()) {
@@ -163,21 +124,16 @@ public class GridIniTool {
                         if (i == startgruppen.get(j).size()-1) {
                             setStrafe = false;
                         }
-                        /*
-                         * werden die Positionen getauscht
-                         */
+                        // werden die Positionen getauscht
                         if (setStrafe) {
                             try {
                                 String temp = startgruppen.get(j).get(i);
                                 startgruppen.get(j).set(i, startgruppen.get(j).get(i + 1));
                                 startgruppen.get(j).set(i + 1, temp);
                             } catch (IndexOutOfBoundsException e) {
-                                /*
-                                Wird eine IndexOutOfBounce geworfen, wird auf den letzten Platz der Startgruppe zugegriffen
-                                 */
-    //                        System.out.println("letzter");
+                                // Wird eine IndexOutOfBounce geworfen, wird auf den letzten Platz der Startgruppe zugegriffen
+//                                System.out.println("letzter");
                             }
-                            anzahl++;
                         } else {
 //                            System.out.println("Das ist der letzte Platz, hier wird nicht versetzt");
                         }
@@ -199,82 +155,76 @@ public class GridIniTool {
             String zeile;
             StringBuilder strafenIni = new StringBuilder();
             StringBuilder strafenVergebenIni = new StringBuilder();
+            int zeilenZaehler = 1;
 
             while ((zeile = in.readLine()) != null) {
                 Controller.addWarning("strafen : " + zeile);
-                if (mod.isTeamEvent()) {
-                    if (zeile.contains("==>")) {
-//                        String vehName = zeile.substring(0, zeile.indexOf(" ==> "));
-                        String vehNummer = zeile.substring(zeile.indexOf("#"), zeile.indexOf(","));
-                        if (insgesamtVehNummer.containsKey(vehNummer)) {
-//                        if (insgesamtFahrerNeu.containsKey(vehName)) {
-                            if (zeile.contains("==> +")) {
-                                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
-                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
-                                insgesamtFahrerNeu.get(vehName).setStrafe(strafplaetze);
-                            } else if (zeile.contains("==> D")) {
-                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
-                                strafenIni.append("/addpenalty -1 ")
-                                        .append(insgesamtFahrerNeu.get(vehName).getFahrer())
-                                        .append("\n");
-                            } else {
-                                String vehName = insgesamtVehNummer.get(vehNummer).getVehName();
-                                int sekunden = Integer.parseInt(zeile.substring(zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden")));
-                                while(sekunden > 60) {
-                                    strafenIni.append("/addpenalty ")
-                                            .append("60")
-                                            .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
-                                            .append("\n");
-                                    sekunden = sekunden - 60;
-                                }
-                                strafenIni.append("/addpenalty ")
-                                        .append(sekunden)
-                                        .append(" ").append(insgesamtFahrerNeu.get(vehName).getFahrer())
-                                        .append("\n");
-                            }
-                            strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
-                        } else {
-                            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
-                        }
-                    }
-                } else {
-                    if (zeile.contains("==>")) {
-                        String driverName = zeile.substring(0, zeile.indexOf(" ==> "));
-                        if (insgesamtFahrerNeu.containsKey(driverName)) {
-                            if (zeile.contains("==> +")) {
-                                int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" +") + 2, zeile.indexOf(" St")));
-                                insgesamtFahrerNeu.get(driverName).setStrafe(strafplaetze);
-                            } else if (zeile.contains("==> D")) {
-                                strafenIni.append("/addpenalty -1 ")
-                                        .append(driverName)
-                                        .append("\n");
-                            } else {
-                                int sekunden = Integer.parseInt(zeile.substring(zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden")));
-                                while(sekunden > 60) {
-                                    strafenIni.append("/addpenalty ")
-                                            .append("60")
-                                            .append(" ").append(driverName)
-                                            .append("\n");
-                                    sekunden = sekunden - 60;
-                                }
-                                strafenIni.append("/addpenalty ")
-                                        .append(sekunden)
-                                        .append(" ").append(driverName)
-                                        .append("\n");
-                            }
-                            strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
-                        } else {
-                            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
-                        }
-                    }
+                if (!convertStrafenDatei(zeile, insgesamtVehNummer, strafenIni, strafenVergebenIni)) {
+                    Controller.showWarning("Fehler in der Strafen-Datei Zeile: " + zeilenZaehler + "\n" + zeile);
                 }
+                zeilenZaehler++;
             }
+
             writeStrafenIni(qualiXml, strafenIni);
             writeStrafenVergebenIni(qualiXml, strafenVergebenIni);
         } catch (FileNotFoundException e) {
+//            Controller.showWarning("Strafen-Datei im Result-Verzeichnis nicht gefunden!");
             Controller.addError("loadStrafenData: keine Strafen-Datei vorhanden");
         } catch (IOException e) {
+            Controller.showWarning("Fehler beim Laden/Verarbeiten der Strafen-Datei");
             Controller.addError(Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+    private boolean convertStrafenDatei(String zeile, HashMap<String, Fahrzeug> insgesamtVehNummer, StringBuilder strafenIni, StringBuilder strafenVergebenIni) {
+        if (zeile.contains(" ==> ")) {
+            String vehNummer = zeile.substring(zeile.indexOf("#"), zeile.indexOf(","));
+            if (insgesamtVehNummer.containsKey(vehNummer)) {
+
+                String driverName;
+                if (mod.isTeamEvent()) {
+                    driverName = insgesamtFahrerNeu.get(insgesamtVehNummer.get(vehNummer).getVehName()).getFahrer();
+                } else {
+                    driverName = zeile.substring(zeile.indexOf(", ") + 2, zeile.indexOf(" ==> "));
+                }
+
+                // Startplatzstrafe
+                if (zeile.contains(" ==> +")) {
+                    int strafplaetze = Integer.parseInt(zeile.substring(zeile.indexOf(" ==> +") + 6, zeile.indexOf(" Startpl")));
+                    if (mod.isTeamEvent()) {
+                        insgesamtFahrerNeu.get(insgesamtVehNummer.get(vehNummer).getVehName()).setStrafe(strafplaetze);
+                    } else {
+                        insgesamtFahrerNeu.get(driverName).setStrafe(strafplaetze);
+                    }
+
+                // Durchfahrtsstrafe
+                } else if (zeile.contains(" ==> Durchfahrtsstrafe")) {
+                    strafenIni.append("/addpenalty -1 ").append(driverName).append("\n");
+
+                // Stop and Go Strafe
+                } else {
+                    int sekunden = Integer.parseInt(zeile.substring(zeile.indexOf(" ==> ") + 5, zeile.indexOf(" Sekunden")));
+                    while(sekunden > 0) {
+                        strafenIni.append("/addpenalty ");
+                        if (sekunden > 60) {
+                            strafenIni.append("60");
+                            sekunden = sekunden - 60;
+                        } else {
+                            strafenIni.append(sekunden);
+                            sekunden = 0;
+                        }
+                        strafenIni.append(" ").append(driverName).append("\n");
+                    }
+                }
+
+                strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
+            } else {
+                strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
+            }
+            return true;
+        } else {
+            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet - Fehler").append("\n");
+            return false;
         }
     }
 
