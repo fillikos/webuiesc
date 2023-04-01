@@ -72,10 +72,6 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isAus_der_box_gefahren()) {
                                 write(new StrafenLog(sessionInfo, user, "Aus der box gefahren"));
                             }
-                            if (modConfig.isVrQualiMode() && escOnTrack.contains(user.getDriverName())) {
-                                backOnTrack.add(user.getVehicleName() + "==<" + user.getDriverName() + " ==> +30 Startplätze");
-                                writeBackOnTrack();
-                            }
                             break;
                         case REQUEST:
                             if (modConfig.getPitVorgang().isBoxenstop_anforderung_abgebrochen()) {
@@ -132,9 +128,6 @@ public class ESCTool {
                             //Wichtig auch für die Auswertung nach dem Rennen
                             if (modConfig.getPitVorgang().isEsc_auf_strecke()) {
                                 write(new StrafenLog(sessionInfo, user, "ESC auf der strecke"));
-                            }
-                            if (modConfig.isVrQualiMode()) {
-                                escOnTrack.add(user.getDriverName());
                             }
                             break;
                         case INPITLANE:

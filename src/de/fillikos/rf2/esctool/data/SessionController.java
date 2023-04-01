@@ -137,35 +137,6 @@ public class SessionController {
                     }
                 }
 
-                if (modConfig.isVrQualiMode()) {
-                    for (User user : users) {
-                        // Klassenabhängig
-                        // Zeitabhängig
-                        if (user.getCarClass().equals("GTD") && !qualiEnd.contains(user.getDriverName()) &&
-                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 900 &&
-                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 1020)) {
-                            // TODO einmal Stand merken mit Rundennummern für Klassenfahrzeuge
-                            // Einmalig an alle (Klasse) die Nachricht, die Runde kann zuende gefahren werden
-                            // Wenn Rundenzähler +1, dann Nachricht, dass die Runde nicht beendet werden darf und aufnahme in qualiEnd
-                            // Strafe, wenn in qualiEnd und Rundenzähler +1 (Eigentlich, wenn Runde +2)
-                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
-                            qualiEnd.add(user.getDriverName());
-                        }
-                        if (user.getCarClass().equals("LMP3") && !qualiEnd.contains(user.getDriverName()) &&
-                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 1920 &&
-                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 2040)) {
-                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
-                            qualiEnd.add(user.getDriverName());
-                        }
-                        if (user.getCarClass().equals("LMP2") && !qualiEnd.contains(user.getDriverName()) &&
-                                (Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) > 2940 &&
-                                        Integer.parseInt(user.getLapStartET().substring(0, user.getLapStartET().indexOf("."))) < 3000)) {
-                            server.sendchat("/w " + user.getDriverName() + " Qualifikation zu ende. Box Box Box!");
-                            qualiEnd.add(user.getDriverName());
-                        }
-                    }
-                }
-
                 if (modConfig.isAssignPitByTeam()) {
                     assignPitByTeam(users);
                 }
