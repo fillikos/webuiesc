@@ -166,7 +166,7 @@ public class RaceController {
                 Controller.setAktualisierungsrate(300);
             }
             if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] && user.getLapsCompleted().equals(startLap[i])) {
-                startStartgruppe(i);
+                startSignalStartgruppe(i);
             }
         }
         if (!setBeginnStartprozedur &&
@@ -176,7 +176,7 @@ public class RaceController {
         }
     }
 
-    private void startStartgruppe(int i) {
+    private void startSignalStartgruppe(int i) {
         Controller.addError("Start " + (i + 1) + ". Startgruppe");
         if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
             server.sendchat("Go Go Go");
@@ -190,7 +190,9 @@ public class RaceController {
         if (i < (startgruppeGo.length - 1)) {
             startgruppeGo[i + 1] = true;
         }
-        Controller.setAktualisierungsrate(500);
+        if ( startgruppeGo.length == (i + 1) ) {
+            Controller.setAktualisierungsrate(500);
+        }
     }
 
     public void doStartAuswertung(int startgrp) {
