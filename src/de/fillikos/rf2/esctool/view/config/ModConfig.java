@@ -26,6 +26,7 @@ public class ModConfig {
     private boolean serverVerlassenMessage = false;
     private boolean strafenLaden = false;
     private boolean serverVerlassen = false;
+    private boolean vrQualiMode = false;
     private PitVorgang pitVorgang = new PitVorgang();
     private ArrayList<ArrayList<String>> manuelleNachrichten = new ArrayList<>();
 
@@ -201,17 +202,25 @@ public class ModConfig {
         this.serverVerlassen = serverVerlassen;
     }
 
+    public boolean isVrQualiMode() {
+        return vrQualiMode;
+    }
+
+    public void setVrQualiMode(boolean vrQualiMode) {
+        this.vrQualiMode = vrQualiMode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ModConfig modConfig = (ModConfig) o;
-        return timeBetweenSG == modConfig.timeBetweenSG && timeToDoStrafen == modConfig.timeToDoStrafen && minStartPos == modConfig.minStartPos && maxStartPos == modConfig.maxStartPos && assignPitByTeam == modConfig.assignPitByTeam && assignPitByDriver == modConfig.assignPitByDriver && teamEvent == modConfig.teamEvent && checkDoppelTeam == modConfig.checkDoppelTeam && gridIniErstellen == modConfig.gridIniErstellen && recordHotlaps == modConfig.recordHotlaps && rennfreigabeByChat == modConfig.rennfreigabeByChat && freigabeEinfuehrungsrundeChat == modConfig.freigabeEinfuehrungsrundeChat && qualiVR == modConfig.qualiVR && startAuswertung == modConfig.startAuswertung && serverVerlassenMessage == modConfig.serverVerlassenMessage && strafenLaden == modConfig.strafenLaden && serverVerlassen == modConfig.serverVerlassen && Objects.equals(startgruppeClass, modConfig.startgruppeClass) && Objects.equals(modName, modConfig.modName) && Objects.equals(pitVorgang, modConfig.pitVorgang) && Objects.equals(manuelleNachrichten, modConfig.manuelleNachrichten);
+        return timeBetweenSG == modConfig.timeBetweenSG && timeToDoStrafen == modConfig.timeToDoStrafen && minStartPos == modConfig.minStartPos && maxStartPos == modConfig.maxStartPos && assignPitByTeam == modConfig.assignPitByTeam && assignPitByDriver == modConfig.assignPitByDriver && teamEvent == modConfig.teamEvent && checkDoppelTeam == modConfig.checkDoppelTeam && gridIniErstellen == modConfig.gridIniErstellen && recordHotlaps == modConfig.recordHotlaps && rennfreigabeByChat == modConfig.rennfreigabeByChat && freigabeEinfuehrungsrundeChat == modConfig.freigabeEinfuehrungsrundeChat && qualiVR == modConfig.qualiVR && startAuswertung == modConfig.startAuswertung && serverVerlassenMessage == modConfig.serverVerlassenMessage && strafenLaden == modConfig.strafenLaden && serverVerlassen == modConfig.serverVerlassen && vrQualiMode == modConfig.vrQualiMode && Objects.equals(startgruppeClass, modConfig.startgruppeClass) && Objects.equals(modName, modConfig.modName) && Objects.equals(pitVorgang, modConfig.pitVorgang) && Objects.equals(manuelleNachrichten, modConfig.manuelleNachrichten);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startgruppeClass, modName, timeBetweenSG, timeToDoStrafen, minStartPos, maxStartPos, assignPitByTeam, assignPitByDriver, teamEvent, checkDoppelTeam, gridIniErstellen, recordHotlaps, rennfreigabeByChat, freigabeEinfuehrungsrundeChat, qualiVR, startAuswertung, serverVerlassenMessage, strafenLaden, serverVerlassen, pitVorgang, manuelleNachrichten);
+        return Objects.hash(startgruppeClass, modName, timeBetweenSG, timeToDoStrafen, minStartPos, maxStartPos, assignPitByTeam, assignPitByDriver, teamEvent, checkDoppelTeam, gridIniErstellen, recordHotlaps, rennfreigabeByChat, freigabeEinfuehrungsrundeChat, qualiVR, startAuswertung, serverVerlassenMessage, strafenLaden, serverVerlassen, vrQualiMode, pitVorgang, manuelleNachrichten);
     }
 
     @Override
@@ -236,6 +245,7 @@ public class ModConfig {
                 ", serverVerlassenMessage=" + serverVerlassenMessage +
                 ", strafenLaden=" + strafenLaden +
                 ", serverVerlassen=" + serverVerlassen +
+                ", vrQualiMode=" + vrQualiMode +
                 ", pitVorgang=" + pitVorgang +
                 ", manuelleNachrichten=" + manuelleNachrichten +
                 '}';

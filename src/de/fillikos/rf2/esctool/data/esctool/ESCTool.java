@@ -19,7 +19,7 @@ import java.util.Date;
 
 public class ESCTool {
 
-    private final ArrayList<StrafenLog> strafen;
+    private final ArrayList<String> strafen;
     private final ArrayList<String> escOnTrack = new ArrayList<>();
     private final ArrayList<String> backOnTrack = new ArrayList<>();
     private final ArrayList<String> endedInBox = new ArrayList<>();
@@ -137,7 +137,7 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isEsc_in_der_box()) {
                                 write(new StrafenLog(sessionInfo, user, "ESC in der box"));
                             }
-                            if (sessionInfo.getGamePhase().equals("8") && endedInBox.contains(user.getDriverName())) {
+                            if (sessionInfo.getGamePhase().equals("8") && !endedInBox.contains(user.getDriverName())) {
                                 endedInBox.add(user.getDriverName());
                                 writeEndedInBox();
                             }
@@ -214,7 +214,7 @@ public class ESCTool {
     }
 
     private void write(StrafenLog strafenLog) {
-        strafen.add(strafenLog);
+        strafen.add(strafenLog.toLog());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String timeString = df.format(new Date());
         ObjectMapper om = new ObjectMapper();

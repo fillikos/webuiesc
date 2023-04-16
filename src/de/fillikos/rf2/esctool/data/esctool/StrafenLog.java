@@ -50,6 +50,10 @@ public class StrafenLog {
         this.currentEventTime = currentEventTime;
     }
 
+    public String toLog() {
+        return teamName + " '" + klartext + "' TC: " + currentEventTime;
+    }
+
     @Override
     public String toString() {
         return "StrafenLog{" +

@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Controller {
@@ -206,5 +207,11 @@ public class Controller {
 
     public static void showWarning(String warning) {
         new Thread(() -> JOptionPane.showMessageDialog(vc.getMainView().getFrame(), warning)).start();
+    }
+
+    public static String getDateFileFormat() {
+        String datePattern = "YYYY_MM_dd_HH_mm_ss";
+        SimpleDateFormat df = new SimpleDateFormat(datePattern);
+        return df.format(System.currentTimeMillis());
     }
 }

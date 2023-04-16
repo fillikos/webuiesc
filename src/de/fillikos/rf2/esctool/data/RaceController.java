@@ -1,6 +1,5 @@
 package de.fillikos.rf2.esctool.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
@@ -9,6 +8,7 @@ import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +82,14 @@ public class RaceController {
                 checkServerVorErlaubnisVerlassen();
             }
             if (modConfig.isServerVerlassen() && serverKannVerlassenWerden && !isGespeichertSKVW) {
-                userServerVerlassen.add("zulässig ab TC X:XX:XX.X / " + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
+                int stunde = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) % 3_600;
+                int minute = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) % 60;
+                int sekunde = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) - stunde - minute;
+                userServerVerlassen.add("zulässig ab TC " + stunde + ":" +
+                        ((minute<10) ? "0" + minute : minute) + ":" +
+                        ((sekunde<10) ? "0" + sekunde : sekunde) +
+                        sessionInfo.getCurrentEventTime().substring(sessionInfo.getCurrentEventTime().indexOf(".")) + " / "
+                        + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
                 write();
                 isGespeichertSKVW = true;
             }
@@ -247,9 +254,8 @@ public class RaceController {
     }
 
     private void write() {
-        ObjectMapper om = new ObjectMapper();
         try {
-            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\ServerVerlassen.txt").toFile(), userServerVerlassen);
+            Files.write(Paths.get(rfDir + "\\UserData\\Log\\Results\\" + Controller.getDateFileFormat() + "R_ServerVerlassen.txt"), userServerVerlassen);
         } catch (IOException e) {
             Controller.addError(Arrays.toString(e.getStackTrace()));
             e.printStackTrace();
