@@ -9,9 +9,10 @@ import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class GridIniTool {
 
@@ -217,13 +218,21 @@ public class GridIniTool {
                     }
                 }
 
-                strafenVergebenIni.append(zeile).append(" ==> abgeleistet").append("\n");
+                strafenVergebenIni.append(zeile.replace(" ==> ", " ==> [B]"))
+                        .append("[/B]")
+                        .append("[COLOR=rgb(65, 168, 95)][B] ==> abgeleistet[/B][/COLOR]")
+                        .append("\n");
             } else {
-                strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet").append("\n");
+                strafenVergebenIni.append(zeile.replace(" ==> ", " ==> [B]"))
+                        .append("[/B]")
+                        .append("[COLOR=rgb(184, 49, 47)][B]==> nicht abgeleistet[/B][/COLOR]")
+                        .append("\n");
             }
             return true;
         } else {
-            strafenVergebenIni.append(zeile).append(" ==> nicht abgeleistet - Fehler").append("\n");
+            strafenVergebenIni.append(zeile)
+                    .append("[COLOR=rgb(184, 49, 47)][B]==> nicht abgeleistet - Fehler[/B][/COLOR]")
+                    .append("\n");
             return false;
         }
     }

@@ -67,10 +67,8 @@ public class SessionController {
         this.users = users;
 
         // 1. ESCTool einfach mal immer starten, Regulierung vom Logging über PitVorgang
-        new Thread(() -> {
-            Controller.addLog("SessionController -> handleESCRule()");
-            escTool.handleESCRule(users, sessionInfo, modConfig);
-        }).start();
+        Controller.addLog("SessionController -> handleESCRule()");
+        escTool.handleESCRule(users, sessionInfo, modConfig);
 
         // 2. Runden Aufzeichnung
         if (modConfig.isRecordHotlaps()) {

@@ -82,7 +82,7 @@ public class UserInformationView {
 
         c.gridy++;
         c.gridx = 0;
-        panUser.add(newLabel("steamID:", JLabel.RIGHT), c);
+        panUser.add(newLabel("pitLapDistance:", JLabel.RIGHT), c);
         c.gridx = 1;
         panUser.add(newLabel("", JLabel.LEFT),c);
 
@@ -94,7 +94,7 @@ public class UserInformationView {
 
         c.gridy++;
         c.gridx = 0;
-        panUser.add(newLabel("serverScored:", JLabel.RIGHT), c);
+        panUser.add(newLabel("inGarageStall:", JLabel.RIGHT), c);
         c.gridx = 1;
         panUser.add(newLabel("", JLabel.LEFT),c);
 
@@ -192,9 +192,9 @@ public class UserInformationView {
                     case 11: text = user.getSlotID(); break;
                     case 13: text = user.getFinishStatus(); break;
                     case 15: text = user.getVehicleFilename(); break;
-                    case 17: text = user.getSteamID(); break;
+                    case 17: text = user.getPitLapDistance(); break;
                     case 19: text = user.getCarNumber(); break;
-                    case 21: text = user.getServerScored(); break;
+                    case 21: text = user.getInGarageStall(); break;
                     case 23: text = user.getPitState(); break;
                     case 25: text = user.getPitting(); break;
                     case 27: text = user.getPenalties(); break;

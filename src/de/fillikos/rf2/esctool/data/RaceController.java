@@ -10,10 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RaceController {
 
@@ -73,7 +71,7 @@ public class RaceController {
 
         // Wenn Führender das Rennen beendet
         if (sessionInfo.getGamePhase().equals("8")) {
-            // Wenn alle Fahrzeuge in der Box sind, kann der Server verlassen werden
+            // Wenn alle Fahrzeuge das Rennen beendet haben, kann der Server verlassen werden
             if (!serverKannVerlassenWerden) {
                 if (checkAllVehiclesInBox()) serverKannVerlassenWerden = true;
             }
@@ -82,12 +80,11 @@ public class RaceController {
                 checkServerVorErlaubnisVerlassen();
             }
             if (modConfig.isServerVerlassen() && serverKannVerlassenWerden && !isGespeichertSKVW) {
-                int stunde = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) % 3_600;
-                int minute = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) % 60;
-                int sekunde = Integer.parseInt(sessionInfo.getCurrentEventTime().substring(0,sessionInfo.getCurrentEventTime().indexOf("."))) - stunde - minute;
-                userServerVerlassen.add("zulässig ab TC " + stunde + ":" +
-                        ((minute<10) ? "0" + minute : minute) + ":" +
-                        ((sekunde<10) ? "0" + sekunde : sekunde) +
+                // 1540:40:14360.0 / 15940.0
+                // 4:25:40.1 / 15940.1
+                SimpleDateFormat df = new SimpleDateFormat("H:mm:ss");
+                userServerVerlassen.add("zulässig ab TC " +
+                        df.format(Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1_000) +
                         sessionInfo.getCurrentEventTime().substring(sessionInfo.getCurrentEventTime().indexOf(".")) + " / "
                         + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
                 write();
@@ -170,8 +167,8 @@ public class RaceController {
             }
         }
         if (!setBeginnStartprozedur &&
-                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5 &&
-                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.7) {
+                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.1 &&
+                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.15) {
             setBeginnStartprozedur = true;
         }
     }
