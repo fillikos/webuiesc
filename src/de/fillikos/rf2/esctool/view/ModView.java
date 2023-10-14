@@ -46,7 +46,6 @@ public class ModView {
     private final JCheckBox cbPitByDriver;
     private final JCheckBox cbByDriverName;
     private final JCheckBox cbDoppelTeam;
-    private final JCheckBox cbVRQualiMode;
     private final JCheckBox cbPit1;
     private final JCheckBox cbPit2;
     private final JCheckBox cbPit3;
@@ -418,7 +417,6 @@ public class ModView {
         // Zeit zwischen Startgruppen
         cbRennfreigabe = new JCheckBox("Rennfreigabe durch Chat");
         cbEinfuehrungsrunde = new JCheckBox("Freigabe der Einführungsrunde Chat");
-        cbVRQualiMode = new JCheckBox("Check VR Quali Hotlap Mode");
 
         cbPitByDriver.addActionListener(e -> {
             if (cbPitByDriver.isSelected()) {
@@ -534,9 +532,9 @@ public class ModView {
         g.gridx = 4;
         panCenter.add(cbPit10, g);
 
-        g.gridy = 12;
-        g.gridx = 0;
-        panCenter.add(cbVRQualiMode, g);
+//        g.gridy = 12;
+//        g.gridx = 0;
+//        panCenter.add(, g);
 
         g.gridy = 13;
         g.gridx = 0;
@@ -598,7 +596,6 @@ public class ModView {
         mod.setTeamEvent(cbByDriverName.isSelected());
         mod.setCheckDoppelTeam(cbDoppelTeam.isSelected());
         mod.setTimeToDoStrafen(Long.parseLong(txtTimeToDoStrafe.getText()));
-        mod.setVrQualiMode(cbVRQualiMode.isSelected());
         mod.setStrafenLaden(cbStrafenLaden.isSelected());
         mod.setServerVerlassen(cbPit9.isSelected());
         mod.setServerVerlassenMessage(cbPit10.isSelected());
@@ -671,7 +668,6 @@ public class ModView {
         cbPitByDriver.setSelected(mod.isAssignPitByDriver());
         cbByDriverName.setSelected(mod.isTeamEvent());
         cbDoppelTeam.setSelected(mod.isCheckDoppelTeam());
-        cbVRQualiMode.setSelected(mod.isVrQualiMode());
         cbStrafenLaden.setSelected(mod.isStrafenLaden());
         cbPit9.setSelected(mod.isServerVerlassen());
         cbPit10.setSelected(mod.isServerVerlassenMessage());

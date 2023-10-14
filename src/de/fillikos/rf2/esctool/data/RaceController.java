@@ -1,6 +1,5 @@
 package de.fillikos.rf2.esctool.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.fillikos.rf2.esctool.controller.Controller;
 import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
@@ -9,11 +8,10 @@ import de.fillikos.rf2.service.webui.httpss.model.standings.User;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class RaceController {
 
@@ -73,7 +71,7 @@ public class RaceController {
 
         // Wenn Führender das Rennen beendet
         if (sessionInfo.getGamePhase().equals("8")) {
-            // Wenn alle Fahrzeuge in der Box sind, kann der Server verlassen werden
+            // Wenn alle Fahrzeuge das Rennen beendet haben, kann der Server verlassen werden
             if (!serverKannVerlassenWerden) {
                 if (checkAllVehiclesInBox()) serverKannVerlassenWerden = true;
             }
@@ -82,7 +80,13 @@ public class RaceController {
                 checkServerVorErlaubnisVerlassen();
             }
             if (modConfig.isServerVerlassen() && serverKannVerlassenWerden && !isGespeichertSKVW) {
-                userServerVerlassen.add("zulässig ab TC X:XX:XX.X / " + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
+                // 1540:40:14360.0 / 15940.0
+                // 4:25:40.1 / 15940.1
+                SimpleDateFormat df = new SimpleDateFormat("H:mm:ss");
+                userServerVerlassen.add("zulässig ab TC " +
+                        df.format(Long.parseLong(sessionInfo.getCurrentEventTime().substring(0, sessionInfo.getCurrentEventTime().indexOf("."))) * 1_000) +
+                        sessionInfo.getCurrentEventTime().substring(sessionInfo.getCurrentEventTime().indexOf(".")) + " / "
+                        + sessionInfo.getCurrentEventTime() + " (jeweils Serverzeit aus dem Logfile, nicht der Zeitpunkt im Replay)");
                 write();
                 isGespeichertSKVW = true;
             }
@@ -159,17 +163,17 @@ public class RaceController {
                 Controller.setAktualisierungsrate(300);
             }
             if (Float.parseFloat(user.getLapDistance()) > startLapPosition[i] && user.getLapsCompleted().equals(startLap[i])) {
-                startStartgruppe(i);
+                startSignalStartgruppe(i);
             }
         }
         if (!setBeginnStartprozedur &&
-                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.5 &&
-                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.7) {
+                Float.parseFloat(user.getLapDistance()) > Float.parseFloat(sessionInfo.getLapDistance()) * 0.1 &&
+                Float.parseFloat(user.getLapDistance()) < Float.parseFloat(sessionInfo.getLapDistance()) * 0.15) {
             setBeginnStartprozedur = true;
         }
     }
 
-    private void startStartgruppe(int i) {
+    private void startSignalStartgruppe(int i) {
         Controller.addError("Start " + (i + 1) + ". Startgruppe");
         if (modConfig.getStartgruppeClass().get(0).get(0).equals("ALL")) {
             server.sendchat("Go Go Go");
@@ -183,7 +187,9 @@ public class RaceController {
         if (i < (startgruppeGo.length - 1)) {
             startgruppeGo[i + 1] = true;
         }
-        Controller.setAktualisierungsrate(500);
+        if ( startgruppeGo.length == (i + 1) ) {
+            Controller.setAktualisierungsrate(500);
+        }
     }
 
     public void doStartAuswertung(int startgrp) {
@@ -247,9 +253,8 @@ public class RaceController {
     }
 
     private void write() {
-        ObjectMapper om = new ObjectMapper();
         try {
-            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\ServerVerlassen.txt").toFile(), userServerVerlassen);
+            Files.write(Paths.get(rfDir + "\\UserData\\Log\\Results\\" + Controller.getDateFileFormat() + "R_ServerVerlassen.txt"), userServerVerlassen);
         } catch (IOException e) {
             Controller.addError(Arrays.toString(e.getStackTrace()));
             e.printStackTrace();

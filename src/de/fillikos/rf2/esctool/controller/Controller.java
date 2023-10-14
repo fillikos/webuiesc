@@ -5,9 +5,11 @@ import de.fillikos.rf2.esctool.view.config.ModConfig;
 import de.fillikos.rf2.esctool.view.config.ServerConfig;
 import de.fillikos.rf2.service.webui.httpss.model.Connection;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class Controller {
@@ -201,5 +203,15 @@ public class Controller {
         } catch (NullPointerException e) {
             errors.add(string);
         }
+    }
+
+    public static void showWarning(String warning) {
+        new Thread(() -> JOptionPane.showMessageDialog(vc.getMainView().getFrame(), warning)).start();
+    }
+
+    public static String getDateFileFormat() {
+        String datePattern = "YYYY_MM_dd_HH_mm_ss";
+        SimpleDateFormat df = new SimpleDateFormat(datePattern);
+        return df.format(System.currentTimeMillis());
     }
 }
