@@ -55,13 +55,12 @@ public class ESCTool {
                 user.getPitting().equals("true") &&
                 user.getPitStateEnum() != PitState.EXITING) {
                 endedInBox.add(user.getDriverName());
-                endedInBoxList.add(user.getFullTeamName() + " ist am Rennende in die Box gefahren TC: " + sessionInfo.getCurrentEventTime());
+                endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Box gefahren TC: " + sessionInfo.getCurrentEventTime());
                 writeEndedInBox();
             }
-            if (userOld.getPitStateEnum() != PitState.EXITING &&
-                    user.getPitStateEnum() == PitState.EXITING &&
+            if (userOld.getInGarageStall().equals("false") && user.getInGarageStall().equals("true") &&
                     endedInBox.contains(user.getDriverName())) {
-                endedInBoxList.add(user.getFullTeamName() + " hat nach Rennende ESC in der Box gedrückt TC: " + sessionInfo.getCurrentEventTime());
+                endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Garage gekommen TC: " + sessionInfo.getCurrentEventTime());
                 writeEndedInBox();
             }
         }
