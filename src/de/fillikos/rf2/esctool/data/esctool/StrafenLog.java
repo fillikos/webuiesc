@@ -51,7 +51,7 @@ public class StrafenLog {
     }
 
     public String toLog() {
-        return teamName + " '" + klartext + "' TC: " + currentEventTime;
+        return teamName + ": " + driverName + " '" + klartext + "' TC: " + currentEventTime;
     }
 
     @Override
