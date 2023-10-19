@@ -28,6 +28,7 @@ public class ESCTool {
     private User[] usersOld = new User[0];
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private final List<String> endedInBoxList = new ArrayList<>();
+    private int zeilenCounter = 1;
 
 
     public ESCTool() {
@@ -85,14 +86,14 @@ public class ESCTool {
                             break;
                         case EXITING:
                             if (modConfig.getPitVorgang().isAus_der_box_gefahren()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "Aus der box gefahren").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Aus der box gefahren").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
                             break;
                         case REQUEST:
                             if (modConfig.getPitVorgang().isBoxenstop_anforderung_abgebrochen()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "Boxenstopanforderung abgebrochen").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstopanforderung abgebrochen").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
@@ -103,7 +104,7 @@ public class ESCTool {
                     switch (userOld.getPitStateEnum()) {
                         case NONE:
                             if (modConfig.getPitVorgang().isBoxenstop_angefordert()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "Boxenstop angefordert").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstop angefordert").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
@@ -148,7 +149,7 @@ public class ESCTool {
                         case REQUEST:
                             //Wichtig auch für die Auswertung nach dem Rennen
                             if (modConfig.getPitVorgang().isEsc_auf_strecke()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "ESC auf der strecke").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "ESC auf der strecke").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
@@ -158,14 +159,14 @@ public class ESCTool {
                             break;
                         case ENTERING:
                             if (modConfig.getPitVorgang().isEsc_in_der_box()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "ESC in der box").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "ESC in der box").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
                             break;
                         case STOPPED:
                             if (modConfig.getPitVorgang().isBoxenstop_ende()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "boxenstop ende").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "boxenstop ende").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
@@ -181,7 +182,7 @@ public class ESCTool {
                         case NONE:
                         case REQUEST:
                             if (modConfig.getPitVorgang().isIn_die_box()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "in die Box").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "in die Box").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
@@ -204,7 +205,7 @@ public class ESCTool {
                             break;
                         case ENTERING:
                             if (modConfig.getPitVorgang().isBoxenstop_beginn()) {
-                                String text = strafen.size() + ". " + new StrafenLog(sessionInfo, user, "Boxenstop beginn").toLog();
+                                String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstop beginn").toLog();
                                 strafen.add(text);
                                 shouldWrite = true;
                             }
