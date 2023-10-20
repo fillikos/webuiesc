@@ -29,7 +29,8 @@ public class ESCTool {
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private final List<String> endedInBoxList = new ArrayList<>();
     private int zeilenCounter = 1;
-    private boolean shouldWrite = false;
+    private boolean shouldWriteStrafen = false;
+    private boolean shouldWriteEndedInBox = false;
 
 
     public ESCTool() {
@@ -37,7 +38,8 @@ public class ESCTool {
     }
 
     public void handleESCRule(User[] users, SessionInfo sessionInfo, ModConfig modConfig) {
-        shouldWrite = false;
+        shouldWriteStrafen = false;
+        shouldWriteEndedInBox = false;
         this.sessionInfo = sessionInfo;
         for (User user : users) {
             for (User userOld : usersOld) {
@@ -47,26 +49,18 @@ public class ESCTool {
                 }
             }
         }
-        if (shouldWrite) {
+        if (shouldWriteStrafen) {
             write();
+        }
+        if (shouldWriteEndedInBox) {
+            writeEndedInBox();
         }
         usersOld = users;
     }
 
     private void pitRule(User user, User userOld, ModConfig modConfig) {
-        if ( sessionInfo.getGamePhase().equals("8") && user.getInGarageStall().equals("false")) {
-            if (userOld.getPitting().equals("false") &&
-                user.getPitting().equals("true") &&
-                user.getPitStateEnum() != PitState.EXITING) {
-                endedInBox.add(user.getDriverName());
-                endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Box gefahren TC: " + sessionInfo.getCurrentEventTime());
-                writeEndedInBox();
-            }
-            if (userOld.getInGarageStall().equals("false") && user.getInGarageStall().equals("true") &&
-                    endedInBox.contains(user.getDriverName())) {
-                endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Garage gekommen TC: " + sessionInfo.getCurrentEventTime());
-                writeEndedInBox();
-            }
+        if (modConfig.isServerVerlassen() && sessionInfo.getGamePhase().equals("8")) {
+            checkRennEnde(user, userOld);
         }
 
         if (userOld.getPitStateEnum() != user.getPitStateEnum()) {
@@ -91,14 +85,14 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isAus_der_box_gefahren()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Aus der box gefahren").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                         case REQUEST:
                             if (modConfig.getPitVorgang().isBoxenstop_anforderung_abgebrochen()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstopanforderung abgebrochen").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                     }
@@ -109,7 +103,7 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isBoxenstop_angefordert()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstop angefordert").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                         case INPITLANE:
@@ -154,7 +148,7 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isEsc_auf_strecke()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "ESC auf der strecke").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                         case INPITLANE:
@@ -164,14 +158,14 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isEsc_in_der_box()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "ESC in der box").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                         case STOPPED:
                             if (modConfig.getPitVorgang().isBoxenstop_ende()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "boxenstop ende").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                     }
@@ -187,7 +181,7 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isIn_die_box()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "in die Box").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                         case INPITLANE:
@@ -210,12 +204,25 @@ public class ESCTool {
                             if (modConfig.getPitVorgang().isBoxenstop_beginn()) {
                                 String text = (zeilenCounter++) + ". " + new StrafenLog(sessionInfo, user, "Boxenstop beginn").toLog();
                                 strafen.add(text);
-                                shouldWrite = true;
+                                shouldWriteStrafen = true;
                             }
                             break;
                     }
                     break;
             }
+        }
+
+    }
+
+    private void checkRennEnde(User user, User userOld) {
+        if (userOld.getPitting().equals("false") && user.getPitting().equals("true") && user.getPitStateEnum() != PitState.EXITING) {
+            endedInBox.add(user.getDriverName());
+            endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Box gefahren TC: " + sessionInfo.getCurrentEventTime());
+            shouldWriteEndedInBox = true;
+        }
+        if (userOld.getInGarageStall().equals("false") && user.getInGarageStall().equals("true") ) {
+            endedInBoxList.add(user.getFullTeamName() + " " + user.getDriverName() + " in die Garage gekommen TC: " + sessionInfo.getCurrentEventTime());
+            shouldWriteEndedInBox = true;
         }
 
     }
