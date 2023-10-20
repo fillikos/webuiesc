@@ -29,6 +29,7 @@ public class ESCTool {
     private File rfDir = new File("D:\\VRrF2LN\\Server\\Train\\UserData\\Log\\Results");
     private final List<String> endedInBoxList = new ArrayList<>();
     private int zeilenCounter = 1;
+    private boolean shouldWrite = false;
 
 
     public ESCTool() {
@@ -36,6 +37,7 @@ public class ESCTool {
     }
 
     public void handleESCRule(User[] users, SessionInfo sessionInfo, ModConfig modConfig) {
+        shouldWrite = false;
         this.sessionInfo = sessionInfo;
         for (User user : users) {
             for (User userOld : usersOld) {
@@ -45,12 +47,13 @@ public class ESCTool {
                 }
             }
         }
+        if (shouldWrite) {
+            write();
+        }
         usersOld = users;
     }
 
     private void pitRule(User user, User userOld, ModConfig modConfig) {
-        boolean shouldWrite = false;
-
         if ( sessionInfo.getGamePhase().equals("8") && user.getInGarageStall().equals("false")) {
             if (userOld.getPitting().equals("false") &&
                 user.getPitting().equals("true") &&
@@ -214,9 +217,7 @@ public class ESCTool {
                     break;
             }
         }
-        if (shouldWrite) {
-            write();
-        }
+
     }
 
     private void writeEndedInBox() {
