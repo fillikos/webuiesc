@@ -203,61 +203,55 @@ public class SessionController {
     }
 
     private void assignPitByTeam(User[] users) {
-        new Thread(() -> {
-            for (User user : users) {
-                if (!garageSpotsAssigned.contains(user.getVehicleName())) {
-                    garageSpotsAssigned.add(user.getVehicleName());
-                    server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
-                    break;
-                }
+        for (User user : users) {
+            if (!garageSpotsAssigned.contains(user.getVehicleName())) {
+                garageSpotsAssigned.add(user.getVehicleName());
+                server.sendchat("/pitbyteam " + garageSpotsAssigned.size() + " " + user.getFullTeamName());
+                break;
             }
-        }).start();
+        }
     }
 
     private void assignPitByDriver(User[] users) {
-        new Thread(() -> {
-            for (User user : users) {
-                if (!garageSpotsAssigned.contains(user.getDriverName())) {
-                    garageSpotsAssigned.add(user.getDriverName());
-                    server.sendchat("/pitbydriver " + garageSpotsAssigned.size() + " " + user.getDriverName());
-                    break;
-                }
+        for (User user : users) {
+            if (!garageSpotsAssigned.contains(user.getDriverName())) {
+                garageSpotsAssigned.add(user.getDriverName());
+                server.sendchat("/pitbydriver " + garageSpotsAssigned.size() + " " + user.getDriverName());
+                break;
             }
-        }).start();
+        }
     }
 
     private void checkDoppelTeam(User[] users) {
         // /callvote kick username funktioniert nicht als Server, nur als Chatbefehl im Spiel
-        new Thread(() -> {
-            ArrayList<String> vehicles = new ArrayList<>();
-            ArrayList<String> doubleTeams = new ArrayList<>();
-            for (User user : users) {
-                if (vehicles.contains(user.getVehicleName())) {
-                    if (doppel.containsKey(user.getVehicleName())) {
-                        if (doppel.get(user.getVehicleName()) > 0) {
-                            int i = doppel.get(user.getVehicleName());
-                            doppel.replace(user.getVehicleName(), (i - 1));
-                        } else {
-                            doppel.remove(user.getVehicleName());
-                        }
+        ArrayList<String> vehicles = new ArrayList<>();
+        ArrayList<String> doubleTeams = new ArrayList<>();
+        for (User user : users) {
+            if (vehicles.contains(user.getVehicleName())) {
+                if (doppel.containsKey(user.getVehicleName())) {
+                    if (doppel.get(user.getVehicleName()) > 0) {
+                        int i = doppel.get(user.getVehicleName());
+                        doppel.replace(user.getVehicleName(), (i - 1));
                     } else {
-                        doubleTeams.add(user.getVehicleName());
-                        // Refreshrate liegt bei 500 ms  30 ==> 15-Sekunden-Intervall
-                        doppel.put(user.getVehicleName(), 30);
+                        doppel.remove(user.getVehicleName());
                     }
                 } else {
-                    vehicles.add(user.getVehicleName());
+                    doubleTeams.add(user.getVehicleName());
+                    // Refreshrate liegt bei 500 ms  30 ==> 15-Sekunden-Intervall
+                    doppel.put(user.getVehicleName(), 30);
                 }
+            } else {
+                vehicles.add(user.getVehicleName());
             }
-            for (User user : users) {
-                if (doubleTeams.contains(user.getVehicleName())) {
-                    server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt.");
-                    server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getVehicleName());
-                    server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
-                    Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getVehicleName() + ")");
-                }
+        }
+        for (User user : users) {
+            if (doubleTeams.contains(user.getVehicleName())) {
+                server.sendchat("/w " + user.getDriverName() + " Nur ein Teamfahrzeug auf dem Server erlaubt.");
+                server.sendchat("/w " + user.getDriverName() + " Ein Fahrer vom Team " + user.getVehicleName());
+                server.sendchat("/w " + user.getDriverName() + " Bitte wieder den Server verlassen");
+                Controller.addError(user.getDriverName() + " hat DoppelTeamCheck Warning erhalten (" + user.getVehicleName() + ")");
             }
-        }).start();
+        }
     }
 
     public void gridINI() {
@@ -305,34 +299,32 @@ public class SessionController {
     }
 
     private void hotlap() {
-        new Thread(() -> {
-            for (User user : users) {
-                for (User userOld : usersOld) {
-                    if (user.getDriverName().equals(userOld.getDriverName())) {
-                        if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
-                            //Rundenzähler hat sich geändert
-                            hotlaps.add(new Hotlap(sessionInfo, user));
-                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                            String timeString = df.format(new Date());
-                            ObjectMapper om = new ObjectMapper();
-                            try {
-                                om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
-                                        timeString +
-                                        "_" +
-                                        sessionInfo.getServerName() +
-                                        "_" +
-                                        sessionInfo.getSession().charAt(0) +
-                                        sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
-                                        ".hl").toFile(), hotlaps);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+        for (User user : users) {
+            for (User userOld : usersOld) {
+                if (user.getDriverName().equals(userOld.getDriverName())) {
+                    if (!user.getLapsCompleted().equals(userOld.getLapsCompleted())) {
+                        //Rundenzähler hat sich geändert
+                        hotlaps.add(new Hotlap(sessionInfo, user));
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        String timeString = df.format(new Date());
+                        ObjectMapper om = new ObjectMapper();
+                        try {
+                            om.writeValue(Paths.get(rfDir + "\\UserData\\Log\\Results\\" +
+                                    timeString +
+                                    "_" +
+                                    sessionInfo.getServerName() +
+                                    "_" +
+                                    sessionInfo.getSession().charAt(0) +
+                                    sessionInfo.getSession().substring(sessionInfo.getSession().length() - 1) +
+                                    ".hl").toFile(), hotlaps);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
-                    break;
                 }
+                break;
             }
-        }).start();
+        }
     }
 
 
